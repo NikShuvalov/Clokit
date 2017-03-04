@@ -7,6 +7,11 @@ import java.util.Calendar;
  */
 
 public class AppUtils {
+
+    /**
+     * Use this to get the currentWeekNum in the format that the rest of this program uses.
+     * @return The current Week Num as YYYYW or YYYYWW
+     */
     public static int getCurrentWeekNum(){
         Calendar cal = Calendar.getInstance();
         String weekNumCoded = String.valueOf(cal.get(Calendar.YEAR))+String.valueOf(cal.get(Calendar.WEEK_OF_YEAR));

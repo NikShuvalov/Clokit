@@ -5,9 +5,10 @@ package shuvalov.nikita.clokit.POJOs;
  */
 
 public class Week {
-    long mStartTime, mEndTime, mWeekNum;
+    private long mStartTime, mEndTime;
+    private int mWeekNum;
 
-    public Week(long startTime, long endTime, long weekNum) {
+    public Week(long startTime, long endTime, int weekNum) {
         mStartTime = startTime;
         mEndTime = endTime;
         mWeekNum = weekNum;
@@ -21,7 +22,7 @@ public class Week {
         return mEndTime;
     }
 
-    public long getWeekNum() {
+    public int getWeekNum() {
         return mWeekNum;
     }
 }

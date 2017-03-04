@@ -79,7 +79,7 @@ public class GoalSQLHelper extends SQLiteOpenHelper {
             IMAGE_REFERENCE_COLUMN + " INTEGER," +
             NAME_COLUMN + " TEXT)";
 
-    public static final String CREATE_WEEKLY_REFERENCE_TABLE_EXE = "CREATE TABLE "+ WEEKS_REFERENCE_TABLE_NAME +
+    public static final String CREATE_WEEKLY_REFERENCE_TABLE_EXE = "CREATE TABLE "+ WEEKS_REFERENCE_TABLE_NAME +" (" +
             WEEK_NUM_COLUMN + " TEXT PRIMARY KEY, " +
             START_DAY_COLUMN + " INTEGER, "+
             END_DAY_COLUMN + " INTEGER)";

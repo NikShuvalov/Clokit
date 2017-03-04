@@ -8,13 +8,24 @@ public class Goal {
     private String mGoalName;
     private long mCurrentMilli, mEndMilli;
     private long[] mWeekBreakdown;
+    private int mWeekNum;
 
-    public Goal(String goalName, long currentMilli, long endMilli, long[] weekBreakdown) {
+    public Goal(String goalName, long currentMilli, long endMilli, long[] weekBreakdown, int weekNum) {
         mGoalName = goalName;
         mCurrentMilli = currentMilli;
         mEndMilli = endMilli;
         mWeekBreakdown = weekBreakdown;
+        mWeekNum = weekNum;
     }
+
+    public Goal(String goalName, long currentMilli, long endMilli, int weekNum) {
+        mGoalName = goalName;
+        mCurrentMilli = currentMilli;
+        mEndMilli = endMilli;
+        mWeekBreakdown = new long[7];
+        mWeekNum = weekNum;
+    }
+
 
     public String getGoalName() {
         return mGoalName;
@@ -38,6 +49,14 @@ public class Goal {
 
     public void setEndMilli(long endMilli) {
         mEndMilli = endMilli;
+    }
+
+    public int getWeekNum() {
+        return mWeekNum;
+    }
+
+    public void setWeekNum(int weekNum) {
+        mWeekNum = weekNum;
     }
 
     /**
@@ -75,4 +94,6 @@ public class Goal {
     public long getSundayValue(){
         return mWeekBreakdown[6];
     }
+
+
 }
