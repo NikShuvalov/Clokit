@@ -9,6 +9,10 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 import java.util.ArrayList;
 
+import shuvalov.nikita.clokit.POJOs.Achievement;
+import shuvalov.nikita.clokit.POJOs.Goal;
+import shuvalov.nikita.clokit.POJOs.Week;
+
 /**
  * Created by NikitaShuvalov on 3/3/17.
  */

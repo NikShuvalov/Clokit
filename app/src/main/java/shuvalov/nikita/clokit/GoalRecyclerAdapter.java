@@ -12,6 +12,8 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
+import shuvalov.nikita.clokit.POJOs.Goal;
+
 /**
  * Created by NikitaShuvalov on 3/3/17.
  */
@@ -70,8 +72,6 @@ public class GoalRecyclerAdapter extends RecyclerView.Adapter<GoalViewHolder> {
                 }
             }
         });
-
-
     }
 
     @Override

@@ -7,7 +7,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
-import java.util.concurrent.TimeUnit;
+import shuvalov.nikita.clokit.POJOs.Goal;
 
 /**
  * Created by NikitaShuvalov on 3/3/17.
