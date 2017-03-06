@@ -1,4 +1,4 @@
-package shuvalov.nikita.clokit;
+package shuvalov.nikita.clokit.GoalTracker;
 
 
 import android.os.Bundle;
@@ -8,6 +8,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import shuvalov.nikita.clokit.R;
 
 
 public class HomeFragment extends Fragment {

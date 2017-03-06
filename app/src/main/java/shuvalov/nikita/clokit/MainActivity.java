@@ -1,7 +1,6 @@
 package shuvalov.nikita.clokit;
 
 import android.content.DialogInterface;
-import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
@@ -9,8 +8,6 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -19,11 +16,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.FrameLayout;
 import android.widget.Toast;
 
-import java.util.Calendar;
-
+import shuvalov.nikita.clokit.GoalTracker.CurrentWeekGoalManager;
+import shuvalov.nikita.clokit.GoalTracker.HomeFragment;
+import shuvalov.nikita.clokit.LifetimeResults.LifetimeFragment;
 import shuvalov.nikita.clokit.POJOs.Goal;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
@@ -48,7 +45,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         loadData();
         findViews();
-        getSupportFragmentManager().beginTransaction().add(R.id.fragment_container,HomeFragment.newInstance()).commit();
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, HomeFragment.newInstance()).commit();
         mCurrentDisplay = HOME_FRAG;
     }
 
@@ -113,6 +110,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 break;
             case R.id.lifetime_option:
                 if(!mCurrentDisplay.equals(LIFETIME_FRAG)){
+                    getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, LifetimeFragment.newInstance()).commit();
                     mCurrentDisplay = LIFETIME_FRAG;
                 }else{
                     Toast.makeText(this, "Already in lifetime activity", Toast.LENGTH_SHORT).show();

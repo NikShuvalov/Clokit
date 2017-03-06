@@ -1,4 +1,4 @@
-package shuvalov.nikita.clokit;
+package shuvalov.nikita.clokit.GoalTracker;
 
 import android.app.NotificationManager;
 import android.content.Context;
@@ -14,7 +14,11 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
+import shuvalov.nikita.clokit.AppConstants;
+import shuvalov.nikita.clokit.AppUtils;
+import shuvalov.nikita.clokit.GoalSQLHelper;
 import shuvalov.nikita.clokit.POJOs.Goal;
+import shuvalov.nikita.clokit.R;
 
 /**
  * Created by NikitaShuvalov on 3/3/17.

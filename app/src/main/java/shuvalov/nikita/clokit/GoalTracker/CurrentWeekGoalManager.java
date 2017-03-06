@@ -1,4 +1,4 @@
-package shuvalov.nikita.clokit;
+package shuvalov.nikita.clokit.GoalTracker;
 
 import java.util.ArrayList;
 
