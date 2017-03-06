@@ -59,6 +59,14 @@ public class Goal {
         mWeekNum = weekNum;
     }
 
+    public long addTimeSpent(long timeSpent){
+        mCurrentMilli+= timeSpent;
+        return mCurrentMilli;
+    }
+    public long getTimeLeft(){
+        return mEndMilli-mCurrentMilli;
+    }
+
     /**
      * Goes from 0-6, where 0 = Monday, 6 = Sunday;
      * @return Array for values per days of the week.

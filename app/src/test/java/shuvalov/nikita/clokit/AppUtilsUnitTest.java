@@ -50,10 +50,11 @@ public class AppUtilsUnitTest {
     }
 
     @Test
-    public void correctDisplayOfTime() throws Exception{
+    public void correctGetHoursAndMinutes() throws Exception{
         long second = 1000;
         long minute = 60*second;
         long hour = 60*minute;
+
 
         assertEquals("03:15", AppUtils.getHoursAndMinutes((3*hour)+(15*minute)));
         assertEquals("10:00", AppUtils.getHoursAndMinutes(10*hour));

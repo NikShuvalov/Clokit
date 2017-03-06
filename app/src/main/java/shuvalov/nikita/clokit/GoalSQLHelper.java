@@ -251,6 +251,30 @@ public class GoalSQLHelper extends SQLiteOpenHelper {
         db.close();
     }
 
+    public void updateTimeSpentCurrentWeek(Goal goal){
+        SQLiteDatabase db = getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+
+        contentValues.put(NAME_COLUMN,goal.getGoalName());
+        contentValues.put(TOTAL_TIME_COLUMN, goal.getCurrentMilli());
+        contentValues.put(GOAL_TIME_COLUMN, goal.getEndMilli());
+
+        contentValues.put(MONDAY_TIME_COLUMN, goal.getMondayValue());
+        contentValues.put(TUESDAY_TIME_COLUMN, goal.getTuesdayValue());
+        contentValues.put(WEDNESDAY_TIME_COLUMN, goal.getWednesdayValue());
+        contentValues.put(THURSDAY_TIME_COLUMN,goal.getThursdayValue());
+        contentValues.put(FRIDAY_TIME_COLUMN, goal.getFridayValue());
+        contentValues.put(SATURDAY_TIME_COLUMN, goal.getSaturdayValue());
+        contentValues.put(SUNDAY_TIME_COLUMN, goal.getSundayValue());
+
+        contentValues.put(WEEK_NUM_COLUMN, String.valueOf(goal.getWeekNum()));
+
+        db.update(WEEKLY_TABLE_NAME,contentValues,
+                NAME_COLUMN+ " = ? AND " + WEEK_NUM_COLUMN+ " = ?",
+                new String[]{goal.getGoalName(), String.valueOf(goal.getWeekNum())});
+        db.close();
+    }
+
     public void addGoalsToCurrentWeek(ArrayList<Goal> massGoals){
         for(Goal goal: massGoals){
             addGoalToCurrentWeek(goal);

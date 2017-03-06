@@ -34,8 +34,8 @@ public class CurrentWeekGoalManager {
     }
 
     public boolean addCurrentGoal(Goal goal){
-        for(Goal existingGoal: mCurrentGoals){ //Quadratic, but it should be fine considering no one should be making more than double digit number of goals per week
-            if(goal.getGoalName().equals(existingGoal.getGoalName()) && goal.getWeekNum() == existingGoal.getWeekNum()){
+        for(Goal existingGoal: mCurrentGoals){
+            if(goal.getGoalName().toLowerCase().equals(existingGoal.getGoalName().toLowerCase()) && goal.getWeekNum() == existingGoal.getWeekNum()){
                 return false;
             }
         }
