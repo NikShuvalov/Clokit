@@ -119,7 +119,7 @@ public class GoalSQLHelper extends SQLiteOpenHelper {
         onCreate(sqLiteDatabase);
     }
 
-    public ArrayList<Goal> getCurrentGoals(long weekNum){
+    public ArrayList<Goal> getCurrentGoals(int weekNum){
         ArrayList<Goal> currentGoals = new ArrayList<>();
         SQLiteDatabase db = getReadableDatabase();
         String weekNumString = String.valueOf(weekNum);
@@ -137,7 +137,7 @@ public class GoalSQLHelper extends SQLiteOpenHelper {
                 weekBreakdown[4] = cursor.getLong(cursor.getColumnIndex(FRIDAY_TIME_COLUMN));
                 weekBreakdown[5] = cursor.getLong(cursor.getColumnIndex(SATURDAY_TIME_COLUMN));
                 weekBreakdown[6] = cursor.getLong(cursor.getColumnIndex(SUNDAY_TIME_COLUMN));
-                currentGoals.add(new Goal(name, totalTime,goalTime, weekBreakdown));
+                currentGoals.add(new Goal(name, totalTime,goalTime, weekBreakdown, weekNum));
                 cursor.moveToNext();
             }
         }
@@ -161,7 +161,9 @@ public class GoalSQLHelper extends SQLiteOpenHelper {
             weekBreakdown[4] = cursor.getLong(cursor.getColumnIndex(FRIDAY_TIME_COLUMN));
             weekBreakdown[5] = cursor.getLong(cursor.getColumnIndex(SATURDAY_TIME_COLUMN));
             weekBreakdown[6] = cursor.getLong(cursor.getColumnIndex(SUNDAY_TIME_COLUMN));
-            goal = new Goal(name, currentSaved,goalAmount,weekBreakdown);
+
+            int weekNum = Integer.valueOf(cursor.getString(cursor.getColumnIndex(WEEK_NUM_COLUMN)));
+            goal = new Goal(name, currentSaved,goalAmount,weekBreakdown, weekNum);
         }
         cursor.close();
         db.close();
@@ -174,7 +176,7 @@ public class GoalSQLHelper extends SQLiteOpenHelper {
         Cursor cursor = db.query(WEEKS_REFERENCE_TABLE_NAME,null, null, null, null,  null, null, null);
         if(cursor.moveToFirst()){
             while(!cursor.isAfterLast()){
-                long weekNum = cursor.getLong(cursor.getColumnIndex(WEEK_NUM_COLUMN));
+                int weekNum = Integer.valueOf(cursor.getString(cursor.getColumnIndex(WEEK_NUM_COLUMN)));
                 long startTime = cursor.getLong(cursor.getColumnIndex(START_DAY_COLUMN));
                 long endTime = cursor.getLong(cursor.getColumnIndex(END_DAY_COLUMN));
                 activeWeeks.add(new Week(startTime,endTime,weekNum));
@@ -194,7 +196,7 @@ public class GoalSQLHelper extends SQLiteOpenHelper {
             while(!c.isAfterLast()){
                 String name = c.getString(c.getColumnIndex(NAME_COLUMN));
                 long totalTime = c.getLong(c.getColumnIndex(TOTAL_TIME_COLUMN));
-                lifetimeResults.add(new Goal(name,totalTime,-1,null));
+                lifetimeResults.add(new Goal(name,totalTime,-1,null,-1));
                 c.moveToNext();
             }
         }
@@ -243,6 +245,9 @@ public class GoalSQLHelper extends SQLiteOpenHelper {
         contentValues.put(SATURDAY_TIME_COLUMN, goal.getSaturdayValue());
         contentValues.put(SUNDAY_TIME_COLUMN, goal.getSundayValue());
 
+        contentValues.put(WEEK_NUM_COLUMN, String.valueOf(goal.getWeekNum()));
+
+        db.insert(WEEKLY_TABLE_NAME, null, contentValues);
         db.close();
     }
 
