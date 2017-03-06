@@ -91,6 +91,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             case R.id.achievements_option:
                 Toast.makeText(this, "Not Yet Implemented", Toast.LENGTH_SHORT).show();
                 break;
+            case R.id.lifetime_option:
+                Toast.makeText(this, "Not yet Implemented", Toast.LENGTH_SHORT).show();
+                break;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -160,7 +163,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                                 }else{
                                     Goal goal = new Goal(goalName.trim(), 0, totalMillis, AppUtils.getCurrentWeekNum());
                                     if(CurrentWeekGoalManager.getInstance().addCurrentGoal(goal)){
-                                        GoalSQLHelper.getInstance(MainActivity.this).addGoalToCurrentWeek(goal);
+                                        GoalSQLHelper.getInstance(MainActivity.this).addGoalToWeeklyTable(goal);
                                     dialogInterface.dismiss();
                                     }else{
                                         Toast.makeText(MainActivity.this, "This goal is already set for this week", Toast.LENGTH_SHORT).show();

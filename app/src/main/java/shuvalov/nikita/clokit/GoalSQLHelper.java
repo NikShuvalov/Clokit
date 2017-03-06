@@ -54,6 +54,7 @@ public class GoalSQLHelper extends SQLiteOpenHelper {
     //Achievement Specific columns
     public static final String ACHIEVEMENT_ID = "ACHIEVEMENT_ID";
     public static final String IMAGE_REFERENCE_COLUMN = "IMAGE_REFERENCE";
+//    public static final String TOTAL_TIME_TRACKED_COLUMN = "TOTAL_TIME_TRACKED"; //Unused at the moment.
 
     //String for creating tables
     public static final String CREATE_LIFETIME_TABLE_EXE = "CREATE TABLE "+ LIFETIME_TABLE_NAME + " ("+
@@ -74,10 +75,13 @@ public class GoalSQLHelper extends SQLiteOpenHelper {
             SUNDAY_TIME_COLUMN + " INTEGER, " +
             "PRIMARY KEY (" + WEEK_NUM_COLUMN+", "+NAME_COLUMN+"))";
 
+    // Add this line if I want to track total time in the achievement table. *Don't forget to update the DB version if ya do*
+    //    TOTAL_TIME_TRACKED_COLUMN + " INTEGER,"
     public static final String CREATE_ACHIEVEMENTS_TABLE_EXE = "CREATE TABLE "+ ACHIEVEMENTS_TABLE_NAME + " ("+
             ACHIEVEMENT_ID+ " INTEGER PRIMARY KEY," +
             IMAGE_REFERENCE_COLUMN + " INTEGER," +
             NAME_COLUMN + " TEXT)";
+
 
     public static final String CREATE_WEEKLY_REFERENCE_TABLE_EXE = "CREATE TABLE "+ WEEKS_REFERENCE_TABLE_NAME +" (" +
             WEEK_NUM_COLUMN + " TEXT PRIMARY KEY, " +
@@ -205,6 +209,34 @@ public class GoalSQLHelper extends SQLiteOpenHelper {
         return lifetimeResults;
     }
 
+    /**
+     * This method adds the amount of time spent on a specific goal to the lifetime total for that goal using the goal's name
+     *
+     * @param goalName The goal in question, just uses the name of it.
+     * @param additionalTimeSpent The amount of time to append to the lifetime time spent.
+     * @return The new lifetime time spent on the goal.
+     */
+    public long updateLifetimeByGoalName(String goalName, long additionalTimeSpent){
+        SQLiteDatabase db = getWritableDatabase();
+        long oldTimeSpent = 0;
+        ContentValues contentValues = new ContentValues();
+        Cursor c = db.query(LIFETIME_TABLE_NAME, new String[]{TOTAL_TIME_COLUMN}, NAME_COLUMN + " = ?", new String[]{goalName}, null, null, null);
+        if(c.moveToFirst()){ //There should be only one row because goalNames are unique, so the first result is exactly what we're looking for, if it exists.
+            oldTimeSpent = c.getLong(c.getColumnIndex(TOTAL_TIME_COLUMN));
+            contentValues.put(TOTAL_TIME_COLUMN, additionalTimeSpent+oldTimeSpent);
+            db.update(LIFETIME_TABLE_NAME, contentValues,
+                    NAME_COLUMN + " = ?",
+                    new String[]{goalName});
+        }else{ //If the goal doesn't already exist in the lifetime table then insert it into it with the timespent.
+            contentValues.put(TOTAL_TIME_COLUMN, additionalTimeSpent);
+            contentValues.put(NAME_COLUMN, goalName);
+            db.insert(LIFETIME_TABLE_NAME, null, contentValues);
+        }
+        c.close();
+        db.close();
+        return oldTimeSpent+additionalTimeSpent;
+    }
+
     public boolean updateLifetimeResults(ArrayList<Goal> weeklyResults){
         SQLiteDatabase db = getWritableDatabase();
         for(Goal result: weeklyResults){
@@ -230,7 +262,9 @@ public class GoalSQLHelper extends SQLiteOpenHelper {
         return true;
     }
 
-    public void addGoalToCurrentWeek(Goal goal){
+
+
+    public void addGoalToWeeklyTable(Goal goal){
         SQLiteDatabase db = getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(NAME_COLUMN,goal.getGoalName());
@@ -247,11 +281,12 @@ public class GoalSQLHelper extends SQLiteOpenHelper {
 
         contentValues.put(WEEK_NUM_COLUMN, String.valueOf(goal.getWeekNum()));
 
-        db.insert(WEEKLY_TABLE_NAME, null, contentValues);
+        //In case the user creates a task a week prior, it's difficult to account for that if a task crosses into a second week, therefore, I'll just replace it. The time spent on the task should remain correct.
+        db.insertWithOnConflict(WEEKLY_TABLE_NAME, null, contentValues, SQLiteDatabase.CONFLICT_REPLACE);
         db.close();
     }
 
-    public void updateTimeSpentCurrentWeek(Goal goal){
+    public void updateTimeSpentOnGoal(Goal goal){
         SQLiteDatabase db = getWritableDatabase();
         ContentValues contentValues = new ContentValues();
 
@@ -277,7 +312,7 @@ public class GoalSQLHelper extends SQLiteOpenHelper {
 
     public void addGoalsToCurrentWeek(ArrayList<Goal> massGoals){
         for(Goal goal: massGoals){
-            addGoalToCurrentWeek(goal);
+            addGoalToWeeklyTable(goal);
         }
     }
 

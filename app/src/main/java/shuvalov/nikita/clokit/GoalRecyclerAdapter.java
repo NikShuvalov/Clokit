@@ -61,14 +61,8 @@ public class GoalRecyclerAdapter extends RecyclerView.Adapter<GoalViewHolder> {
                     sharedPreferences.edit().putInt(AppConstants.PREFERENCES_CURRENT_GOAL_WEEK_NUM, AppUtils.getCurrentWeekNum()).apply(); //Adds the weeknum of when the goal was started
 
                     //ToDo: Might move this into a service that updates the current amount of time spent every minute or so.
-                    NotificationCompat.Builder noteBuilder = new NotificationCompat.Builder(compoundButton.getContext());
-                    noteBuilder
-                            .setSmallIcon(android.R.drawable.ic_dialog_info)
-                            .setContentTitle("You're on the clock")
-                            .setContentText("You've selected to work on " + selectedGoal.getGoalName()+". Work diligently!")
-                            .setOngoing(true);
+                    createNotification(compoundButton.getContext(), selectedGoal);
 
-                    mNotificationManager.notify(AppConstants.NOTIFICATION_ID,noteBuilder.build());
                 } else if(currentGoal.equals(selectedGoal.getGoalName())){ //If selected goal is the current goal, then we end current goal.
                     mNotificationManager.cancel(AppConstants.NOTIFICATION_ID);
                     long currentTime = System.currentTimeMillis();
@@ -81,20 +75,31 @@ public class GoalRecyclerAdapter extends RecyclerView.Adapter<GoalViewHolder> {
                         Log.e("GoalRecyclerAdapter", "Missing preference value", new Exception());
                     }
                     if(savedWeekNum == AppUtils.getCurrentWeekNum()-1){ //The task crossed over into a second week. Divide the task time between the goals of both weeks
+                        //Gets the time spent on task for last week by using the task start time and endOfWeekTime, then updates the values in the Database accordingly.
                         long weekEndTime = AppUtils.getWeekEndMillis(savedWeekNum);
                         long timeSpentLastWeek = weekEndTime-startTime;
+                        selectedGoal.addTimeSpent(timeSpentLastWeek);
+                        GoalSQLHelper sqlHelper = GoalSQLHelper.getInstance(compoundButton.getContext());
+                        sqlHelper.updateTimeSpentOnGoal(selectedGoal);
 
-                        //ToDo: Add value to last week's version of goal.
 
+                        //Gets the time spent on task for this week by using the week start time and task end time, then adds the goal to the weekly table, the GoalManager, and the Database.
+                        //Since the new goal is the same as the last week's goal, the user may want to edit their goal time.
                         long weekStartTime = AppUtils.getWeekStartMillis(savedWeekNum+1);
                         long timeSpentThisWeek = System.currentTimeMillis() - weekStartTime;
-                        //ToDo: Add this week's version of goal to current tracker and database.
-                        //ToDo: Add value to this week's version of goal.
+                        selectedGoal.setWeekNum(AppUtils.getCurrentWeekNum());
+                        selectedGoal.setCurrentMilli(timeSpentThisWeek);
+                        sqlHelper.addGoalToWeeklyTable(selectedGoal);
+                        CurrentWeekGoalManager.getInstance().addCurrentGoal(selectedGoal);
+
+
                     }else if (savedWeekNum == AppUtils.getCurrentWeekNum()){ //The task started and ended in the same week, simply update values.
                         long timeSpent = currentTime-startTime;
                         Goal updatedGoal = mGoals.get(holder.getAdapterPosition());
                         updatedGoal.addTimeSpent(timeSpent); //Updates the value in the adapter.
-                        GoalSQLHelper.getInstance(compoundButton.getContext()).updateTimeSpentCurrentWeek(updatedGoal);
+                        GoalSQLHelper sqlHelper = GoalSQLHelper.getInstance(compoundButton.getContext());
+                        sqlHelper.updateTimeSpentOnGoal(updatedGoal);
+                        sqlHelper.updateLifetimeByGoalName(updatedGoal.getGoalName(),timeSpent);
                         notifyItemChanged(holder.getAdapterPosition());
                     }else if (savedWeekNum+1<AppUtils.getCurrentWeekNum()){ //If the current week is 2 or more than the saved week, that means the user just left it on all week, by mistake or to cheat the system!
                         Toast.makeText(compoundButton.getContext(), "So.... you spent every minute of your last week on your goal?", Toast.LENGTH_LONG).show();
@@ -113,6 +118,17 @@ public class GoalRecyclerAdapter extends RecyclerView.Adapter<GoalViewHolder> {
                 }
             }
         });
+    }
+    public void createNotification(Context context, Goal selectedGoal){
+        NotificationCompat.Builder noteBuilder = new NotificationCompat.Builder(context);
+        noteBuilder
+                .setSmallIcon(android.R.drawable.ic_dialog_info)
+                .setContentTitle("You're on the clock")
+                .setContentText("You've selected to work on " + selectedGoal.getGoalName()+". Work diligently!")
+                .setOngoing(true);
+
+        mNotificationManager.notify(AppConstants.NOTIFICATION_ID,noteBuilder.build());
+
     }
 
     @Override
