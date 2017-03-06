@@ -71,6 +71,25 @@ public class AppUtils {
     public static long getWeekEndMillis(long weekStartTimeInMillis){
         return (weekStartTimeInMillis + 604799998); //Should return Sunday 11:59:59:999am if Monday 12:00:00:001am is passed.
         //604799998 = milliseconds/week - 2;
-
     }
+
+    public static String getHoursAndMinutes(long timeInMillis){
+        String timeAsString = "";
+        long millisPerMinute = 1000*60;
+        long millisperHour = millisPerMinute*60;
+
+        long hours = timeInMillis/millisperHour;
+        long minutes = (timeInMillis%millisperHour)/millisPerMinute;
+
+        if(hours<10){
+            timeAsString+="0";
+        }
+        timeAsString+=hours+":";
+        if(minutes<10){
+            timeAsString+="0";
+        }
+        timeAsString+= String.valueOf(minutes);
+        return timeAsString;
+    }
+
 }

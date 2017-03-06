@@ -47,10 +47,18 @@ public class AppUtilsUnitTest {
         assertEquals(mlkWeekEnd, AppUtils.getWeekEndMillis(20173));
         assertEquals(birthWeeksEnd, AppUtils.getWeekEndMillis(201717));
         assertEquals(newYearsEve, AppUtils.getWeekEndMillis(201752));
+    }
 
+    @Test
+    public void correctDisplayOfTime() throws Exception{
+        long second = 1000;
+        long minute = 60*second;
+        long hour = 60*minute;
 
-
-
+        assertEquals("03:15", AppUtils.getHoursAndMinutes((3*hour)+(15*minute)));
+        assertEquals("10:00", AppUtils.getHoursAndMinutes(10*hour));
+        assertEquals("04:20", AppUtils.getHoursAndMinutes((4*hour)+(20*minute)+(59*second)));
+        assertEquals("100:59", AppUtils.getHoursAndMinutes((100*hour)+(59*minute)));
     }
 
 }
