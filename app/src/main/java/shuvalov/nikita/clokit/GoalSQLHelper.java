@@ -55,7 +55,6 @@ public class GoalSQLHelper extends SQLiteOpenHelper {
     //Achievement Specific columns
     public static final String ACHIEVEMENT_ID = "ACHIEVEMENT_ID";
     public static final String IMAGE_REFERENCE_COLUMN = "IMAGE_REFERENCE";
-//    public static final String TOTAL_TIME_TRACKED_COLUMN = "TOTAL_TIME_TRACKED"; //Unused at the moment.
 
     //String for creating tables
     public static final String CREATE_LIFETIME_TABLE_EXE = "CREATE TABLE "+ LIFETIME_TABLE_NAME + " ("+
@@ -362,4 +361,5 @@ public class GoalSQLHelper extends SQLiteOpenHelper {
             addNewWeekReference(week);
         }
     }
+
 }

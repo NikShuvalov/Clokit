@@ -92,4 +92,16 @@ public class AppUtils {
         return timeAsString;
     }
 
+    public static String getLifetimeSummaryText(long timeInMillis){
+        String timeAsString = "";
+        long millisPerMinute = 1000*60;
+        long millisperHour = millisPerMinute*60;
+
+        long hours = timeInMillis/millisperHour;
+        long minutes = (timeInMillis%millisperHour)/millisPerMinute;
+
+        timeAsString+=hours+"Hour(s) ";
+        timeAsString+= minutes+ "Minute(s)";
+        return timeAsString;
+    }
 }

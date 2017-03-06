@@ -96,6 +96,9 @@ public class GoalRecyclerAdapter extends RecyclerView.Adapter<GoalViewHolder> {
                         sqlHelper.addGoalToWeeklyTable(selectedGoal);
                         CurrentWeekGoalManager.getInstance().addCurrentGoal(selectedGoal);
 
+                        long previousTotalTime = sharedPreferences.getLong(AppConstants.PREFERENCES_TOTAL_TRACKED_TIME, 0);
+                        long newTotal = previousTotalTime+timeSpentLastWeek+ timeSpentLastWeek;
+                        sharedPreferences.edit().putLong(AppConstants.PREFERENCES_TOTAL_TRACKED_TIME, newTotal).apply();
 
                     }else if (savedWeekNum == AppUtils.getCurrentWeekNum()){ //The task started and ended in the same week, simply update values.
                         long timeSpent = currentTime-startTime;
@@ -105,6 +108,8 @@ public class GoalRecyclerAdapter extends RecyclerView.Adapter<GoalViewHolder> {
                         sqlHelper.updateTimeSpentOnGoal(updatedGoal);
                         sqlHelper.updateLifetimeByGoalName(updatedGoal.getGoalName(),timeSpent);
                         notifyItemChanged(holder.getAdapterPosition());
+                        long previousTotalTime = sharedPreferences.getLong(AppConstants.PREFERENCES_TOTAL_TRACKED_TIME, 0);
+                        sharedPreferences.edit().putLong(AppConstants.PREFERENCES_TOTAL_TRACKED_TIME, timeSpent+previousTotalTime).apply();
                     }else if (savedWeekNum+1<AppUtils.getCurrentWeekNum()){ //If the current week is 2 or more than the saved week, that means the user just left it on all week, by mistake or to cheat the system!
                         Toast.makeText(compoundButton.getContext(), "So.... you spent every minute of your last week on your goal?", Toast.LENGTH_LONG).show();
                     }

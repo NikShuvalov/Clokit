@@ -1,6 +1,7 @@
 package shuvalov.nikita.clokit.LifetimeResults;
 
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -8,12 +9,17 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
+import android.widget.TextView;
 
+import shuvalov.nikita.clokit.AppConstants;
+import shuvalov.nikita.clokit.AppUtils;
 import shuvalov.nikita.clokit.GoalSQLHelper;
 import shuvalov.nikita.clokit.R;
 
 
 public class LifetimeFragment extends Fragment {
+
 
 
     public LifetimeFragment() {
@@ -41,6 +47,10 @@ public class LifetimeFragment extends Fragment {
 
         lifetimeRecycler.setLayoutManager(linearLayoutManager);
         lifetimeRecycler.setAdapter(lifetimeRecyclerAdapter);
+
+        long trackedTime = getContext().getSharedPreferences(AppConstants.PREFERENCES_NAME, Context.MODE_PRIVATE).getLong(AppConstants.PREFERENCES_TOTAL_TRACKED_TIME,0);
+        String summaryText = "Total tracked time:\n" + AppUtils.getLifetimeSummaryText(trackedTime);
+        ((TextView)view.findViewById(R.id.summary_text)).setText(summaryText);
 
         return view;
     }

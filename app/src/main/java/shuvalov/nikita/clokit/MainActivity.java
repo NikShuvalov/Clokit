@@ -24,9 +24,9 @@ import shuvalov.nikita.clokit.LifetimeResults.LifetimeFragment;
 import shuvalov.nikita.clokit.POJOs.Goal;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
-    private DrawerLayout mDrawerLayout;
-    private NavigationView mNavView;
-    private Toolbar mToolbar;
+    DrawerLayout mDrawerLayout;
+    NavigationView mNavView;
+    Toolbar mToolbar;
     private String mCurrentDisplay;
 
     public static final String HOME_FRAG = "Home fragment";
@@ -96,14 +96,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 break;
             case R.id.history_option:
                 if(!mCurrentDisplay.equals(HISTORY_FRAG)){
-                    mCurrentDisplay = HISTORY_FRAG;
+//                    mCurrentDisplay = HISTORY_FRAG;
+                    Toast.makeText(this, "Not yet Implemented", Toast.LENGTH_SHORT).show();
                 }else{
                     Toast.makeText(this, "Already in history activity", Toast.LENGTH_SHORT).show();
                 }
                 break;
             case R.id.achievements_option:
                 if(!mCurrentDisplay.equals(ACHIEVEMENTS_FRAG)){
-                    mCurrentDisplay = ACHIEVEMENTS_FRAG;
+//                    mCurrentDisplay = ACHIEVEMENTS_FRAG;
+                    Toast.makeText(this, "Not yet Implemented", Toast.LENGTH_SHORT).show();
                 }else{
                     Toast.makeText(this, "Already in achievement activity", Toast.LENGTH_SHORT).show();
                 }
