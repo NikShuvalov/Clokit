@@ -19,6 +19,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import java.util.Calendar;
@@ -28,9 +29,16 @@ import shuvalov.nikita.clokit.POJOs.Goal;
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
     private DrawerLayout mDrawerLayout;
     private NavigationView mNavView;
-    private RecyclerView mGoalView;
     private Toolbar mToolbar;
-    private GoalRecyclerAdapter mGoalAdapter;
+    private String mCurrentDisplay;
+
+    public static final String HOME_FRAG = "Home fragment";
+    public static final String HISTORY_FRAG = "History fragment";
+    public static final String ACHIEVEMENTS_FRAG = "Achievements fragment";
+    public static final String LIFETIME_FRAG = "Lifetime fragment";
+//    private GoalRecyclerAdapter mGoalAdapter;
+//    private RecyclerView mGoalView;
+
 
 
     @Override
@@ -40,6 +48,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         loadData();
         findViews();
+        getSupportFragmentManager().beginTransaction().add(R.id.fragment_container,HomeFragment.newInstance()).commit();
+        mCurrentDisplay = HOME_FRAG;
     }
 
 
@@ -51,22 +61,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public void findViews(){
         mDrawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout);
         mNavView = (NavigationView)findViewById(R.id.nav_view);
-        mGoalView = (RecyclerView)findViewById(R.id.goal_recycler);
         mToolbar = (Toolbar)findViewById(R.id.my_toolbar);
 
-
-        mGoalAdapter = new GoalRecyclerAdapter(CurrentWeekGoalManager.getInstance().getCurrentGoals());
-        LinearLayoutManager goalLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL,false);
-
-        mGoalView.setAdapter(mGoalAdapter);
-        mGoalView.setLayoutManager(goalLayoutManager);
+//        mGoalView = (RecyclerView)findViewById(R.id.goal_recycler);
+//        mGoalAdapter = new GoalRecyclerAdapter(CurrentWeekGoalManager.getInstance().getCurrentGoals());
+//        LinearLayoutManager goalLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL,false);
+//        mGoalView.setAdapter(mGoalAdapter);
+//        mGoalView.setLayoutManager(goalLayoutManager);
 
         setSupportActionBar(mToolbar);
 
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this,mDrawerLayout, mToolbar, R.string.open_nav,R.string.close_nav);
         mDrawerLayout.setDrawerListener(toggle);
         toggle.syncState();
-
 
         mNavView.setNavigationItemSelectedListener(this);
     }
@@ -83,18 +90,36 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()){
             case R.id.home_option:
-                Toast.makeText(this, "Not Yet implemented", Toast.LENGTH_SHORT).show();
+                if(!mCurrentDisplay.equals(HOME_FRAG)){
+                    getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, HomeFragment.newInstance()).commit();
+                    mCurrentDisplay = HOME_FRAG;
+                }else{
+                    Toast.makeText(this, "Already in home activity", Toast.LENGTH_SHORT).show();
+                }
                 break;
             case R.id.history_option:
-                Toast.makeText(this, "Not yet Implemented", Toast.LENGTH_SHORT).show();
+                if(!mCurrentDisplay.equals(HISTORY_FRAG)){
+                    mCurrentDisplay = HISTORY_FRAG;
+                }else{
+                    Toast.makeText(this, "Already in history activity", Toast.LENGTH_SHORT).show();
+                }
                 break;
             case R.id.achievements_option:
-                Toast.makeText(this, "Not Yet Implemented", Toast.LENGTH_SHORT).show();
+                if(!mCurrentDisplay.equals(ACHIEVEMENTS_FRAG)){
+                    mCurrentDisplay = ACHIEVEMENTS_FRAG;
+                }else{
+                    Toast.makeText(this, "Already in achievement activity", Toast.LENGTH_SHORT).show();
+                }
                 break;
             case R.id.lifetime_option:
-                Toast.makeText(this, "Not yet Implemented", Toast.LENGTH_SHORT).show();
+                if(!mCurrentDisplay.equals(LIFETIME_FRAG)){
+                    mCurrentDisplay = LIFETIME_FRAG;
+                }else{
+                    Toast.makeText(this, "Already in lifetime activity", Toast.LENGTH_SHORT).show();
+                }
                 break;
         }
+        mDrawerLayout.closeDrawers();
         return super.onOptionsItemSelected(item);
     }
 

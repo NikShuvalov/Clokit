@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.database.DatabaseErrorHandler;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import java.util.ArrayList;
 
@@ -222,12 +223,14 @@ public class GoalSQLHelper extends SQLiteOpenHelper {
         ContentValues contentValues = new ContentValues();
         Cursor c = db.query(LIFETIME_TABLE_NAME, new String[]{TOTAL_TIME_COLUMN}, NAME_COLUMN + " = ?", new String[]{goalName}, null, null, null);
         if(c.moveToFirst()){ //There should be only one row because goalNames are unique, so the first result is exactly what we're looking for, if it exists.
+            Log.d("SQLHELPER", goalName+" was found");
             oldTimeSpent = c.getLong(c.getColumnIndex(TOTAL_TIME_COLUMN));
             contentValues.put(TOTAL_TIME_COLUMN, additionalTimeSpent+oldTimeSpent);
             db.update(LIFETIME_TABLE_NAME, contentValues,
                     NAME_COLUMN + " = ?",
                     new String[]{goalName});
         }else{ //If the goal doesn't already exist in the lifetime table then insert it into it with the timespent.
+            Log.d("SQLHELPER", goalName + " not found");
             contentValues.put(TOTAL_TIME_COLUMN, additionalTimeSpent);
             contentValues.put(NAME_COLUMN, goalName);
             db.insert(LIFETIME_TABLE_NAME, null, contentValues);

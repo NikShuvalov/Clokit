@@ -16,11 +16,17 @@
         android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
         />
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/goal_recycler"
+    <FrameLayout
+        android:id="@+id/fragment_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/my_toolbar"
-        android:layout_margin="16dp"/>
+        android:layout_below="@id/my_toolbar"/>
+    <!---->
+    <!--<android.support.v7.widget.RecyclerView-->
+        <!--android:id="@+id/goal_recycler"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:layout_below="@id/my_toolbar"-->
+        <!--android:layout_margin="16dp"/>-->
 
 </RelativeLayout>
