@@ -1,6 +1,5 @@
 package shuvalov.nikita.clokit;
 
-import java.lang.annotation.Documented;
 import java.util.Calendar;
 
 /**
@@ -32,10 +31,20 @@ public class AppUtils {
         Calendar cal = Calendar.getInstance();
         cal.set(Calendar.WEEK_OF_YEAR, weekNum);
         cal.set(Calendar.YEAR, yearNum);
+//        int weekOfMonth = cal.get(Calendar.WEEK_OF_MONTH);
+//        int month = cal.get(Calendar.MONTH);
+//        if (month == 2 && weekOfMonth ==2) {
+//            cal.set(Calendar.HOUR_OF_DAY, 1);
+//            cal.set(Calendar.SECOND, 0);
+//            cal.set(Calendar.MINUTE, 0);
+//            cal.set(Calendar.DAY_OF_WEEK, 2);
+//            cal.set(Calendar.MILLISECOND, 1);
+//
+//        }
         cal.set(Calendar.HOUR_OF_DAY, 0);
         cal.set(Calendar.SECOND, 0);
         cal.set(Calendar.MINUTE, 0);
-        cal.set(Calendar.DAY_OF_WEEK, 2);
+        cal.set(Calendar.DAY_OF_WEEK, 1);
         cal.set(Calendar.MILLISECOND, 1);
         return cal.getTimeInMillis();
     }
@@ -51,14 +60,14 @@ public class AppUtils {
         int yearNum = Integer.parseInt(weekNumAsString.substring(0,4));
         weekNum = Integer.parseInt(weekNumAsString.substring(4));
         Calendar cal = Calendar.getInstance();
-        cal.set(Calendar.WEEK_OF_YEAR, weekNum+1);
         cal.set(Calendar.YEAR, yearNum);
+        cal.set(Calendar.WEEK_OF_YEAR, weekNum+1);
+        cal.set(Calendar.DAY_OF_WEEK, 2);
         cal.set(Calendar.HOUR_OF_DAY, 0);
         cal.set(Calendar.SECOND, 0);
         cal.set(Calendar.MINUTE, 0);
-        cal.set(Calendar.DAY_OF_WEEK, 2);
-        cal.set(Calendar.MILLISECOND, 0);
-        return (cal.getTimeInMillis()-1);
+        cal.set(Calendar.MILLISECOND, 1);
+        return (cal.getTimeInMillis()-2);
     }
 
 

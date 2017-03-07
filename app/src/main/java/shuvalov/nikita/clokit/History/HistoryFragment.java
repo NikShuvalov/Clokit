@@ -3,10 +3,13 @@ package shuvalov.nikita.clokit.History;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import shuvalov.nikita.clokit.GoalSQLHelper;
 import shuvalov.nikita.clokit.R;
 
 public class HistoryFragment extends Fragment {
@@ -29,7 +32,14 @@ public class HistoryFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_history, container, false);
-        //ToDo: Set-up the recyclerview with adapters and such
+
+
+        RecyclerView historyRecycler = (RecyclerView)view.findViewById(R.id.history_recycler);
+        HistoryRecyclerAdapter historyAdapter = new HistoryRecyclerAdapter(GoalSQLHelper.getInstance(getContext()).getActiveWeeks());
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(),LinearLayoutManager.VERTICAL,false);
+
+        historyRecycler.setAdapter(historyAdapter);
+        historyRecycler.setLayoutManager(linearLayoutManager);
         return view;
     }
 

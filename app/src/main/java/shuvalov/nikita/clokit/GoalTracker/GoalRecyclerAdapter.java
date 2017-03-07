@@ -80,6 +80,7 @@ public class GoalRecyclerAdapter extends RecyclerView.Adapter<GoalViewHolder> {
                         Log.e("GoalRecyclerAdapter", "Missing preference value", new Exception());
                     }
                     if(savedWeekNum == AppUtils.getCurrentWeekNum()-1){ //The task crossed over into a second week. Divide the task time between the goals of both weeks
+                        Log.d("GoalRecyclerAdapter", "Crossed weeks");
                         //Gets the time spent on task for last week by using the task start time and endOfWeekTime, then updates the values in the Database accordingly.
                         long weekEndTime = AppUtils.getWeekEndMillis(savedWeekNum);
                         long timeSpentLastWeek = weekEndTime-startTime;
@@ -104,13 +105,17 @@ public class GoalRecyclerAdapter extends RecyclerView.Adapter<GoalViewHolder> {
                         sharedPreferences.edit().putLong(AppConstants.PREFERENCES_TOTAL_TRACKED_TIME, newTotal).apply();
 
                     }else if (savedWeekNum == AppUtils.getCurrentWeekNum()){ //The task started and ended in the same week, simply update values.
+                        Log.d("GoalRecyclerAdapter", "Same week ");
                         long timeSpent = currentTime-startTime;
                         Goal updatedGoal = mGoals.get(holder.getAdapterPosition());
                         updatedGoal.addTimeSpent(timeSpent); //Updates the value in the adapter.
                         GoalSQLHelper sqlHelper = GoalSQLHelper.getInstance(compoundButton.getContext());
                         sqlHelper.updateTimeSpentOnGoal(updatedGoal); //Updates weekly stats
                         sqlHelper.updateLifetimeByGoalName(updatedGoal.getGoalName(),timeSpent); //Updates lifetime stats
-                        sqlHelper.addNewWeekReference(new Week(AppUtils.getWeekStartMillis(savedWeekNum), AppUtils.getWeekEndMillis(savedWeekNum), savedWeekNum));//Adds this week as an active week for reference in history view, the method ignores duplicate entries.
+                        Log.d("GoalRecyclerAdapter", "SavedWeekNum: "+ savedWeekNum);
+                        Week week = new Week(AppUtils.getWeekStartMillis(savedWeekNum), AppUtils.getWeekEndMillis(savedWeekNum), savedWeekNum);
+                        Log.d("GoalRecyclerAdapter", "Week Start:"+week.getStartTime()+" End: "+ week.getEndTime());
+                        sqlHelper.addNewWeekReference(week);//Adds this week as an active week for reference in history view, the method ignores duplicate entries.
                         notifyItemChanged(holder.getAdapterPosition());
                         long previousTotalTime = sharedPreferences.getLong(AppConstants.PREFERENCES_TOTAL_TRACKED_TIME, 0);
                         sharedPreferences.edit().putLong(AppConstants.PREFERENCES_TOTAL_TRACKED_TIME, timeSpent+previousTotalTime).apply();

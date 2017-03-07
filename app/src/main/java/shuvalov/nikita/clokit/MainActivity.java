@@ -1,6 +1,7 @@
 package shuvalov.nikita.clokit;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
@@ -20,6 +21,7 @@ import android.widget.Toast;
 
 import shuvalov.nikita.clokit.GoalTracker.CurrentWeekGoalManager;
 import shuvalov.nikita.clokit.GoalTracker.HomeFragment;
+import shuvalov.nikita.clokit.History.HistoryFragment;
 import shuvalov.nikita.clokit.LifetimeResults.LifetimeFragment;
 import shuvalov.nikita.clokit.POJOs.Goal;
 
@@ -28,6 +30,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     NavigationView mNavView;
     Toolbar mToolbar;
     private String mCurrentDisplay;
+    private boolean mBackRecentlyPressed;
 
     public static final String HOME_FRAG = "Home fragment";
     public static final String HISTORY_FRAG = "History fragment";
@@ -43,6 +46,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        mBackRecentlyPressed = false;
         loadData();
         findViews();
         getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, HomeFragment.newInstance()).commit();
@@ -96,14 +100,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 break;
             case R.id.history_option:
                 if(!mCurrentDisplay.equals(HISTORY_FRAG)){
-//                    mCurrentDisplay = HISTORY_FRAG;
-                    Toast.makeText(this, "Not yet Implemented", Toast.LENGTH_SHORT).show();
+                    mBackRecentlyPressed = false;
+                    mCurrentDisplay = HISTORY_FRAG;
+                    getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, HistoryFragment.newInstance()).commit();
                 }else{
                     Toast.makeText(this, "Already in history activity", Toast.LENGTH_SHORT).show();
                 }
                 break;
             case R.id.achievements_option:
                 if(!mCurrentDisplay.equals(ACHIEVEMENTS_FRAG)){
+                    mBackRecentlyPressed = false;
 //                    mCurrentDisplay = ACHIEVEMENTS_FRAG;
                     Toast.makeText(this, "Not yet Implemented", Toast.LENGTH_SHORT).show();
                 }else{
@@ -112,6 +118,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 break;
             case R.id.lifetime_option:
                 if(!mCurrentDisplay.equals(LIFETIME_FRAG)){
+                    mBackRecentlyPressed = false;
                     getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, LifetimeFragment.newInstance()).commit();
                     mCurrentDisplay = LIFETIME_FRAG;
                 }else{
@@ -201,5 +208,24 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
         });
         alertDialog.show();
+    }
+
+    @Override
+    public void onBackPressed() {
+        if(mCurrentDisplay.equals(HOME_FRAG)){
+            if(mBackRecentlyPressed){
+                mBackRecentlyPressed=false;
+                Intent intent = new Intent(Intent.ACTION_MAIN);
+                intent.addCategory(Intent.CATEGORY_HOME);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+            }else{
+                mBackRecentlyPressed = true;
+                Toast.makeText(this, "Press back again to close", Toast.LENGTH_SHORT).show();
+            }
+        }else{
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, HomeFragment.newInstance()).commit();
+            mCurrentDisplay = HOME_FRAG;
+        }
     }
 }
