@@ -15,5 +15,9 @@
         android:id="@+id/existing_goal_opt"
         android:title="Add Previous Goal"
         app:showAsAction="never"/>
+    <item
+        android:id="@+id/copy_goals_opt"
+        android:title="Copy Last Week"
+        app:showAsAction="never"/>
 
 </menu>

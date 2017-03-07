@@ -21,6 +21,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+
 import shuvalov.nikita.clokit.GoalTracker.CurrentWeekGoalManager;
 import shuvalov.nikita.clokit.GoalTracker.HomeFragment;
 import shuvalov.nikita.clokit.History.HistoryFragment;
@@ -143,6 +145,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 break;
             case R.id.existing_goal_opt:
                 promptUserForGoal(true);
+                break;
+            case R.id.copy_goals_opt:
+                copyLastWeeksGoals();
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -312,6 +317,26 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }else{
             getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, HomeFragment.newInstance()).commit();
             mCurrentDisplay = HOME_FRAG;
+        }
+    }
+
+    /**
+     * Copies the last active week's goals, clears the progress, adjusts the weeknumber and places it back in the database as new tasks.
+     * This keeps the total goalTime
+     */
+    public void copyLastWeeksGoals(){
+        GoalSQLHelper sqlHelper = GoalSQLHelper.getInstance(this);
+        String lastActiveWeek = sqlHelper.getLastActiveWeekNum();
+        if(lastActiveWeek!=null){ //If a week is found, adjust values and put in as current week.
+            int previousWeek = Integer.valueOf(lastActiveWeek);
+            ArrayList<Goal> previousGoals = sqlHelper.getCurrentGoals(previousWeek);
+            for(Goal goal: previousGoals){
+                goal.setCurrentMilli(0);
+                goal.setWeekNum(AppUtils.getCurrentWeekNum());
+            }
+            sqlHelper.addGoalsToCurrentWeek(previousGoals);
+        }else{
+            Toast.makeText(this, "Couldn't find previous active week", Toast.LENGTH_SHORT).show();
         }
     }
 }

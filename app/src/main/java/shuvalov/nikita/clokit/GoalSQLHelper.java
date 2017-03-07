@@ -361,5 +361,30 @@ public class GoalSQLHelper extends SQLiteOpenHelper {
             addNewWeekReference(week);
         }
     }
+    public String getLastActiveWeekNum(){
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor c =db.query(WEEKS_REFERENCE_TABLE_NAME,null, null, null, null ,null, null, null);
+        if(c.moveToLast()){//Move cursor to last, as that will be the most recent active week.
+            String lastActiveWeek = c.getString(c.getColumnIndex(WEEK_NUM_COLUMN));
+            if(lastActiveWeek.equals(String.valueOf(AppUtils.getCurrentWeekNum()))){ //Is the recent week the same as the current week? Then import from the row before this one.
+                if(c.moveToPrevious()){
+                    lastActiveWeek = c.getString(c.getColumnIndex(WEEK_NUM_COLUMN));
+                }else{ //There's no row before the most recent? Gosh darn it! Let's return null.
+                    //This runs if there's a single row, which happens to be this week.
+                    db.close();
+                    c.close();
+                    return null;
+                }
+            }
+            //This runs if the last week on file is not this week, in other words no tracking was logged this week.
+            db.close();
+            c.close();
+            return lastActiveWeek;
+        }
+        //This runs if there's no weeks at all found in history.
+        db.close();
+        c.close();
+        return null;
+    }
 
 }
