@@ -47,12 +47,12 @@ public class GoalRecyclerAdapter extends RecyclerView.Adapter<GoalViewHolder> {
         }else{
             holder.mToggleButton.setChecked(false);
         }
-        holder.mEditButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //ToDo: Logic for editing or removing entry.
-            }
-        });
+//        holder.mEditButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                //ToDo: Logic for editing or removing entry.
+//            }
+//        });
         holder.mToggleButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
@@ -120,10 +120,9 @@ public class GoalRecyclerAdapter extends RecyclerView.Adapter<GoalViewHolder> {
                 }
                 else{ //If there is a current goal, and the goal is not the selected goal
                     if(b){
-                        Toast.makeText(holder.mEditButton.getContext(), "There is currently another active goal", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(compoundButton.getContext(), "There is currently another active goal", Toast.LENGTH_SHORT).show();
                         compoundButton.setChecked(false);
                     }
-
                 }
             }
         });

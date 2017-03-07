@@ -1,5 +1,9 @@
 package shuvalov.nikita.clokit.POJOs;
 
+import android.os.Build;
+
+import java.util.Comparator;
+
 /**
  * Created by NikitaShuvalov on 3/3/17.
  */

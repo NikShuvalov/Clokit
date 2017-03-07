@@ -40,7 +40,10 @@ public class LifetimeFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_lifetime, container, false);
         RecyclerView lifetimeRecycler = (RecyclerView) view.findViewById(R.id.lifetime_recycler);
 
-        LifetimeTrackerManager.getInstance().setLifetimeResults(GoalSQLHelper.getInstance(getContext()).getLifetimeResults());
+        LifetimeTrackerManager lifetrackerManager = LifetimeTrackerManager.getInstance();
+        lifetrackerManager.setLifetimeResults(GoalSQLHelper.getInstance(getContext()).getLifetimeResults());
+        lifetrackerManager.sortByTimeAllocated();
+
 
         LifetimeRecyclerAdapter lifetimeRecyclerAdapter = new LifetimeRecyclerAdapter(LifetimeTrackerManager.getInstance().getLifetimeResults());
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(),LinearLayoutManager.VERTICAL, false);

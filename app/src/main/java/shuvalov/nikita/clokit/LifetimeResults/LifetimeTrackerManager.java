@@ -1,8 +1,10 @@
 package shuvalov.nikita.clokit.LifetimeResults;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 import shuvalov.nikita.clokit.POJOs.Goal;
+
 
 /**
  * Created by NikitaShuvalov on 3/6/17.
@@ -33,5 +35,9 @@ public class LifetimeTrackerManager {
     }
     public void addLifeTimeResult(Goal goal){
         mLifetimeResults.add(goal);
+    }
+
+    public void sortByTimeAllocated(){
+        Collections.sort(mLifetimeResults, new TimeAllocatedComparator());
     }
 }
