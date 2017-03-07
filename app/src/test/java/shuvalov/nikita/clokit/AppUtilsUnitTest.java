@@ -62,4 +62,15 @@ public class AppUtilsUnitTest {
         assertEquals("100:59", AppUtils.getHoursAndMinutes((100*hour)+(59*minute)));
     }
 
+    @Test
+    public void correctGetDate()throws Exception{
+        long birthday = Long.valueOf("1493006400001");
+        long firstMonday2017 = Long.valueOf("1483333200001");
+        long xmas = Long.valueOf("1514178000001");
+
+        assertEquals("04/24/2017", AppUtils.getDate(birthday));
+        assertEquals("01/02/2017", AppUtils.getDate(firstMonday2017));
+        assertEquals("12/25/2017", AppUtils.getDate(xmas));
+    }
+
 }

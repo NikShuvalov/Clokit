@@ -352,7 +352,7 @@ public class GoalSQLHelper extends SQLiteOpenHelper {
         contentValues.put(WEEK_NUM_COLUMN, week.getWeekNum());
         contentValues.put(START_DAY_COLUMN, week.getStartTime());
         contentValues.put(END_DAY_COLUMN, week.getEndTime());
-        db.insertWithOnConflict(WEEKS_REFERENCE_TABLE_NAME, null, contentValues, SQLiteDatabase.CONFLICT_REPLACE);
+        db.insertWithOnConflict(WEEKS_REFERENCE_TABLE_NAME, null, contentValues, SQLiteDatabase.CONFLICT_IGNORE);
         db.close();
     }
 

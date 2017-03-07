@@ -18,6 +18,7 @@ import shuvalov.nikita.clokit.AppConstants;
 import shuvalov.nikita.clokit.AppUtils;
 import shuvalov.nikita.clokit.GoalSQLHelper;
 import shuvalov.nikita.clokit.POJOs.Goal;
+import shuvalov.nikita.clokit.POJOs.Week;
 import shuvalov.nikita.clokit.R;
 
 /**
@@ -85,6 +86,7 @@ public class GoalRecyclerAdapter extends RecyclerView.Adapter<GoalViewHolder> {
                         selectedGoal.addTimeSpent(timeSpentLastWeek);
                         GoalSQLHelper sqlHelper = GoalSQLHelper.getInstance(compoundButton.getContext());
                         sqlHelper.updateTimeSpentOnGoal(selectedGoal);
+                        sqlHelper.addNewWeekReference(new Week(AppUtils.getWeekStartMillis(savedWeekNum),weekEndTime,savedWeekNum));
 
 
                         //Gets the time spent on task for this week by using the week start time and task end time, then adds the goal to the weekly table, the GoalManager, and the Database.
@@ -94,6 +96,7 @@ public class GoalRecyclerAdapter extends RecyclerView.Adapter<GoalViewHolder> {
                         selectedGoal.setWeekNum(AppUtils.getCurrentWeekNum());
                         selectedGoal.setCurrentMilli(timeSpentThisWeek);
                         sqlHelper.addGoalToWeeklyTable(selectedGoal);
+                        sqlHelper.addNewWeekReference(new Week(weekStartTime,AppUtils.getWeekEndMillis(savedWeekNum+1), savedWeekNum+1));
                         CurrentWeekGoalManager.getInstance().addCurrentGoal(selectedGoal);
 
                         long previousTotalTime = sharedPreferences.getLong(AppConstants.PREFERENCES_TOTAL_TRACKED_TIME, 0);
@@ -105,8 +108,9 @@ public class GoalRecyclerAdapter extends RecyclerView.Adapter<GoalViewHolder> {
                         Goal updatedGoal = mGoals.get(holder.getAdapterPosition());
                         updatedGoal.addTimeSpent(timeSpent); //Updates the value in the adapter.
                         GoalSQLHelper sqlHelper = GoalSQLHelper.getInstance(compoundButton.getContext());
-                        sqlHelper.updateTimeSpentOnGoal(updatedGoal);
-                        sqlHelper.updateLifetimeByGoalName(updatedGoal.getGoalName(),timeSpent);
+                        sqlHelper.updateTimeSpentOnGoal(updatedGoal); //Updates weekly stats
+                        sqlHelper.updateLifetimeByGoalName(updatedGoal.getGoalName(),timeSpent); //Updates lifetime stats
+                        sqlHelper.addNewWeekReference(new Week(AppUtils.getWeekStartMillis(savedWeekNum), AppUtils.getWeekEndMillis(savedWeekNum), savedWeekNum));//Adds this week as an active week for reference in history view, the method ignores duplicate entries.
                         notifyItemChanged(holder.getAdapterPosition());
                         long previousTotalTime = sharedPreferences.getLong(AppConstants.PREFERENCES_TOTAL_TRACKED_TIME, 0);
                         sharedPreferences.edit().putLong(AppConstants.PREFERENCES_TOTAL_TRACKED_TIME, timeSpent+previousTotalTime).apply();

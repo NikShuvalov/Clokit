@@ -1,5 +1,6 @@
 package shuvalov.nikita.clokit;
 
+import java.lang.annotation.Documented;
 import java.util.Calendar;
 
 /**
@@ -103,5 +104,24 @@ public class AppUtils {
         timeAsString+=hours+"Hour(s) ";
         timeAsString+= minutes+ "Minute(s)";
         return timeAsString;
+    }
+
+    public static String getDate(long timeInMillis){
+        String date = "";
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(timeInMillis);
+
+        int month = calendar.get(Calendar.MONTH)+1;
+        int day = calendar.get(Calendar.DAY_OF_MONTH);
+        int year = calendar.get(Calendar.YEAR);
+        if(month<10){
+            date+="0";
+        }
+        date+=month+"/";
+        if(day<10){
+            date+="0";
+        }
+        date+=day+"/"+year;
+        return date;
     }
 }
