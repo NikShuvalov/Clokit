@@ -9,6 +9,8 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -134,80 +136,164 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public boolean onOptionsItemSelected(MenuItem item) {
         switch(item.getItemId()){
             case R.id.new_goal_opt:
-                promptUserForGoal();
+                promptUserForGoal(false);
                 break;
             case R.id.settings_opt:
                 //ToDo: Take to settings page.
+                break;
+            case R.id.existing_goal_opt:
+                promptUserForGoal(true);
                 break;
         }
         return super.onOptionsItemSelected(item);
     }
 
-    public void promptUserForGoal(){
-        final View view = LayoutInflater.from(this).inflate(R.layout.dialog_newgoal, null);
-        final AlertDialog alertDialog = new AlertDialog.Builder(this).setTitle("Goal Creation").setView(view)
-                .setPositiveButton("Add Goal",null)
+    public void promptUserForGoal(boolean existing) {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(this).setPositiveButton("Add Goal",null)
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                dialogInterface.dismiss();
-            }
-        }).create();
-
-        alertDialog.setOnShowListener(new DialogInterface.OnShowListener() {
-            @Override
-            public void onShow(final DialogInterface dialogInterface) {
-                Button button = ((AlertDialog) dialogInterface).getButton(DialogInterface.BUTTON_POSITIVE);
-
-                final EditText nameEntry = (EditText) ((AlertDialog) dialogInterface).findViewById(R.id.goal_name_entry);
-                final EditText hourEntry = (EditText) ((AlertDialog) dialogInterface).findViewById(R.id.hour_entry);
-                final EditText minuteEntry = (EditText)((AlertDialog) dialogInterface).findViewById(R.id.minute_entry);
-                button.setOnClickListener(new View.OnClickListener() {
-
                     @Override
-                    public void onClick(View view) {
-                        {
-                            String goalName = nameEntry.getText().toString();
-                            if(goalName.trim().equals("")){
-                                nameEntry.setError("A goal name is required");
-                            }else{
-                                String hoursString = hourEntry.getText().toString();
-                                String minutesString  = minuteEntry.getText().toString();
-                                int minutes = 0;
-                                int hours = 0;
-                                if(hoursString.equals("") && minutesString.equals("")){
-                                    hourEntry.setError("A goal time amount is required");
-                                    minuteEntry.setError("A goal time amount is required");
-                                }else if(hoursString.equals("") || minutesString.equals("")){
-                                    if(minutesString.equals("")){
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.dismiss();
+                    }
+                });
+        if(existing){
+            final View view = LayoutInflater.from(this).inflate(R.layout.dialog_existinggoal, null);
+            RecyclerView optionsRecycler = (RecyclerView)view.findViewById(R.id.existing_goal_recycler);
+            optionsRecycler.setLayoutManager(new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false));
+
+            final ExistingGoalsRecyclerAdapter goalsAdapter = new ExistingGoalsRecyclerAdapter(GoalSQLHelper.getInstance(view.getContext()).getLifetimeResults());
+            optionsRecycler.setAdapter(goalsAdapter);
+
+            AlertDialog alertDialog = builder.setTitle("Goal Selection").setView(view).create();
+
+            alertDialog.setOnShowListener(new DialogInterface.OnShowListener() {
+                @Override
+                public void onShow(final DialogInterface dialogInterface) {
+                    Button button = ((AlertDialog) dialogInterface).getButton(DialogInterface.BUTTON_POSITIVE);
+
+                    final EditText hourEntry = (EditText) ((AlertDialog) dialogInterface).findViewById(R.id.hour_entry);
+                    final EditText minuteEntry = (EditText)((AlertDialog) dialogInterface).findViewById(R.id.minute_entry);
+                    button.setOnClickListener(new View.OnClickListener() {
+
+                        @Override
+                        public void onClick(View view) {
+                            {
+                                String goalName;
+                                Goal selectedGoal = goalsAdapter.getSelectedGoal();
+                                if(selectedGoal ==null){
+                                    Toast.makeText(MainActivity.this, "No Goal Selected", Toast.LENGTH_SHORT).show();
+                                }else{
+                                    goalName = selectedGoal.getGoalName();
+                                    goalsAdapter.resetSelection();
+                                    String hoursString = hourEntry.getText().toString();
+                                    String minutesString  = minuteEntry.getText().toString();
+                                    int minutes = 0;
+                                    int hours = 0;
+                                    if(hoursString.equals("") && minutesString.equals("")){
+                                        hourEntry.setError("A goal time amount is required");
+                                        minuteEntry.setError("A goal time amount is required");
+                                        goalsAdapter.resetSelection();
+                                    }else if(hoursString.equals("") || minutesString.equals("")){
+                                        if(minutesString.equals("")){
+                                            hours = Integer.valueOf(hoursString);
+                                        }else{
+                                            minutes = Integer.valueOf(minutesString);
+                                        }
+                                    } else{
                                         hours = Integer.valueOf(hoursString);
-                                    }else{
                                         minutes = Integer.valueOf(minutesString);
                                     }
-                                } else{
-                                    hours = Integer.valueOf(hoursString);
-                                    minutes = Integer.valueOf(minutesString);
-                                }
-                                long totalMillis = (minutes*1000*60)+(hours*1000*3600);
-                                if(totalMillis==0){
-                                    hourEntry.setError("A goal time amount is required");
-                                    minuteEntry.setError("A goal time amount is required");
-                                }else{
-                                    Goal goal = new Goal(goalName.trim(), 0, totalMillis, AppUtils.getCurrentWeekNum());
-                                    if(CurrentWeekGoalManager.getInstance().addCurrentGoal(goal)){
-                                        GoalSQLHelper.getInstance(MainActivity.this).addGoalToWeeklyTable(goal);
-                                    dialogInterface.dismiss();
-                                    }else{
-                                        Toast.makeText(MainActivity.this, "This goal is already set for this week", Toast.LENGTH_SHORT).show();
+                                    long totalMillis = (minutes*1000*60)+(hours*1000*3600);
+                                    if(totalMillis==0){
+                                        hourEntry.setError("A goal time amount is required");
+                                        minuteEntry.setError("A goal time amount is required");
+                                        goalsAdapter.resetSelection();
+                                    }else {
+                                        Goal goal = new Goal(goalName.trim(), 0, totalMillis, AppUtils.getCurrentWeekNum());
+                                        if (CurrentWeekGoalManager.getInstance().addCurrentGoal(goal)) {
+                                            GoalSQLHelper.getInstance(MainActivity.this).addGoalToWeeklyTable(goal);
+                                            dialogInterface.dismiss();
+                                        } else {
+                                            goalsAdapter.resetSelection();
+                                            Toast.makeText(MainActivity.this, "This goal is already set for this week", Toast.LENGTH_SHORT).show();
+                                        }
                                     }
                                 }
                             }
                         }
-                    }
-                });
-            }
-        });
-        alertDialog.show();
+                    });
+
+                }
+            });
+            alertDialog.show();
+        }else{
+            final View view = LayoutInflater.from(this).inflate(R.layout.dialog_newgoal, null);
+            AlertDialog alertDialog = builder.setTitle("Goal Creation").setView(view).create();
+
+            alertDialog.setOnShowListener(new DialogInterface.OnShowListener() {
+                @Override
+                public void onShow(final DialogInterface dialogInterface) {
+                    Button button = ((AlertDialog) dialogInterface).getButton(DialogInterface.BUTTON_POSITIVE);
+
+                    final EditText nameEntry = (EditText) ((AlertDialog) dialogInterface).findViewById(R.id.goal_name_entry);
+                    final EditText hourEntry = (EditText) ((AlertDialog) dialogInterface).findViewById(R.id.hour_entry);
+                    final EditText minuteEntry = (EditText)((AlertDialog) dialogInterface).findViewById(R.id.minute_entry);
+                    button.setOnClickListener(new View.OnClickListener() {
+
+                        @Override
+                        public void onClick(View view) {
+                            {
+                                String goalName = nameEntry.getText().toString();
+                                if(goalName.trim().equals("")){
+                                    nameEntry.setError("A goal name is required");
+                                }else{
+                                    String hoursString = hourEntry.getText().toString();
+                                    String minutesString  = minuteEntry.getText().toString();
+                                    int minutes = 0;
+                                    int hours = 0;
+                                    if(hoursString.equals("") && minutesString.equals("")){
+                                        hourEntry.setError("A goal time amount is required");
+                                        minuteEntry.setError("A goal time amount is required");
+                                    }else if(hoursString.equals("") || minutesString.equals("")){
+                                        if(minutesString.equals("")){
+                                            hours = Integer.valueOf(hoursString);
+                                        }else{
+                                            minutes = Integer.valueOf(minutesString);
+                                        }
+                                    } else{
+                                        hours = Integer.valueOf(hoursString);
+                                        minutes = Integer.valueOf(minutesString);
+                                    }
+                                    long totalMillis = (minutes*1000*60)+(hours*1000*3600);
+                                    if(totalMillis==0){
+                                        hourEntry.setError("A goal time amount is required");
+                                        minuteEntry.setError("A goal time amount is required");
+                                    }else{
+                                        Goal goal = new Goal(goalName.trim(), 0, totalMillis, AppUtils.getCurrentWeekNum());
+                                        if(CurrentWeekGoalManager.getInstance().addCurrentGoal(goal)){
+                                            GoalSQLHelper.getInstance(MainActivity.this).addGoalToWeeklyTable(goal);
+                                            dialogInterface.dismiss();
+                                        }else{
+                                            Toast.makeText(MainActivity.this, "This goal is already set for this week", Toast.LENGTH_SHORT).show();
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    });
+                }
+            });
+            alertDialog.show();
+        }
+
+//        final AlertDialog alertDialog = new AlertDialog.Builder(this).setTitle("Goal Creation").setView(view)
+//                .setPositiveButton("Add Goal",null)
+//                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+//            @Override
+//            public void onClick(DialogInterface dialogInterface, int i) {
+//                dialogInterface.dismiss();
+//            }
+//        }).create();
     }
 
     @Override
