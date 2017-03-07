@@ -7,7 +7,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.TextView;
 
-import shuvalov.nikita.clokit.POJOs.Goal;
+import shuvalov.nikita.clokit.pojos.Goal;
 
 /**
  * Created by NikitaShuvalov on 3/7/17.

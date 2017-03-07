@@ -7,7 +7,7 @@ import android.view.ViewGroup;
 
 import java.util.ArrayList;
 
-import shuvalov.nikita.clokit.POJOs.Goal;
+import shuvalov.nikita.clokit.pojos.Goal;
 
 /**
  * Created by NikitaShuvalov on 3/7/17.

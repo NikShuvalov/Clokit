@@ -1,4 +1,4 @@
-package shuvalov.nikita.clokit.POJOs;
+package shuvalov.nikita.clokit.pojos;
 
 /**
  * Created by NikitaShuvalov on 3/3/17.

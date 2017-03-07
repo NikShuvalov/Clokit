@@ -1,4 +1,4 @@
-package shuvalov.nikita.clokit.LifetimeResults;
+package shuvalov.nikita.clokit.lifetime_results;
 
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -6,7 +6,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import shuvalov.nikita.clokit.AppUtils;
-import shuvalov.nikita.clokit.POJOs.Goal;
+import shuvalov.nikita.clokit.pojos.Goal;
 import shuvalov.nikita.clokit.R;
 
 /**

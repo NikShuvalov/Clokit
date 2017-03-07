@@ -1,4 +1,4 @@
-package shuvalov.nikita.clokit.History;
+package shuvalov.nikita.clokit.history;
 
 
 import android.os.Bundle;

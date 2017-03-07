@@ -23,11 +23,11 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
-import shuvalov.nikita.clokit.GoalTracker.CurrentWeekGoalManager;
-import shuvalov.nikita.clokit.GoalTracker.HomeFragment;
-import shuvalov.nikita.clokit.History.HistoryFragment;
-import shuvalov.nikita.clokit.LifetimeResults.LifetimeFragment;
-import shuvalov.nikita.clokit.POJOs.Goal;
+import shuvalov.nikita.clokit.goaltracker.CurrentWeekGoalManager;
+import shuvalov.nikita.clokit.goaltracker.HomeFragment;
+import shuvalov.nikita.clokit.history.HistoryFragment;
+import shuvalov.nikita.clokit.lifetime_results.LifetimeFragment;
+import shuvalov.nikita.clokit.pojos.Goal;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
     DrawerLayout mDrawerLayout;
@@ -40,8 +40,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public static final String HISTORY_FRAG = "History fragment";
     public static final String ACHIEVEMENTS_FRAG = "Achievements fragment";
     public static final String LIFETIME_FRAG = "Lifetime fragment";
-//    private GoalRecyclerAdapter mGoalAdapter;
-//    private RecyclerView mGoalView;
+
 
 
 
@@ -67,12 +66,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mDrawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout);
         mNavView = (NavigationView)findViewById(R.id.nav_view);
         mToolbar = (Toolbar)findViewById(R.id.my_toolbar);
-
-//        mGoalView = (RecyclerView)findViewById(R.id.goal_recycler);
-//        mGoalAdapter = new GoalRecyclerAdapter(CurrentWeekGoalManager.getInstance().getCurrentGoals());
-//        LinearLayoutManager goalLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL,false);
-//        mGoalView.setAdapter(mGoalAdapter);
-//        mGoalView.setLayoutManager(goalLayoutManager);
 
         setSupportActionBar(mToolbar);
 

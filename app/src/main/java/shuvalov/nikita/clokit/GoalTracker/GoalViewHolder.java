@@ -1,15 +1,13 @@
-package shuvalov.nikita.clokit.GoalTracker;
+package shuvalov.nikita.clokit.goaltracker;
 
-import android.os.Build;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
 import shuvalov.nikita.clokit.AppUtils;
-import shuvalov.nikita.clokit.POJOs.Goal;
+import shuvalov.nikita.clokit.pojos.Goal;
 import shuvalov.nikita.clokit.R;
 
 /**

@@ -1,4 +1,4 @@
-package shuvalov.nikita.clokit.History;
+package shuvalov.nikita.clokit.history;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -6,7 +6,7 @@ import android.view.ViewGroup;
 
 import java.util.ArrayList;
 
-import shuvalov.nikita.clokit.POJOs.Week;
+import shuvalov.nikita.clokit.pojos.Week;
 import shuvalov.nikita.clokit.R;
 
 /**

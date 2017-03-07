@@ -1,4 +1,4 @@
-package shuvalov.nikita.clokit.LifetimeResults;
+package shuvalov.nikita.clokit.lifetime_results;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -6,7 +6,7 @@ import android.view.ViewGroup;
 
 import java.util.ArrayList;
 
-import shuvalov.nikita.clokit.POJOs.Goal;
+import shuvalov.nikita.clokit.pojos.Goal;
 import shuvalov.nikita.clokit.R;
 
 /**

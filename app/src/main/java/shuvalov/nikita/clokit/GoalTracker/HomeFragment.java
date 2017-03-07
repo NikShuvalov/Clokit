@@ -1,4 +1,4 @@
-package shuvalov.nikita.clokit.GoalTracker;
+package shuvalov.nikita.clokit.goaltracker;
 
 
 import android.os.Bundle;

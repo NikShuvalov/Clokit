@@ -15,6 +15,10 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-    </application>
 
+        <service
+            android:name=".goaltracker.GoalTrackerIntentService"
+            android:exported="false">
+        </service>
+    </application>
 </manifest>

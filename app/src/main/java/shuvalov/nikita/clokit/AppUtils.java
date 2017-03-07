@@ -134,4 +134,10 @@ public class AppUtils {
         date+=day+"/"+year;
         return date;
     }
+
+    public static int getMinutesOfWork(long startTime, long currentTime){
+        long timeSpent = currentTime - startTime;
+        String timeSpentMinutes = String.valueOf(timeSpent/60000);
+        return Integer.valueOf(timeSpentMinutes);
+    }
 }

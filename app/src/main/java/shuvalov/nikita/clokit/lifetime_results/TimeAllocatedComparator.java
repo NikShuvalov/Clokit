@@ -1,10 +1,10 @@
-package shuvalov.nikita.clokit.LifetimeResults;
+package shuvalov.nikita.clokit.lifetime_results;
 
 import android.os.Build;
 
 import java.util.Comparator;
 
-import shuvalov.nikita.clokit.POJOs.Goal;
+import shuvalov.nikita.clokit.pojos.Goal;
 
 /**
  * Created by NikitaShuvalov on 3/6/17.

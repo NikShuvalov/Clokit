@@ -1,9 +1,9 @@
-package shuvalov.nikita.clokit.LifetimeResults;
+package shuvalov.nikita.clokit.lifetime_results;
 
 import java.util.ArrayList;
 import java.util.Collections;
 
-import shuvalov.nikita.clokit.POJOs.Goal;
+import shuvalov.nikita.clokit.pojos.Goal;
 
 
 /**

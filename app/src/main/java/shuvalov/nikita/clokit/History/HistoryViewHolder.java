@@ -1,11 +1,11 @@
-package shuvalov.nikita.clokit.History;
+package shuvalov.nikita.clokit.history;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.TextView;
 
 import shuvalov.nikita.clokit.AppUtils;
-import shuvalov.nikita.clokit.POJOs.Week;
+import shuvalov.nikita.clokit.pojos.Week;
 import shuvalov.nikita.clokit.R;
 
 /**

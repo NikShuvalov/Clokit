@@ -1,13 +1,12 @@
-package shuvalov.nikita.clokit.GoalTracker;
+package shuvalov.nikita.clokit.goaltracker;
 
 import android.app.NotificationManager;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
-import android.support.v7.app.NotificationCompat;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
 import android.widget.Toast;
@@ -17,8 +16,8 @@ import java.util.ArrayList;
 import shuvalov.nikita.clokit.AppConstants;
 import shuvalov.nikita.clokit.AppUtils;
 import shuvalov.nikita.clokit.GoalSQLHelper;
-import shuvalov.nikita.clokit.POJOs.Goal;
-import shuvalov.nikita.clokit.POJOs.Week;
+import shuvalov.nikita.clokit.pojos.Goal;
+import shuvalov.nikita.clokit.pojos.Week;
 import shuvalov.nikita.clokit.R;
 
 /**
@@ -27,7 +26,6 @@ import shuvalov.nikita.clokit.R;
 
 public class GoalRecyclerAdapter extends RecyclerView.Adapter<GoalViewHolder> {
     private ArrayList<Goal> mGoals;
-    private NotificationManager mNotificationManager;
 
     public GoalRecyclerAdapter(ArrayList<Goal> goals) {
         mGoals = goals;
@@ -57,7 +55,6 @@ public class GoalRecyclerAdapter extends RecyclerView.Adapter<GoalViewHolder> {
         holder.mToggleButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                mNotificationManager = (NotificationManager) compoundButton.getContext().getSystemService(Context.NOTIFICATION_SERVICE);
                 String currentGoal = sharedPreferences.getString(AppConstants.PREFERENCES_CURRENT_GOAL,AppConstants.PREFERENCES_NO_GOAL);
                 Goal selectedGoal = mGoals.get(holder.getAdapterPosition());
                 if(currentGoal.equals(AppConstants.PREFERENCES_NO_GOAL)){ //If no goal is currently active, then allow this goal to become new goal.
@@ -65,11 +62,9 @@ public class GoalRecyclerAdapter extends RecyclerView.Adapter<GoalViewHolder> {
                     sharedPreferences.edit().putLong(AppConstants.PREFERENCES_START_TIME, System.currentTimeMillis()).apply(); //Save the current time of the selected goal.
                     sharedPreferences.edit().putInt(AppConstants.PREFERENCES_CURRENT_GOAL_WEEK_NUM, AppUtils.getCurrentWeekNum()).apply(); //Adds the weeknum of when the goal was started
 
-                    //ToDo: Might move this into a service that updates the current amount of time spent every minute or so.
-                    createNotification(compoundButton.getContext(), selectedGoal);
+                    startNotificationService(holder.mToggleButton.getContext());
 
                 } else if(currentGoal.equals(selectedGoal.getGoalName())){ //If selected goal is the current goal, then we end current goal.
-                    mNotificationManager.cancel(AppConstants.NOTIFICATION_ID);
                     long currentTime = System.currentTimeMillis();
 
                     sharedPreferences.edit().putString(AppConstants.PREFERENCES_CURRENT_GOAL,AppConstants.PREFERENCES_NO_GOAL).apply();
@@ -104,6 +99,7 @@ public class GoalRecyclerAdapter extends RecyclerView.Adapter<GoalViewHolder> {
                         long newTotal = previousTotalTime+timeSpentLastWeek+ timeSpentLastWeek;
                         sharedPreferences.edit().putLong(AppConstants.PREFERENCES_TOTAL_TRACKED_TIME, newTotal).apply();
 
+                        stopNotification(compoundButton.getContext());
                     }else if (savedWeekNum == AppUtils.getCurrentWeekNum()){ //The task started and ended in the same week, simply update values.
                         Log.d("GoalRecyclerAdapter", "Same week ");
                         long timeSpent = currentTime-startTime;
@@ -119,10 +115,10 @@ public class GoalRecyclerAdapter extends RecyclerView.Adapter<GoalViewHolder> {
                         notifyItemChanged(holder.getAdapterPosition());
                         long previousTotalTime = sharedPreferences.getLong(AppConstants.PREFERENCES_TOTAL_TRACKED_TIME, 0);
                         sharedPreferences.edit().putLong(AppConstants.PREFERENCES_TOTAL_TRACKED_TIME, timeSpent+previousTotalTime).apply();
+                        stopNotification(compoundButton.getContext());
                     }else if (savedWeekNum+1<AppUtils.getCurrentWeekNum()){ //If the current week is 2 or more than the saved week, that means the user just left it on all week, by mistake or to cheat the system!
                         Toast.makeText(compoundButton.getContext(), "So.... you spent every minute of your last week on your goal?", Toast.LENGTH_LONG).show();
                     }
-
                     if(startTime == -1){
                         Log.e("GoalRecyclerAdapter", "onCheckedChanged: ", new IllegalArgumentException("Error in retrieving start time of previous goal."));
                     }
@@ -136,16 +132,17 @@ public class GoalRecyclerAdapter extends RecyclerView.Adapter<GoalViewHolder> {
             }
         });
     }
-    public void createNotification(Context context, Goal selectedGoal){
-        NotificationCompat.Builder noteBuilder = new NotificationCompat.Builder(context);
-        noteBuilder
-                .setSmallIcon(android.R.drawable.ic_dialog_info)
-                .setContentTitle("You're on the clock")
-                .setContentText("You've selected to work on " + selectedGoal.getGoalName()+". Work diligently!")
-                .setOngoing(true);
+    public void startNotificationService(Context context){
+        Intent intent = new Intent(context, GoalTrackerIntentService.class);
+        //Consider putting name of goal in the intent instead.
+        context.startService(intent);
+    }
 
-        mNotificationManager.notify(AppConstants.NOTIFICATION_ID,noteBuilder.build());
-
+    public void stopNotification(Context context){
+        NotificationManager noteMan = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
+        noteMan.cancel(AppConstants.NOTIFICATION_ID);
+        Intent intent = new Intent(context, GoalTrackerIntentService.class);
+        context.stopService(intent);
     }
 
     @Override

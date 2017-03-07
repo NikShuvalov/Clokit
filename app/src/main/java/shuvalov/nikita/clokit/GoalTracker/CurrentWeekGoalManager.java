@@ -1,8 +1,8 @@
-package shuvalov.nikita.clokit.GoalTracker;
+package shuvalov.nikita.clokit.goaltracker;
 
 import java.util.ArrayList;
 
-import shuvalov.nikita.clokit.POJOs.Goal;
+import shuvalov.nikita.clokit.pojos.Goal;
 
 /**
  * Created by NikitaShuvalov on 3/3/17.
