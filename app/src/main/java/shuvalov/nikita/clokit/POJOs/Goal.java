@@ -64,7 +64,11 @@ public class Goal {
         return mCurrentMilli;
     }
     public long getTimeLeft(){
-        return mEndMilli-mCurrentMilli;
+        long timeLeft = mEndMilli-mCurrentMilli;
+        if(timeLeft<0){
+            timeLeft=0;
+        }
+        return timeLeft;
     }
 
     /**

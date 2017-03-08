@@ -1,5 +1,7 @@
 package shuvalov.nikita.clokit;
 
+import android.util.Log;
+
 import java.util.Calendar;
 
 /**
@@ -63,11 +65,26 @@ public class AppUtils {
         Calendar cal = Calendar.getInstance();
         cal.set(Calendar.YEAR, yearNum);
         cal.set(Calendar.WEEK_OF_YEAR, weekNum+1);
-        cal.set(Calendar.DAY_OF_WEEK, 2);
-        cal.set(Calendar.HOUR_OF_DAY, 0);
-        cal.set(Calendar.SECOND, 0);
-        cal.set(Calendar.MINUTE, 0);
-        cal.set(Calendar.MILLISECOND, 1);
+//        cal.set(Calendar.DAY_OF_WEEK, 1);
+        int month=cal.get(Calendar.MONTH);
+        int week  = cal.get(Calendar.WEEK_OF_MONTH);
+        if(month == 2 && week == 2){
+            Log.d("FUCK", "getWeekEndMillis: "+ cal.getTimeInMillis());
+            cal.set(Calendar.DAY_OF_WEEK, 7);
+            cal.set(Calendar.HOUR_OF_DAY, 23);
+            cal.set(Calendar.SECOND, 59);
+            cal.set(Calendar.MINUTE, 59);
+            cal.set(Calendar.MILLISECOND, 999);
+            Log.d("FUCK", "getWeekEndMillis: "+ cal.getTimeInMillis());
+            return cal.getTimeInMillis();
+        }else {
+            Log.d("FUCK", "YOU ");
+            cal.set(Calendar.DAY_OF_WEEK, 1);
+            cal.set(Calendar.HOUR_OF_DAY, 0);
+            cal.set(Calendar.SECOND, 0);
+            cal.set(Calendar.MINUTE, 0);
+            cal.set(Calendar.MILLISECOND, 1);
+        }
         return (cal.getTimeInMillis()-2);
     }
 
@@ -139,5 +156,12 @@ public class AppUtils {
         long timeSpent = currentTime - startTime;
         String timeSpentMinutes = String.valueOf(timeSpent/60000);
         return Integer.valueOf(timeSpentMinutes);
+    }
+
+    public static String getDisplayForTimeLeft(){
+        int currentWeek = getCurrentWeekNum();
+        long weekEndMillis = getWeekEndMillis(currentWeek);
+        long timeLeft = weekEndMillis - Calendar.getInstance().getTimeInMillis();
+        return getHoursAndMinutes(timeLeft);
     }
 }

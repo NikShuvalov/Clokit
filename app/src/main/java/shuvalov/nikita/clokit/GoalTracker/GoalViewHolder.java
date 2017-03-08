@@ -44,6 +44,9 @@ public class GoalViewHolder extends RecyclerView.ViewHolder {
         String p =String.valueOf( (currentMilli*100)/goalMilli );
         int progress = Integer.valueOf(p);
 
+        if(progress>100){
+            progress=100;
+        }
         mProgressBar.setProgress(progress);
     }
 }

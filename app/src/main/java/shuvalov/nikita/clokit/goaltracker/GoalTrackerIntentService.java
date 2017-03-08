@@ -2,6 +2,7 @@ package shuvalov.nikita.clokit.goaltracker;
 
 import android.app.IntentService;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.v7.app.NotificationCompat;
@@ -9,6 +10,7 @@ import android.util.Log;
 
 import shuvalov.nikita.clokit.AppConstants;
 import shuvalov.nikita.clokit.AppUtils;
+import shuvalov.nikita.clokit.MainActivity;
 
 public class GoalTrackerIntentService extends IntentService {
     private static final String TAG = "GOAL_TRACKER_INTENT";
@@ -41,11 +43,16 @@ public class GoalTrackerIntentService extends IntentService {
                     .setSummaryText(sumText)
                     .bigText(fullText);
 
+            Intent noteIntent = new Intent(this, MainActivity.class);
+            PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, noteIntent,0);
             noteBuilder.setSmallIcon(android.R.drawable.ic_dialog_info)
                     .setContentTitle("You're on the clock")
                     .setContentText(sumText)
                     .setStyle(bigTextStyle)
+                    .setContentIntent(pendingIntent)
                     .setOngoing(true);
+            //.addAction(android.R.drawable.ic_media_pause, "Stop", new PendingIntent())
+
             NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
             notificationManager.notify(AppConstants.NOTIFICATION_ID,noteBuilder.build());
 

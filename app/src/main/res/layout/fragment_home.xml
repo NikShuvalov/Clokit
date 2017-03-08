@@ -3,12 +3,54 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 tools:context="shuvalov.nikita.clokit.goaltracker.HomeFragment">
+    <android.support.v7.widget.CardView
+        android:id="@+id/time_summary_card"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/week_time_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Time until week reset:\n 45hr"
+                android:layout_marginLeft="5dp"
+                android:layout_marginStart="5dp"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                android:textColor="#338"/>
+
+            <View
+                android:id="@+id/divider"
+                android:layout_width="2dp"
+                android:layout_height="match_parent"
+                android:background="#aaa"
+                android:layout_centerHorizontal="true"
+                android:layout_alignBottom="@id/week_time_text"
+                android:layout_alignTop="@id/week_time_text"/>
+
+            <TextView
+                android:id="@+id/unfinished_work_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@id/divider"
+                android:layout_toEndOf="@id/divider"
+                android:text="Unfinished work:\n"
+                android:layout_margin="5dp"
+                android:textColor="#833"
+                />
+
+
+        </RelativeLayout>
+    </android.support.v7.widget.CardView>
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/goal_recycler"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/my_toolbar"
+        android:layout_below="@id/time_summary_card"
         android:layout_margin="16dp"/>
 
 </RelativeLayout>
