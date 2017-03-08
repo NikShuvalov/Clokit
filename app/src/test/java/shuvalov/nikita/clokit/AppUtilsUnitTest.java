@@ -25,45 +25,45 @@ public class AppUtilsUnitTest {
 
     }
 
-//    @Test
-//    public void correctValueForWeeksEnd() throws Exception{
-//        long firstMonday2017 = Long.valueOf("1483333200001");
-//        long firstMondayEndOfWeek = Long.valueOf("1483937999999");
-//
-//        long mlk2017 = Long.valueOf("1484542800001");
-//        long mlkWeekEnd = Long.valueOf("1485147599999");
-//
-//        long birthday = Long.valueOf("1493006400001");
-//        long birthWeeksEnd = Long.valueOf("1493611199999");
-//
-//        long xmas = Long.valueOf("1514178000001");
-//        long newYearsEve = Long.valueOf("1514782799999");
-//
-//        long marchSeven = Long.valueOf("1488776400001");
-//        long marchTwelve = Long.valueOf("1489377599999");//Edge case, daylight savings
-//
-//        long marchSecond2020 = Long.valueOf("1583125200000"); //Sunday is first day of month.
-//        long marchEighth2020 = Long.valueOf("1583726399999"); //Daylight savings
-//
-//
-//
-//        //Checks method with milli param
-//        assertEquals(firstMondayEndOfWeek,AppUtils.getWeekEndMillis(firstMonday2017));
-//        assertEquals(mlkWeekEnd, AppUtils.getWeekEndMillis(mlk2017));
-//        assertEquals(birthWeeksEnd, AppUtils.getWeekEndMillis(birthday));
-//        assertEquals(newYearsEve, AppUtils.getWeekEndMillis(xmas));
-//        assertEquals(marchTwelve, AppUtils.getWeekEndMillis(marchSeven));
-//        assertEquals(marchEighth2020, AppUtils.getWeekEndMillis(marchSecond2020));
-//
-//
-//        //CHecks method with weekNum param
-//        assertEquals(firstMondayEndOfWeek, AppUtils.getWeekEndMillis(20171));
-//        assertEquals(mlkWeekEnd, AppUtils.getWeekEndMillis(20173));
-//        assertEquals(birthWeeksEnd, AppUtils.getWeekEndMillis(201717));
-//        assertEquals(newYearsEve, AppUtils.getWeekEndMillis(201752));
-//        assertEquals(marchTwelve, AppUtils.getWeekEndMillis(201710));
-//        assertEquals(marchEighth2020, AppUtils.getWeekEndMillis(2020));
-//    }
+    @Test
+    public void correctValueForWeeksEnd() throws Exception{
+        long firstSunday2017 = Long.valueOf("1483246800001"); //New Year's day
+        long firstSaturdayEndOfWeek = Long.valueOf("1483851599999");//First Saturday
+
+        long mlk2017 = Long.valueOf("1484456400001"); //Sunday Prior
+        long mlkWeekEnd = Long.valueOf("1485061199999");
+
+        long preBirthday = Long.valueOf("1492920000001");
+        long birthWeeksEnd = Long.valueOf("1493524799999");
+
+        long xmasEve = Long.valueOf("1514091600001"); //Last week of the year, last Sunday of year
+        long newYearsEve = Long.valueOf("1514696399999");
+
+        long marchSixth = Long.valueOf("1488690000001");
+        long marchEleventh = Long.valueOf("1489294799999");//Edge case, daylight savings
+
+        long marchFirst2020 = Long.valueOf("1583038800001"); //First day of month, Sunday
+        long marchSeventh2020 = Long.valueOf("1583643599999"); //Daylight savings
+
+
+
+        //Checks method with milli param
+        assertEquals(firstSaturdayEndOfWeek,AppUtils.getWeekEndMillis(firstSunday2017));
+        assertEquals(mlkWeekEnd, AppUtils.getWeekEndMillis(mlk2017));
+        assertEquals(birthWeeksEnd, AppUtils.getWeekEndMillis(preBirthday));
+        assertEquals(newYearsEve, AppUtils.getWeekEndMillis(xmasEve));
+        assertEquals(marchEleventh, AppUtils.getWeekEndMillis(marchSixth));
+        assertEquals(marchSeventh2020, AppUtils.getWeekEndMillis(marchFirst2020));
+
+
+        //CHecks method with weekNum param
+        assertEquals(firstSaturdayEndOfWeek, AppUtils.getWeekEndMillis(20171));
+        assertEquals(mlkWeekEnd, AppUtils.getWeekEndMillis(20173));
+        assertEquals(birthWeeksEnd, AppUtils.getWeekEndMillis(201717));
+        assertEquals(newYearsEve, AppUtils.getWeekEndMillis(201752));
+        assertEquals(marchEleventh, AppUtils.getWeekEndMillis(201710));
+        assertEquals(marchSeventh2020, AppUtils.getWeekEndMillis(202010));
+    }
 
     @Test
     public void correctGetHoursAndMinutes() throws Exception{

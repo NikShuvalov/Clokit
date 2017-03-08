@@ -64,21 +64,19 @@ public class AppUtils {
         weekNum = Integer.parseInt(weekNumAsString.substring(4));
         Calendar cal = Calendar.getInstance();
         cal.set(Calendar.YEAR, yearNum);
-        cal.set(Calendar.WEEK_OF_YEAR, weekNum+1);
+        cal.set(Calendar.WEEK_OF_YEAR, weekNum);
 //        cal.set(Calendar.DAY_OF_WEEK, 1);
         int month=cal.get(Calendar.MONTH);
         int week  = cal.get(Calendar.WEEK_OF_MONTH);
         if(month == 2 && week == 2){
-            Log.d("FUCK", "getWeekEndMillis: "+ cal.getTimeInMillis());
             cal.set(Calendar.DAY_OF_WEEK, 7);
             cal.set(Calendar.HOUR_OF_DAY, 23);
             cal.set(Calendar.SECOND, 59);
             cal.set(Calendar.MINUTE, 59);
             cal.set(Calendar.MILLISECOND, 999);
-            Log.d("FUCK", "getWeekEndMillis: "+ cal.getTimeInMillis());
             return cal.getTimeInMillis();
         }else {
-            Log.d("FUCK", "YOU ");
+            cal.set(Calendar.WEEK_OF_YEAR, weekNum+1);
             cal.set(Calendar.DAY_OF_WEEK, 1);
             cal.set(Calendar.HOUR_OF_DAY, 0);
             cal.set(Calendar.SECOND, 0);
