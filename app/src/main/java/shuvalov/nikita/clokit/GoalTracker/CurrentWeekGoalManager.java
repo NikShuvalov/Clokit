@@ -49,4 +49,17 @@ public class CurrentWeekGoalManager {
         mCurrentGoals.add(goal);
         return true;
     }
+
+    public boolean removeGoal(Goal goal){
+        for (int i = 0; i<mCurrentGoals.size(); i++){
+            Goal storedGoal = mCurrentGoals.get(i);
+            if(storedGoal.getGoalName().equals(goal.getGoalName()) &&
+                    storedGoal.getSubCategory().equals(goal.getSubCategory()) &&
+                    storedGoal.getWeekNum() == goal.getWeekNum()){
+                mCurrentGoals.remove(i);
+                return true;
+            }
+        }
+        return false;
+    }
 }

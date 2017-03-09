@@ -2,11 +2,14 @@ package shuvalov.nikita.clokit.goaltracker;
 
 import android.app.NotificationManager;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
 import android.widget.Toast;
@@ -41,8 +44,8 @@ public class GoalRecyclerAdapter extends RecyclerView.Adapter<GoalViewHolder>{
         final SharedPreferences sharedPreferences = holder.mToggleButton.getContext().getSharedPreferences(AppConstants.PREFERENCES_NAME,Context.MODE_PRIVATE);
         Goal goal = mGoals.get(holder.getAdapterPosition());
         holder.bindDataToViews(goal);
-        String activeGoalName = sharedPreferences.getString(AppConstants.PREFERENCES_CURRENT_GOAL, AppConstants.PREFERENCES_NO_GOAL);
-        String subCatName = sharedPreferences.getString(AppConstants.PREFERENCES_CURRENT_SUB_CAT, null);
+        final String activeGoalName = sharedPreferences.getString(AppConstants.PREFERENCES_CURRENT_GOAL, AppConstants.PREFERENCES_NO_GOAL);
+        final String subCatName = sharedPreferences.getString(AppConstants.PREFERENCES_CURRENT_SUB_CAT, null);
         holder.mToggleButton.setOnCheckedChangeListener(null); //If the holder is being reloaded the onCheckedListener is already attached; it needs to be removed because setChecked() because triggers onCheckedChangeListener;
         if(activeGoalName.equals(goal.getGoalName())
                 && ((subCatName==null && goal.getSubCategory()==null) || (subCatName!=null && goal.getSubCategory()!=null && subCatName.equals(goal.getSubCategory())))){ //This visually toggles the active goal ON.
@@ -51,6 +54,72 @@ public class GoalRecyclerAdapter extends RecyclerView.Adapter<GoalViewHolder>{
         }else{
             holder.mToggleButton.setChecked(false);
         }
+        holder.mRemoveButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(final View view) {
+                final Goal goal = mGoals.get(holder.getAdapterPosition());
+                Log.d("ADAPTER", "onClick: "+ goal.getGoalName() + goal.getSubCategory());
+                if((goal.getGoalName().equals(activeGoalName)) &&
+                        ((goal.getSubCategory()==null && subCatName==null) || (goal.getSubCategory()!=null && goal.getSubCategory().equals(subCatName)))){
+                    Toast.makeText(view.getContext(), "An active goal can't be removed", Toast.LENGTH_SHORT).show();
+                }else if (goal.getCurrentMilli()>0){
+                    Log.d("Test", "Before Goal Size: "+ mGoals.size());
+                    AlertDialog alertDialog = new AlertDialog.Builder(view.getContext()).setMessage("Time spent on this goal for this week will be deleted (Lifetime tracking stats will be unaffected).\nPress \"Okay\" to remove goal for this week.")
+                            .setTitle("Are you sure?")
+                            .setPositiveButton("Okay", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    String weekNum = String.valueOf(goal.getWeekNum());
+                                    GoalSQLHelper goalSQLHelper = GoalSQLHelper.getInstance(view.getContext());
+                                    int rowsremoved = goalSQLHelper.removeCurrentGoal(goal.getGoalName(), goal.getSubCategory(), weekNum);
+                                    if(rowsremoved>1){
+                                        Log.e("GoalRecyclerAdapter", "Removed: "+rowsremoved, new Exception("Excessive amount of rows deleted"));
+                                    }
+                                    if(CurrentWeekGoalManager.getInstance().removeGoal(goal)){
+                                        notifyItemRemoved(holder.getAdapterPosition());
+                                        Log.d("Test", "After Goal size: " + mGoals.size());
+                                    }else{
+                                        Log.w("GoalRecyclerAdapter", "onClick: ", new Exception("Couldn't remove goal because it wasn't found in CurrentWeekGoalManager"));
+                                    }
+                                    if(mGoals.size()==0){
+                                        int removedRows = goalSQLHelper.removeWeekReference(AppUtils.getCurrentWeekNum());
+                                        if(removedRows==0){ //If a non-existing reference was removed, it's not a big deal, but could be optimized.
+                                            Log.w("GoalRecyclerAdapter", "Tried to remove a week reference that didn't exist");
+                                        }else if (removedRows>1){ //If more than one row is being deleted then we have a problem.
+                                            Log.e("GoalRecyclerAdapter", "Removed: "+ rowsremoved,new Exception("Excessive amount of rows deleted"));
+                                        }
+                                        Log.d("GoalRecyclerAdapter", "Removed :"+removedRows);
+                                    }
+                                }
+                            })
+                            .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    dialogInterface.dismiss();
+                                }
+                            }).create();
+                    alertDialog.show();
+                }else{
+                    Log.d("Test", "Before Goal Size: "+ mGoals.size());
+                    GoalSQLHelper goalSQLHelper = GoalSQLHelper.getInstance(view.getContext());
+                    String weekNum = String.valueOf(goal.getWeekNum());
+                    int i = goalSQLHelper.removeCurrentGoal(goal.getGoalName(), goal.getSubCategory(), weekNum);
+                    if(i>1){
+                        Log.e("GoalRecyclerAdapter", "Removed: "+i, new Exception("Excessive amount of rows deleted"));
+                    }
+                    if(CurrentWeekGoalManager.getInstance().removeGoal(goal)){
+                        notifyItemRemoved(holder.getAdapterPosition());
+                        Log.d("Test", "After Goal size: " + mGoals.size());
+                    }else{
+                        Log.w("GoalRecyclerAdapter", "onClick: ", new Exception("Couldn't remove goal because it wasn't found in CurrentWeekGoalManager"));
+                    }
+                    if(mGoals.size()==0){
+                        int p = goalSQLHelper.removeWeekReference(AppUtils.getCurrentWeekNum());
+                        Log.d("GoalRecyclerAdapter", "Removed :"+p);
+                    }
+                }
+            }
+        });
 //        holder.mEditButton.setOnClickListener(new View.OnClickListener() {
 //            @Override
 //            public void onClick(View view) {

@@ -165,41 +165,49 @@ public class GoalSQLHelper extends SQLiteOpenHelper {
      * Retrieves ALL of the entries saved in the weekly table. Used this for migrating entries.
      * @return All entries in weekly table
      */
-//    public ArrayList<Goal> getAllWeeklyGoals(){
-//        ArrayList<Goal> allGoals = new ArrayList<>();
-//        SQLiteDatabase db = getReadableDatabase();
-//        Cursor cursor = db.query(WEEKLY_TABLE_NAME, null, null, null, null, null, null);
-//        if(cursor.moveToFirst()) {
-//            while (!cursor.isAfterLast()) {
-//                String name = cursor.getString(cursor.getColumnIndex(NAME_COLUMN));
-//                int weekNum = Integer.valueOf(cursor.getString(cursor.getColumnIndex(WEEK_NUM_COLUMN)));
-//
-//                String subCat = cursor.getString(cursor.getColumnIndex(SUBCATEGORY_COLUMN));
-//                long totalTime = cursor.getLong(cursor.getColumnIndex(TOTAL_TIME_COLUMN));
-//                long goalTime = cursor.getLong(cursor.getColumnIndex(GOAL_TIME_COLUMN));
-//                long[] weekBreakdown = new long[7];
-//                weekBreakdown[0] = cursor.getLong(cursor.getColumnIndex(MONDAY_TIME_COLUMN));
-//                weekBreakdown[1] = cursor.getLong(cursor.getColumnIndex(TUESDAY_TIME_COLUMN));
-//                weekBreakdown[2] = cursor.getLong(cursor.getColumnIndex(WEDNESDAY_TIME_COLUMN));
-//                weekBreakdown[3] = cursor.getLong(cursor.getColumnIndex(THURSDAY_TIME_COLUMN));
-//                weekBreakdown[4] = cursor.getLong(cursor.getColumnIndex(FRIDAY_TIME_COLUMN));
-//                weekBreakdown[5] = cursor.getLong(cursor.getColumnIndex(SATURDAY_TIME_COLUMN));
-//                weekBreakdown[6] = cursor.getLong(cursor.getColumnIndex(SUNDAY_TIME_COLUMN));
-//                allGoals.add(new Goal(name, totalTime,goalTime, weekBreakdown, weekNum, subCat));
-//
-//                cursor.moveToNext();
-//            }
-//        }
-//        db.close();
-//        cursor.close();
-//        return allGoals;
-//
-//    }
-
-    //FixMe: With addition of subcategories, would probably want to search by name + sub-category
-    public Goal getCurrentGoalByName(String name){
+    //ToDo: Remove if I'm not going to be using FireBase, otherwise use this to sync data with Firebase.
+    public ArrayList<Goal> getAllWeeklyGoals(){
+        ArrayList<Goal> allGoals = new ArrayList<>();
         SQLiteDatabase db = getReadableDatabase();
-        Cursor cursor = db.query(WEEKLY_TABLE_NAME, null, NAME_COLUMN + " = ?", new String[]{name},null, null, null);
+        Cursor cursor = db.query(WEEKLY_TABLE_NAME, null, null, null, null, null, null);
+        if(cursor.moveToFirst()) {
+            while (!cursor.isAfterLast()) {
+                String name = cursor.getString(cursor.getColumnIndex(NAME_COLUMN));
+                int weekNum = Integer.valueOf(cursor.getString(cursor.getColumnIndex(WEEK_NUM_COLUMN)));
+
+                String subCat = cursor.getString(cursor.getColumnIndex(SUBCATEGORY_COLUMN));
+                long totalTime = cursor.getLong(cursor.getColumnIndex(TOTAL_TIME_COLUMN));
+                long goalTime = cursor.getLong(cursor.getColumnIndex(GOAL_TIME_COLUMN));
+                long[] weekBreakdown = new long[7];
+                weekBreakdown[0] = cursor.getLong(cursor.getColumnIndex(MONDAY_TIME_COLUMN));
+                weekBreakdown[1] = cursor.getLong(cursor.getColumnIndex(TUESDAY_TIME_COLUMN));
+                weekBreakdown[2] = cursor.getLong(cursor.getColumnIndex(WEDNESDAY_TIME_COLUMN));
+                weekBreakdown[3] = cursor.getLong(cursor.getColumnIndex(THURSDAY_TIME_COLUMN));
+                weekBreakdown[4] = cursor.getLong(cursor.getColumnIndex(FRIDAY_TIME_COLUMN));
+                weekBreakdown[5] = cursor.getLong(cursor.getColumnIndex(SATURDAY_TIME_COLUMN));
+                weekBreakdown[6] = cursor.getLong(cursor.getColumnIndex(SUNDAY_TIME_COLUMN));
+                allGoals.add(new Goal(name, totalTime,goalTime, weekBreakdown, weekNum, subCat));
+
+                cursor.moveToNext();
+            }
+        }
+        db.close();
+        cursor.close();
+        return allGoals;
+
+    }
+
+    //Returns the amount of removed rows.
+    public int removeCurrentGoal(String name, String subCategory, String weekNum){
+        SQLiteDatabase db= getWritableDatabase();
+        int removed = db.delete(WEEKLY_TABLE_NAME, NAME_COLUMN + " = ? AND "+ SUBCATEGORY_COLUMN + " = ? AND " + WEEK_NUM_COLUMN + " = ?", new String[]{name, subCategory, weekNum});
+        db.close();
+        return removed;
+    }
+
+    public Goal getSpecificCurrentGoal(String name, String subcategory,String weekNum){
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor cursor = db.query(WEEKLY_TABLE_NAME, null, NAME_COLUMN + " = ? AND " + SUBCATEGORY_COLUMN + " = ? AND " + WEEK_NUM_COLUMN + " = ?", new String[]{name,subcategory, weekNum},null, null, null);
         Goal goal= null;
         if(cursor.moveToFirst()){
             String subCat = cursor.getString(cursor.getColumnIndex(SUBCATEGORY_COLUMN));
@@ -214,8 +222,8 @@ public class GoalSQLHelper extends SQLiteOpenHelper {
             weekBreakdown[5] = cursor.getLong(cursor.getColumnIndex(SATURDAY_TIME_COLUMN));
             weekBreakdown[6] = cursor.getLong(cursor.getColumnIndex(SUNDAY_TIME_COLUMN));
 
-            int weekNum = Integer.valueOf(cursor.getString(cursor.getColumnIndex(WEEK_NUM_COLUMN)));
-            goal = new Goal(name, currentSaved,goalAmount,weekBreakdown, weekNum, subCat);
+            int weekNumber = Integer.valueOf(weekNum);
+            goal = new Goal(name, currentSaved,goalAmount,weekBreakdown, weekNumber, subCat);
 
         }
         cursor.close();
@@ -312,7 +320,6 @@ public class GoalSQLHelper extends SQLiteOpenHelper {
         db.close();
         return true;
     }
-
 
 
     public void addGoalToWeeklyTable(Goal goal){
@@ -413,11 +420,21 @@ public class GoalSQLHelper extends SQLiteOpenHelper {
         db.close();
     }
 
+    public int removeWeekReference(int weekNum){
+        String weekNumString = String.valueOf(weekNum);
+        SQLiteDatabase db = getWritableDatabase();
+        int deletedRows = db.delete(WEEKS_REFERENCE_TABLE_NAME, WEEK_NUM_COLUMN + " = ? ", new String[]{weekNumString});
+        db.close();
+        return deletedRows;
+    }
+
     public void addBulkWeekReferences(ArrayList<Week> importedWeeks){
         for(Week week: importedWeeks){
             addNewWeekReference(week);
         }
     }
+
+
     public String getLastActiveWeekNum(){
         SQLiteDatabase db = getReadableDatabase();
         Cursor c =db.query(WEEKS_REFERENCE_TABLE_NAME,null, null, null, null ,null, null, null);

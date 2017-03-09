@@ -2,6 +2,7 @@ package shuvalov.nikita.clokit.goaltracker;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.ToggleButton;
@@ -19,6 +20,7 @@ public class GoalViewHolder extends RecyclerView.ViewHolder {
     private ProgressBar mProgressBar;
 //    public Button mEditButton;
     public ToggleButton mToggleButton;
+    public Button mRemoveButton;
 
     public GoalViewHolder(View itemView) {
         super(itemView);
@@ -29,6 +31,7 @@ public class GoalViewHolder extends RecyclerView.ViewHolder {
 //        mEditButton = (Button)itemView.findViewById(R.id.edit_button); //FixMe: Choose to either keep this or nah.
         mToggleButton = (ToggleButton)itemView.findViewById(R.id.clock_it_button);
         mSubCatText = (TextView)itemView.findViewById(R.id.subcat_name);
+        mRemoveButton = (Button)itemView.findViewById(R.id.remove_goal_butt);
     }
 
     public void bindDataToViews(Goal goal){
