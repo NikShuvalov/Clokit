@@ -205,6 +205,14 @@ public class GoalSQLHelper extends SQLiteOpenHelper {
         return removed;
     }
 
+    public int removeCurrentGoal(Goal goal){
+        SQLiteDatabase db = getWritableDatabase();
+        String weekNum = String.valueOf(goal.getWeekNum());
+        int removed = db.delete(WEEKLY_TABLE_NAME, NAME_COLUMN + " = ? AND "+ SUBCATEGORY_COLUMN + " = ? AND " + WEEK_NUM_COLUMN + " = ?", new String[]{goal.getGoalName(), goal.getSubCategory(), weekNum});
+        db.close();
+        return removed;
+    }
+
     public Goal getSpecificCurrentGoal(String name, String subcategory,String weekNum){
         SQLiteDatabase db = getReadableDatabase();
         Cursor cursor = db.query(WEEKLY_TABLE_NAME, null, NAME_COLUMN + " = ? AND " + SUBCATEGORY_COLUMN + " = ? AND " + WEEK_NUM_COLUMN + " = ?", new String[]{name,subcategory, weekNum},null, null, null);

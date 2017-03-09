@@ -43,7 +43,10 @@ public class HomeFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
         mGoalRecycler = (RecyclerView)view.findViewById(R.id.goal_recycler);
 
-        mAdapter = new GoalRecyclerAdapter(CurrentWeekGoalManager.getInstance().getCurrentGoals());
+        CurrentWeekGoalManager currentWeekGoalManager = CurrentWeekGoalManager.getInstance();
+        mAdapter = new GoalRecyclerAdapter(currentWeekGoalManager.getCurrentGoals());
+
+        currentWeekGoalManager.setGoalRecyclerAdapter(mAdapter);
         LinearLayoutManager goalLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL,false);
 
         mGoalRecycler.setAdapter(mAdapter);

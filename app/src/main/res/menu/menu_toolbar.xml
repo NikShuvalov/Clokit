@@ -20,4 +20,9 @@
         android:title="Copy Last Week"
         app:showAsAction="never"/>
 
+    <item
+        android:id="@+id/remove_empty_goals_opt"
+        android:title="Rid Untouched Goals"
+        app:showAsAction= "never"/>
+
 </menu>

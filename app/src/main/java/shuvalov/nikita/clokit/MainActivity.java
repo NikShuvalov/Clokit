@@ -2,6 +2,7 @@ package shuvalov.nikita.clokit;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
@@ -12,6 +13,7 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -142,10 +144,47 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             case R.id.copy_goals_opt:
                 copyLastWeeksGoals();
                 break;
+            case R.id.remove_empty_goals_opt:
+                removeUnusedGoals();
+
+                //ToDo: Need to update the adapter in some way.
+                break;
         }
         return super.onOptionsItemSelected(item);
     }
 
+    public void removeUnusedGoals(){
+        CurrentWeekGoalManager manager = CurrentWeekGoalManager.getInstance();
+        SharedPreferences sharedPreferences = getSharedPreferences(AppConstants.PREFERENCES_NAME, MODE_PRIVATE);
+        String activeGoalName = sharedPreferences.getString(AppConstants.PREFERENCES_CURRENT_GOAL, AppConstants.PREFERENCES_NO_GOAL);
+        String activeSubCat = sharedPreferences.getString(AppConstants.PREFERENCES_CURRENT_SUB_CAT, null);
+        int activeWeekNum = sharedPreferences.getInt(AppConstants.PREFERENCES_CURRENT_GOAL_WEEK_NUM, -1);
+        int removed =0;
+        boolean noActive = activeGoalName.equals(AppConstants.PREFERENCES_NO_GOAL);
+        for(Goal goal : manager.getCurrentGoals()){
+            if(goal.getCurrentMilli()<60000){
+                if(!noActive){
+                    if(goal.getGoalName().equals(activeGoalName)
+                            && (goal.getSubCategory()==null && activeSubCat == null ||(goal.getSubCategory()!=null && goal.getSubCategory().equals(activeSubCat)))
+                            && activeWeekNum == goal.getWeekNum()){
+                        continue;
+                    }
+                }
+                removed++;
+                int i = GoalSQLHelper.getInstance(this).removeCurrentGoal(goal);
+                if(i!=1){
+                    Log.w("MainActivity", "removed: " + i , new Exception("Unexpected amount of goals removed") );
+                }
+                manager.removeGoal(goal);
+            }
+        }
+        if(CurrentWeekGoalManager.getInstance().getCurrentGoals().size()==0){
+            GoalSQLHelper.getInstance(this).removeWeekReference(AppUtils.getCurrentWeekNum());
+        }
+        if(removed>0){
+            CurrentWeekGoalManager.getInstance().notifyNewData();
+        }
+    }
     public void promptUserForGoal(boolean existing) {
         final AlertDialog.Builder builder = new AlertDialog.Builder(this).setPositiveButton("Add Goal",null)
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -212,6 +251,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                                         Goal goal = new Goal(goalName.trim(), 0, totalMillis, AppUtils.getCurrentWeekNum(), subCategory.trim());
                                         if (CurrentWeekGoalManager.getInstance().addCurrentGoal(goal)) {
                                             GoalSQLHelper.getInstance(MainActivity.this).addGoalToWeeklyTable(goal);
+                                            CurrentWeekGoalManager.getInstance().notifyNewData();
                                             dialogInterface.dismiss();
                                         } else {
                                             goalsAdapter.resetSelection();

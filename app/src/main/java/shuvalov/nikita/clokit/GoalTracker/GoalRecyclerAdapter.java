@@ -54,6 +54,8 @@ public class GoalRecyclerAdapter extends RecyclerView.Adapter<GoalViewHolder>{
         }else{
             holder.mToggleButton.setChecked(false);
         }
+
+
         holder.mRemoveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View view) {
@@ -89,6 +91,7 @@ public class GoalRecyclerAdapter extends RecyclerView.Adapter<GoalViewHolder>{
                                             Log.e("GoalRecyclerAdapter", "Removed: "+ rowsremoved,new Exception("Excessive amount of rows deleted"));
                                         }
                                         Log.d("GoalRecyclerAdapter", "Removed :"+removedRows);
+                                        dialogInterface.dismiss();
                                     }
                                 }
                             })
@@ -120,12 +123,16 @@ public class GoalRecyclerAdapter extends RecyclerView.Adapter<GoalViewHolder>{
                 }
             }
         });
+
+
 //        holder.mEditButton.setOnClickListener(new View.OnClickListener() {
 //            @Override
 //            public void onClick(View view) {
 //                //ToDo: Logic for editing or removing entry.
 //            }
 //        });
+
+
         holder.mToggleButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {

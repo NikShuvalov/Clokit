@@ -10,6 +10,7 @@ import shuvalov.nikita.clokit.pojos.Goal;
 
 public class CurrentWeekGoalManager {
     private ArrayList<Goal> mCurrentGoals;
+    private GoalRecyclerAdapter mGoalRecyclerAdapter;
 
     private static CurrentWeekGoalManager sCurrentWeekGoalManager;
 
@@ -62,4 +63,13 @@ public class CurrentWeekGoalManager {
         }
         return false;
     }
+
+    public void setGoalRecyclerAdapter(GoalRecyclerAdapter goalRecyclerAdapter){
+        mGoalRecyclerAdapter = goalRecyclerAdapter;
+    }
+
+    public void notifyNewData(){
+        mGoalRecyclerAdapter.notifyDataSetChanged();
+    }
+
 }
