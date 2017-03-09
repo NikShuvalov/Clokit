@@ -24,7 +24,7 @@ import shuvalov.nikita.clokit.R;
  * Created by NikitaShuvalov on 3/3/17.
  */
 
-public class GoalRecyclerAdapter extends RecyclerView.Adapter<GoalViewHolder> {
+public class GoalRecyclerAdapter extends RecyclerView.Adapter<GoalViewHolder>{
     private ArrayList<Goal> mGoals;
 
     public GoalRecyclerAdapter(ArrayList<Goal> goals) {
@@ -39,12 +39,15 @@ public class GoalRecyclerAdapter extends RecyclerView.Adapter<GoalViewHolder> {
     @Override
     public void onBindViewHolder(final GoalViewHolder holder, int position) {
         final SharedPreferences sharedPreferences = holder.mToggleButton.getContext().getSharedPreferences(AppConstants.PREFERENCES_NAME,Context.MODE_PRIVATE);
-        holder.bindDataToViews(mGoals.get(holder.getAdapterPosition()));
-        String activeGoalName = sharedPreferences.getString(AppConstants.PREFERENCES_CURRENT_GOAL, AppConstants.PREFERENCES_NO_GOAL);
-        String subCatName = sharedPreferences.getString(AppConstants.PREFERENCES_CURRENT_SUB_CAT, AppConstants.PREFERENCES_NO_GOAL);
         Goal goal = mGoals.get(holder.getAdapterPosition());
-        if(activeGoalName.equals(goal.getGoalName()) && subCatName.equals(goal.getSubCategory())){ //This visually toggles the active goal ON.
+        holder.bindDataToViews(goal);
+        String activeGoalName = sharedPreferences.getString(AppConstants.PREFERENCES_CURRENT_GOAL, AppConstants.PREFERENCES_NO_GOAL);
+        String subCatName = sharedPreferences.getString(AppConstants.PREFERENCES_CURRENT_SUB_CAT, null);
+        holder.mToggleButton.setOnCheckedChangeListener(null); //If the holder is being reloaded the onCheckedListener is already attached; it needs to be removed because setChecked() because triggers onCheckedChangeListener;
+        if(activeGoalName.equals(goal.getGoalName())
+                && ((subCatName==null && goal.getSubCategory()==null) || (subCatName!=null && goal.getSubCategory()!=null && subCatName.equals(goal.getSubCategory())))){ //This visually toggles the active goal ON.
             holder.mToggleButton.setChecked(true);
+            Log.d("Holder", "onBindViewHolder: "+ holder.getAdapterPosition());
         }else{
             holder.mToggleButton.setChecked(false);
         }
@@ -64,7 +67,7 @@ public class GoalRecyclerAdapter extends RecyclerView.Adapter<GoalViewHolder> {
                     sharedPreferences.edit().putString(AppConstants.PREFERENCES_CURRENT_GOAL,selectedGoal.getGoalName()).apply(); //Save name of current goal.
                     sharedPreferences.edit().putLong(AppConstants.PREFERENCES_START_TIME, System.currentTimeMillis()).apply(); //Save the current time of the selected goal.
                     sharedPreferences.edit().putInt(AppConstants.PREFERENCES_CURRENT_GOAL_WEEK_NUM, AppUtils.getCurrentWeekNum()).apply(); //Adds the weeknum of when the goal was started
-                    sharedPreferences.edit().putString(AppConstants.PREFERENCES_CURRENT_SUB_CAT, selectedGoal.getSubCategory()).apply();
+                    sharedPreferences.edit().putString(AppConstants.PREFERENCES_CURRENT_SUB_CAT, selectedGoal.getSubCategory()).apply(); //Saves the subcategory of current goal.
 
                     startNotificationService(holder.mToggleButton.getContext());
                 } else if(currentGoalName.equals(selectedGoal.getGoalName()) && ((currentSubCat==null && selectedGoal.getSubCategory()==null)||(currentSubCat!=null && currentSubCat.equals(selectedGoal.getSubCategory())))){ //If selected goal is the current goal, then we end current goal.

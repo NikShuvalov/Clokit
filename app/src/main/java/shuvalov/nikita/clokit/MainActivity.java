@@ -209,7 +209,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                                         goalsAdapter.resetSelection();
                                     }else {
                                         String subCategory = subCatEntry.getText().toString();
-                                        Goal goal = new Goal(goalName.trim(), 0, totalMillis, AppUtils.getCurrentWeekNum(), subCategory);
+                                        Goal goal = new Goal(goalName.trim(), 0, totalMillis, AppUtils.getCurrentWeekNum(), subCategory.trim());
                                         if (CurrentWeekGoalManager.getInstance().addCurrentGoal(goal)) {
                                             GoalSQLHelper.getInstance(MainActivity.this).addGoalToWeeklyTable(goal);
                                             dialogInterface.dismiss();
@@ -271,7 +271,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                                         hourEntry.setError("A goal time amount is required");
                                         minuteEntry.setError("A goal time amount is required");
                                     }else{
-                                        Goal goal = new Goal(goalName.trim(), 0, totalMillis, AppUtils.getCurrentWeekNum(),subCat);
+                                        Goal goal = new Goal(goalName.trim(), 0, totalMillis, AppUtils.getCurrentWeekNum(), subCat.trim());
                                         if(CurrentWeekGoalManager.getInstance().addCurrentGoal(goal)){
                                             GoalSQLHelper.getInstance(MainActivity.this).addGoalToWeeklyTable(goal);
                                             dialogInterface.dismiss();

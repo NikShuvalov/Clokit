@@ -165,37 +165,38 @@ public class GoalSQLHelper extends SQLiteOpenHelper {
      * Retrieves ALL of the entries saved in the weekly table. Used this for migrating entries.
      * @return All entries in weekly table
      */
-    public ArrayList<Goal> getAllWeeklyGoals(){
-        ArrayList<Goal> allGoals = new ArrayList<>();
-        SQLiteDatabase db = getReadableDatabase();
-        Cursor cursor = db.query(WEEKLY_TABLE_NAME, null, null, null, null, null, null);
-        if(cursor.moveToFirst()) {
-            while (!cursor.isAfterLast()) {
-                String name = cursor.getString(cursor.getColumnIndex(NAME_COLUMN));
-                int weekNum = Integer.valueOf(cursor.getString(cursor.getColumnIndex(WEEK_NUM_COLUMN)));
+//    public ArrayList<Goal> getAllWeeklyGoals(){
+//        ArrayList<Goal> allGoals = new ArrayList<>();
+//        SQLiteDatabase db = getReadableDatabase();
+//        Cursor cursor = db.query(WEEKLY_TABLE_NAME, null, null, null, null, null, null);
+//        if(cursor.moveToFirst()) {
+//            while (!cursor.isAfterLast()) {
+//                String name = cursor.getString(cursor.getColumnIndex(NAME_COLUMN));
+//                int weekNum = Integer.valueOf(cursor.getString(cursor.getColumnIndex(WEEK_NUM_COLUMN)));
+//
+//                String subCat = cursor.getString(cursor.getColumnIndex(SUBCATEGORY_COLUMN));
+//                long totalTime = cursor.getLong(cursor.getColumnIndex(TOTAL_TIME_COLUMN));
+//                long goalTime = cursor.getLong(cursor.getColumnIndex(GOAL_TIME_COLUMN));
+//                long[] weekBreakdown = new long[7];
+//                weekBreakdown[0] = cursor.getLong(cursor.getColumnIndex(MONDAY_TIME_COLUMN));
+//                weekBreakdown[1] = cursor.getLong(cursor.getColumnIndex(TUESDAY_TIME_COLUMN));
+//                weekBreakdown[2] = cursor.getLong(cursor.getColumnIndex(WEDNESDAY_TIME_COLUMN));
+//                weekBreakdown[3] = cursor.getLong(cursor.getColumnIndex(THURSDAY_TIME_COLUMN));
+//                weekBreakdown[4] = cursor.getLong(cursor.getColumnIndex(FRIDAY_TIME_COLUMN));
+//                weekBreakdown[5] = cursor.getLong(cursor.getColumnIndex(SATURDAY_TIME_COLUMN));
+//                weekBreakdown[6] = cursor.getLong(cursor.getColumnIndex(SUNDAY_TIME_COLUMN));
+//                allGoals.add(new Goal(name, totalTime,goalTime, weekBreakdown, weekNum, subCat));
+//
+//                cursor.moveToNext();
+//            }
+//        }
+//        db.close();
+//        cursor.close();
+//        return allGoals;
+//
+//    }
 
-                String subCat = cursor.getString(cursor.getColumnIndex(SUBCATEGORY_COLUMN));
-                long totalTime = cursor.getLong(cursor.getColumnIndex(TOTAL_TIME_COLUMN));
-                long goalTime = cursor.getLong(cursor.getColumnIndex(GOAL_TIME_COLUMN));
-                long[] weekBreakdown = new long[7];
-                weekBreakdown[0] = cursor.getLong(cursor.getColumnIndex(MONDAY_TIME_COLUMN));
-                weekBreakdown[1] = cursor.getLong(cursor.getColumnIndex(TUESDAY_TIME_COLUMN));
-                weekBreakdown[2] = cursor.getLong(cursor.getColumnIndex(WEDNESDAY_TIME_COLUMN));
-                weekBreakdown[3] = cursor.getLong(cursor.getColumnIndex(THURSDAY_TIME_COLUMN));
-                weekBreakdown[4] = cursor.getLong(cursor.getColumnIndex(FRIDAY_TIME_COLUMN));
-                weekBreakdown[5] = cursor.getLong(cursor.getColumnIndex(SATURDAY_TIME_COLUMN));
-                weekBreakdown[6] = cursor.getLong(cursor.getColumnIndex(SUNDAY_TIME_COLUMN));
-                allGoals.add(new Goal(name, totalTime,goalTime, weekBreakdown, weekNum, subCat));
-
-                cursor.moveToNext();
-            }
-        }
-        db.close();
-        cursor.close();
-        return allGoals;
-
-    }
-
+    //FixMe: With addition of subcategories, would probably want to search by name + sub-category
     public Goal getCurrentGoalByName(String name){
         SQLiteDatabase db = getReadableDatabase();
         Cursor cursor = db.query(WEEKLY_TABLE_NAME, null, NAME_COLUMN + " = ?", new String[]{name},null, null, null);
