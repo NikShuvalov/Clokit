@@ -171,6 +171,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
                     final EditText hourEntry = (EditText) ((AlertDialog) dialogInterface).findViewById(R.id.hour_entry);
                     final EditText minuteEntry = (EditText)((AlertDialog) dialogInterface).findViewById(R.id.minute_entry);
+                    final EditText subCatEntry = (EditText)((AlertDialog)dialogInterface).findViewById(R.id.sub_cat_entry);
                     button.setOnClickListener(new View.OnClickListener() {
 
                         @Override
@@ -190,7 +191,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                                     if(hoursString.equals("") && minutesString.equals("")){
                                         hourEntry.setError("A goal time amount is required");
                                         minuteEntry.setError("A goal time amount is required");
-                                        goalsAdapter.resetSelection();
+                                        goalsAdapter.resetSelection(); //Needed to reset selection, otherwise two can be selected
                                     }else if(hoursString.equals("") || minutesString.equals("")){
                                         if(minutesString.equals("")){
                                             hours = Integer.valueOf(hoursString);
@@ -207,7 +208,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                                         minuteEntry.setError("A goal time amount is required");
                                         goalsAdapter.resetSelection();
                                     }else {
-                                        Goal goal = new Goal(goalName.trim(), 0, totalMillis, AppUtils.getCurrentWeekNum());
+                                        String subCategory = subCatEntry.getText().toString();
+                                        Goal goal = new Goal(goalName.trim(), 0, totalMillis, AppUtils.getCurrentWeekNum(), subCategory);
                                         if (CurrentWeekGoalManager.getInstance().addCurrentGoal(goal)) {
                                             GoalSQLHelper.getInstance(MainActivity.this).addGoalToWeeklyTable(goal);
                                             dialogInterface.dismiss();
@@ -236,12 +238,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     final EditText nameEntry = (EditText) ((AlertDialog) dialogInterface).findViewById(R.id.goal_name_entry);
                     final EditText hourEntry = (EditText) ((AlertDialog) dialogInterface).findViewById(R.id.hour_entry);
                     final EditText minuteEntry = (EditText)((AlertDialog) dialogInterface).findViewById(R.id.minute_entry);
+                    final EditText subCatEntry = (EditText)((AlertDialog)dialogInterface).findViewById(R.id.sub_cat_entry);
                     button.setOnClickListener(new View.OnClickListener() {
 
                         @Override
                         public void onClick(View view) {
                             {
                                 String goalName = nameEntry.getText().toString();
+                                String subCat = subCatEntry.getText().toString();
                                 if(goalName.trim().equals("")){
                                     nameEntry.setError("A goal name is required");
                                 }else{
@@ -267,7 +271,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                                         hourEntry.setError("A goal time amount is required");
                                         minuteEntry.setError("A goal time amount is required");
                                     }else{
-                                        Goal goal = new Goal(goalName.trim(), 0, totalMillis, AppUtils.getCurrentWeekNum());
+                                        Goal goal = new Goal(goalName.trim(), 0, totalMillis, AppUtils.getCurrentWeekNum(),subCat);
                                         if(CurrentWeekGoalManager.getInstance().addCurrentGoal(goal)){
                                             GoalSQLHelper.getInstance(MainActivity.this).addGoalToWeeklyTable(goal);
                                             dialogInterface.dismiss();
@@ -283,15 +287,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             });
             alertDialog.show();
         }
-
-//        final AlertDialog alertDialog = new AlertDialog.Builder(this).setTitle("Goal Creation").setView(view)
-//                .setPositiveButton("Add Goal",null)
-//                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-//            @Override
-//            public void onClick(DialogInterface dialogInterface, int i) {
-//                dialogInterface.dismiss();
-//            }
-//        }).create();
     }
 
     @Override

@@ -22,10 +22,10 @@ public class AppUtils {
 
 
     /**
-     * Use this Method to get the Monday start of the week entered.
+     * Use this Method to get the Sunday start of the week entered.
      *
      * @param weekNum Pass weekNum in YYYYW or YYYYWW format. First 4 digits are year, and week of the year is concatenated.
-     * @return Returns the most recent Monday 12:00:00:001am in millis.
+     * @return Returns the most recent Sunday 12:00:00:001am in millis.
      */
     public static long getWeekStartMillis(int weekNum){
         String weekNumAsString = String.valueOf(weekNum);
@@ -56,7 +56,7 @@ public class AppUtils {
      * Pass the weekNum to find the end of that week. This method is more reliable than the method that takes millis as parameter, and doesn't require a week start time.
      *
      * @param weekNum Pass WeekNum in YYYYW or YYYYWW format. First 4 digits are year, and week of the year is concatenated.
-     * @return Returns Sunday 11:59:59:999pm in millis of the weekNum passed.
+     * @return Returns Saturday 11:59:59:999pm in millis of the weekNum passed.
      */
     public static long getWeekEndMillis(int weekNum){//More reliable
         String weekNumAsString = String.valueOf(weekNum);
@@ -65,7 +65,6 @@ public class AppUtils {
         Calendar cal = Calendar.getInstance();
         cal.set(Calendar.YEAR, yearNum);
         cal.set(Calendar.WEEK_OF_YEAR, weekNum);
-//        cal.set(Calendar.DAY_OF_WEEK, 1);
         int month=cal.get(Calendar.MONTH);
         int week  = cal.get(Calendar.WEEK_OF_MONTH);
         if(month == 2 && week == 2){
@@ -95,7 +94,7 @@ public class AppUtils {
      * @return Returns time in millis of 1 week after the milli time entered minus 2 milliseconds.
      */
     public static long getWeekEndMillis(long weekStartTimeInMillis){
-        return (weekStartTimeInMillis + 604799998); //Should return Sunday 11:59:59:999am if Monday 12:00:00:001am is passed.
+        return (weekStartTimeInMillis + 604799998); //Should return Saturday 11:59:59:999am if Sunday 12:00:00:001am is passed.
         //604799998 = milliseconds/week - 2;
     }
 

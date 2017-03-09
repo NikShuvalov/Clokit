@@ -15,7 +15,7 @@ import shuvalov.nikita.clokit.R;
  */
 
 public class GoalViewHolder extends RecyclerView.ViewHolder {
-    private TextView mGoalText, mCurrentTime, mEndTime;
+    private TextView mGoalText, mCurrentTime, mEndTime, mSubCatText;
     private ProgressBar mProgressBar;
 //    public Button mEditButton;
     public ToggleButton mToggleButton;
@@ -28,10 +28,18 @@ public class GoalViewHolder extends RecyclerView.ViewHolder {
         mProgressBar = (ProgressBar) itemView.findViewById(R.id.progress_bar);
 //        mEditButton = (Button)itemView.findViewById(R.id.edit_button); //FixMe: Choose to either keep this or nah.
         mToggleButton = (ToggleButton)itemView.findViewById(R.id.clock_it_button);
+        mSubCatText = (TextView)itemView.findViewById(R.id.subcat_name);
     }
 
     public void bindDataToViews(Goal goal){
         mGoalText.setText(goal.getGoalName());
+        String subCat = goal.getSubCategory();
+        if(subCat!=null){
+            mSubCatText.setVisibility(View.VISIBLE);
+            mSubCatText.setText(subCat);
+        }else{
+            mSubCatText.setVisibility(View.GONE);
+        }
         long goalMilli = goal.getEndMilli();
         long currentMilli= goal.getCurrentMilli();
 

@@ -19,8 +19,10 @@ import shuvalov.nikita.clokit.pojos.Week;
  */
 
 public class GoalSQLHelper extends SQLiteOpenHelper {
+
     public static final String DATABASE_NAME = "GOAL_DATABASE";
     public static final int DATABASE_VERSION = 1;
+
 
     //Table names
     public static final String LIFETIME_TABLE_NAME = "LIFETIME_TABLE";
@@ -49,6 +51,9 @@ public class GoalSQLHelper extends SQLiteOpenHelper {
     public static final String SATURDAY_TIME_COLUMN = "SATURDAY";
     public static final String SUNDAY_TIME_COLUMN = "SUNDAY";
 
+    public static final String SUBCATEGORY_COLUMN = "SUBCATEGORY";
+
+
     //Lifetime specific columns
     public static final String LAST_UPDATE = "LAST_UPDATED";
 
@@ -64,6 +69,7 @@ public class GoalSQLHelper extends SQLiteOpenHelper {
     public static final String CREATE_WEEKLY_TABLE_EXE = "CREATE TABLE " + WEEKLY_TABLE_NAME + " ("+
             WEEK_NUM_COLUMN + " TEXT,"+
             NAME_COLUMN+ " TEXT,"+
+            SUBCATEGORY_COLUMN + " TEXT," +
             TOTAL_TIME_COLUMN + " INTEGER," +
             GOAL_TIME_COLUMN + " INTEGER," +
             MONDAY_TIME_COLUMN + " INTEGER," +
@@ -73,9 +79,9 @@ public class GoalSQLHelper extends SQLiteOpenHelper {
             FRIDAY_TIME_COLUMN + " INTEGER," +
             SATURDAY_TIME_COLUMN + " INTEGER," +
             SUNDAY_TIME_COLUMN + " INTEGER, " +
-            "PRIMARY KEY (" + WEEK_NUM_COLUMN+", "+NAME_COLUMN+"))";
+            "PRIMARY KEY (" + WEEK_NUM_COLUMN+", "+NAME_COLUMN+", "+SUBCATEGORY_COLUMN+"))";
 
-    // Add this line if I want to track total time in the achievement table. *Don't forget to update the DB version if ya do*
+    //ToDo: Add this line if I want to track total time in the achievement table. *Don't forget to update the DB version if ya do*
     //    TOTAL_TIME_TRACKED_COLUMN + " INTEGER,"
     public static final String CREATE_ACHIEVEMENTS_TABLE_EXE = "CREATE TABLE "+ ACHIEVEMENTS_TABLE_NAME + " ("+
             ACHIEVEMENT_ID+ " INTEGER PRIMARY KEY," +
@@ -115,12 +121,16 @@ public class GoalSQLHelper extends SQLiteOpenHelper {
     }
 
     @Override
-    public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
-        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS "+ LIFETIME_TABLE_NAME);
-        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS "+ WEEKLY_TABLE_NAME);
-        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS "+ WEEKS_REFERENCE_TABLE_NAME);
-        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS "+ ACHIEVEMENTS_TABLE_NAME);
-        onCreate(sqLiteDatabase);
+    public void onUpgrade(SQLiteDatabase sqLiteDatabase, int oldVersion, int newVersion) {
+        //instead of dropping tables on upgrade: https://thebhwgroup.com/blog/how-android-sqlite-onupgrade
+
+        //But just in case I do want to drop tables for whatever reason.
+//        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS "+ LIFETIME_TABLE_NAME);
+//        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS "+ WEEKLY_TABLE_NAME);
+//        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS "+ WEEKS_REFERENCE_TABLE_NAME);
+//        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS "+ ACHIEVEMENTS_TABLE_NAME);
+//        onCreate(sqLiteDatabase);
+
     }
 
     public ArrayList<Goal> getCurrentGoals(int weekNum){
@@ -131,6 +141,7 @@ public class GoalSQLHelper extends SQLiteOpenHelper {
         if(cursor.moveToFirst()) {
             while (!cursor.isAfterLast()) {
                 String name = cursor.getString(cursor.getColumnIndex(NAME_COLUMN));
+                String subCat = cursor.getString(cursor.getColumnIndex(SUBCATEGORY_COLUMN));
                 long totalTime = cursor.getLong(cursor.getColumnIndex(TOTAL_TIME_COLUMN));
                 long goalTime = cursor.getLong(cursor.getColumnIndex(GOAL_TIME_COLUMN));
                 long[] weekBreakdown = new long[7];
@@ -141,7 +152,7 @@ public class GoalSQLHelper extends SQLiteOpenHelper {
                 weekBreakdown[4] = cursor.getLong(cursor.getColumnIndex(FRIDAY_TIME_COLUMN));
                 weekBreakdown[5] = cursor.getLong(cursor.getColumnIndex(SATURDAY_TIME_COLUMN));
                 weekBreakdown[6] = cursor.getLong(cursor.getColumnIndex(SUNDAY_TIME_COLUMN));
-                currentGoals.add(new Goal(name, totalTime,goalTime, weekBreakdown, weekNum));
+                currentGoals.add(new Goal(name, totalTime,goalTime, weekBreakdown, weekNum, subCat));
                 cursor.moveToNext();
             }
         }
@@ -150,11 +161,47 @@ public class GoalSQLHelper extends SQLiteOpenHelper {
         return currentGoals;
     }
 
+    /**
+     * Retrieves ALL of the entries saved in the weekly table. Used this for migrating entries.
+     * @return All entries in weekly table
+     */
+    public ArrayList<Goal> getAllWeeklyGoals(){
+        ArrayList<Goal> allGoals = new ArrayList<>();
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor cursor = db.query(WEEKLY_TABLE_NAME, null, null, null, null, null, null);
+        if(cursor.moveToFirst()) {
+            while (!cursor.isAfterLast()) {
+                String name = cursor.getString(cursor.getColumnIndex(NAME_COLUMN));
+                int weekNum = Integer.valueOf(cursor.getString(cursor.getColumnIndex(WEEK_NUM_COLUMN)));
+
+                String subCat = cursor.getString(cursor.getColumnIndex(SUBCATEGORY_COLUMN));
+                long totalTime = cursor.getLong(cursor.getColumnIndex(TOTAL_TIME_COLUMN));
+                long goalTime = cursor.getLong(cursor.getColumnIndex(GOAL_TIME_COLUMN));
+                long[] weekBreakdown = new long[7];
+                weekBreakdown[0] = cursor.getLong(cursor.getColumnIndex(MONDAY_TIME_COLUMN));
+                weekBreakdown[1] = cursor.getLong(cursor.getColumnIndex(TUESDAY_TIME_COLUMN));
+                weekBreakdown[2] = cursor.getLong(cursor.getColumnIndex(WEDNESDAY_TIME_COLUMN));
+                weekBreakdown[3] = cursor.getLong(cursor.getColumnIndex(THURSDAY_TIME_COLUMN));
+                weekBreakdown[4] = cursor.getLong(cursor.getColumnIndex(FRIDAY_TIME_COLUMN));
+                weekBreakdown[5] = cursor.getLong(cursor.getColumnIndex(SATURDAY_TIME_COLUMN));
+                weekBreakdown[6] = cursor.getLong(cursor.getColumnIndex(SUNDAY_TIME_COLUMN));
+                allGoals.add(new Goal(name, totalTime,goalTime, weekBreakdown, weekNum, subCat));
+
+                cursor.moveToNext();
+            }
+        }
+        db.close();
+        cursor.close();
+        return allGoals;
+
+    }
+
     public Goal getCurrentGoalByName(String name){
         SQLiteDatabase db = getReadableDatabase();
         Cursor cursor = db.query(WEEKLY_TABLE_NAME, null, NAME_COLUMN + " = ?", new String[]{name},null, null, null);
         Goal goal= null;
         if(cursor.moveToFirst()){
+            String subCat = cursor.getString(cursor.getColumnIndex(SUBCATEGORY_COLUMN));
             long currentSaved = cursor.getLong(cursor.getColumnIndex(TOTAL_TIME_COLUMN));
             long goalAmount = cursor.getLong(cursor.getColumnIndex(GOAL_TIME_COLUMN));
             long[] weekBreakdown = new long[7];
@@ -167,7 +214,8 @@ public class GoalSQLHelper extends SQLiteOpenHelper {
             weekBreakdown[6] = cursor.getLong(cursor.getColumnIndex(SUNDAY_TIME_COLUMN));
 
             int weekNum = Integer.valueOf(cursor.getString(cursor.getColumnIndex(WEEK_NUM_COLUMN)));
-            goal = new Goal(name, currentSaved,goalAmount,weekBreakdown, weekNum);
+            goal = new Goal(name, currentSaved,goalAmount,weekBreakdown, weekNum, subCat);
+
         }
         cursor.close();
         db.close();
@@ -270,6 +318,7 @@ public class GoalSQLHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(NAME_COLUMN,goal.getGoalName());
+        contentValues.put(SUBCATEGORY_COLUMN, goal.getSubCategory());
         contentValues.put(TOTAL_TIME_COLUMN, goal.getCurrentMilli());
         contentValues.put(GOAL_TIME_COLUMN, goal.getEndMilli());
 
@@ -293,6 +342,7 @@ public class GoalSQLHelper extends SQLiteOpenHelper {
         ContentValues contentValues = new ContentValues();
 
         contentValues.put(NAME_COLUMN,goal.getGoalName());
+        contentValues.put(SUBCATEGORY_COLUMN, goal.getSubCategory());
         contentValues.put(TOTAL_TIME_COLUMN, goal.getCurrentMilli());
         contentValues.put(GOAL_TIME_COLUMN, goal.getEndMilli());
 
@@ -307,8 +357,8 @@ public class GoalSQLHelper extends SQLiteOpenHelper {
         contentValues.put(WEEK_NUM_COLUMN, String.valueOf(goal.getWeekNum()));
 
         db.update(WEEKLY_TABLE_NAME,contentValues,
-                NAME_COLUMN+ " = ? AND " + WEEK_NUM_COLUMN+ " = ?",
-                new String[]{goal.getGoalName(), String.valueOf(goal.getWeekNum())});
+                NAME_COLUMN+ " = ? AND " + WEEK_NUM_COLUMN+ " = ? AND " + SUBCATEGORY_COLUMN + " = ?",
+                new String[]{goal.getGoalName(), String.valueOf(goal.getWeekNum()),goal.getSubCategory()});
         db.close();
     }
 
@@ -344,6 +394,12 @@ public class GoalSQLHelper extends SQLiteOpenHelper {
         contentValues.put(NAME_COLUMN, achievement.getName());
         db.insertWithOnConflict(ACHIEVEMENTS_TABLE_NAME,null, contentValues,SQLiteDatabase.CONFLICT_IGNORE);
         db.close();
+    }
+
+    public void migrateUnlockedAchievements(ArrayList<Achievement> unlockedAchievemnts){
+        for(Achievement achievement: unlockedAchievemnts){
+            unlockAchievement(achievement);
+        }
     }
 
     public void addNewWeekReference(Week week){

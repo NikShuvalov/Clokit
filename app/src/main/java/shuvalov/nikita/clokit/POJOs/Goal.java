@@ -5,10 +5,11 @@ package shuvalov.nikita.clokit.pojos;
  */
 
 public class Goal {
-    private String mGoalName;
+    private String mGoalName, mSubCategory;
     private long mCurrentMilli, mEndMilli;
     private long[] mWeekBreakdown;
     private int mWeekNum;
+
 
     public Goal(String goalName, long currentMilli, long endMilli, long[] weekBreakdown, int weekNum) {
         mGoalName = goalName;
@@ -16,14 +17,27 @@ public class Goal {
         mEndMilli = endMilli;
         mWeekBreakdown = weekBreakdown;
         mWeekNum = weekNum;
+        mSubCategory = null;
     }
 
-    public Goal(String goalName, long currentMilli, long endMilli, int weekNum) {
+
+
+    public Goal(String goalName, long currentMilli, long endMilli, long[] weekBreakdown, int weekNum, String subCategory) {
+        mGoalName = goalName;
+        mCurrentMilli = currentMilli;
+        mEndMilli = endMilli;
+        mWeekBreakdown = weekBreakdown;
+        mWeekNum = weekNum;
+        mSubCategory = subCategory;
+    }
+
+    public Goal(String goalName, long currentMilli, long endMilli, int weekNum, String subCategory) {
         mGoalName = goalName;
         mCurrentMilli = currentMilli;
         mEndMilli = endMilli;
         mWeekBreakdown = new long[7];
         mWeekNum = weekNum;
+        mSubCategory = subCategory;
     }
 
 
@@ -107,5 +121,11 @@ public class Goal {
         return mWeekBreakdown[6];
     }
 
+    public String getSubCategory() {
+        return mSubCategory;
+    }
 
+    public void setSubCategory(String subCategory) {
+        mSubCategory = subCategory;
+    }
 }

@@ -41,7 +41,9 @@ public class GoalRecyclerAdapter extends RecyclerView.Adapter<GoalViewHolder> {
         final SharedPreferences sharedPreferences = holder.mToggleButton.getContext().getSharedPreferences(AppConstants.PREFERENCES_NAME,Context.MODE_PRIVATE);
         holder.bindDataToViews(mGoals.get(holder.getAdapterPosition()));
         String activeGoalName = sharedPreferences.getString(AppConstants.PREFERENCES_CURRENT_GOAL, AppConstants.PREFERENCES_NO_GOAL);
-        if(activeGoalName.equals(mGoals.get(holder.getAdapterPosition()).getGoalName())){
+        String subCatName = sharedPreferences.getString(AppConstants.PREFERENCES_CURRENT_SUB_CAT, AppConstants.PREFERENCES_NO_GOAL);
+        Goal goal = mGoals.get(holder.getAdapterPosition());
+        if(activeGoalName.equals(goal.getGoalName()) && subCatName.equals(goal.getSubCategory())){ //This visually toggles the active goal ON.
             holder.mToggleButton.setChecked(true);
         }else{
             holder.mToggleButton.setChecked(false);
@@ -55,19 +57,21 @@ public class GoalRecyclerAdapter extends RecyclerView.Adapter<GoalViewHolder> {
         holder.mToggleButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                String currentGoal = sharedPreferences.getString(AppConstants.PREFERENCES_CURRENT_GOAL,AppConstants.PREFERENCES_NO_GOAL);
+                String currentGoalName = sharedPreferences.getString(AppConstants.PREFERENCES_CURRENT_GOAL,AppConstants.PREFERENCES_NO_GOAL);
+                String currentSubCat = sharedPreferences.getString(AppConstants.PREFERENCES_CURRENT_SUB_CAT, null);
                 Goal selectedGoal = mGoals.get(holder.getAdapterPosition());
-                if(currentGoal.equals(AppConstants.PREFERENCES_NO_GOAL)){ //If no goal is currently active, then allow this goal to become new goal.
+                if(currentGoalName.equals(AppConstants.PREFERENCES_NO_GOAL)){ //If no goal is currently active, then allow this goal to become new goal.
                     sharedPreferences.edit().putString(AppConstants.PREFERENCES_CURRENT_GOAL,selectedGoal.getGoalName()).apply(); //Save name of current goal.
                     sharedPreferences.edit().putLong(AppConstants.PREFERENCES_START_TIME, System.currentTimeMillis()).apply(); //Save the current time of the selected goal.
                     sharedPreferences.edit().putInt(AppConstants.PREFERENCES_CURRENT_GOAL_WEEK_NUM, AppUtils.getCurrentWeekNum()).apply(); //Adds the weeknum of when the goal was started
+                    sharedPreferences.edit().putString(AppConstants.PREFERENCES_CURRENT_SUB_CAT, selectedGoal.getSubCategory()).apply();
 
                     startNotificationService(holder.mToggleButton.getContext());
-
-                } else if(currentGoal.equals(selectedGoal.getGoalName())){ //If selected goal is the current goal, then we end current goal.
+                } else if(currentGoalName.equals(selectedGoal.getGoalName()) && ((currentSubCat==null && selectedGoal.getSubCategory()==null)||(currentSubCat!=null && currentSubCat.equals(selectedGoal.getSubCategory())))){ //If selected goal is the current goal, then we end current goal.
                     long currentTime = System.currentTimeMillis();
 
                     sharedPreferences.edit().putString(AppConstants.PREFERENCES_CURRENT_GOAL,AppConstants.PREFERENCES_NO_GOAL).apply();
+                    sharedPreferences.edit().putString(AppConstants.PREFERENCES_CURRENT_SUB_CAT, null).apply();
                     long startTime = sharedPreferences.getLong(AppConstants.PREFERENCES_START_TIME, -1);
 
                     int savedWeekNum = sharedPreferences.getInt(AppConstants.PREFERENCES_CURRENT_GOAL_WEEK_NUM, -1);

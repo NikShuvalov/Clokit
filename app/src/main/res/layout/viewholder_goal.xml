@@ -20,7 +20,17 @@
                 android:text="Goal"
                 android:textColor="#333"
                 android:gravity="center"
-                android:textSize="20sp"/>
+                android:textSize="20sp"
+                android:layout_marginBottom="5dp"/>
+            <TextView
+                android:id="@+id/subcat_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="SUBCATEGORY"
+                android:textSize="15sp"
+                android:textColor="#666"
+                android:gravity="center"
+                android:layout_marginBottom="10dp"/>
             <LinearLayout
                 android:id="@+id/time_row"
                 android:layout_width="match_parent"

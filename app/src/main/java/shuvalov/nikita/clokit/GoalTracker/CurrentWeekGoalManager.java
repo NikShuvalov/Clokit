@@ -35,8 +35,15 @@ public class CurrentWeekGoalManager {
 
     public boolean addCurrentGoal(Goal goal){
         for(Goal existingGoal: mCurrentGoals){
-            if(goal.getGoalName().toLowerCase().equals(existingGoal.getGoalName().toLowerCase()) && goal.getWeekNum() == existingGoal.getWeekNum()){
-                return false;
+            if(goal.getGoalName().toLowerCase()
+                    .equals(existingGoal.getGoalName().toLowerCase()) &&
+                    goal.getWeekNum() == existingGoal.getWeekNum()){//If the goalName and weekNum are identical, check to see if subcategories are the same as well.
+                if(goal.getSubCategory() == null && existingGoal.getSubCategory()==null){ //If both have null subcategories, then treat them as the same.
+                    return false;
+                }else if (goal.getSubCategory()!=null && existingGoal.getSubCategory() != null
+                        && goal.getSubCategory().toLowerCase().equals(existingGoal.getSubCategory().toLowerCase())){//If Neither are null, and the subcategories match, then they are the same.
+                    return false;
+                }
             }
         }
         mCurrentGoals.add(goal);

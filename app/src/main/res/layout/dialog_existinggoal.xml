@@ -33,10 +33,17 @@
             />
     </LinearLayout>
 
+    <EditText
+        android:id="@+id/sub_cat_entry"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter Subcategory (Optional)"
+        android:layout_above="@id/time_row"/>
+
     <android.support.v7.widget.RecyclerView
         android:id="@+id/existing_goal_recycler"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@id/time_row"/>
+        android:layout_above="@id/sub_cat_entry"/>
 
 </RelativeLayout>
