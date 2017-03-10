@@ -29,9 +29,11 @@ import shuvalov.nikita.clokit.R;
 
 public class GoalRecyclerAdapter extends RecyclerView.Adapter<GoalViewHolder>{
     private ArrayList<Goal> mGoals;
+    private OnGoalChangeListener mGoalChangeListener;
 
-    public GoalRecyclerAdapter(ArrayList<Goal> goals) {
+    public GoalRecyclerAdapter(ArrayList<Goal> goals, OnGoalChangeListener goalChangeListener) {
         mGoals = goals;
+        mGoalChangeListener = goalChangeListener;
     }
 
     @Override
@@ -44,8 +46,8 @@ public class GoalRecyclerAdapter extends RecyclerView.Adapter<GoalViewHolder>{
         final SharedPreferences sharedPreferences = holder.mToggleButton.getContext().getSharedPreferences(AppConstants.PREFERENCES_NAME,Context.MODE_PRIVATE);
         Goal goal = mGoals.get(holder.getAdapterPosition());
         holder.bindDataToViews(goal);
-        final String activeGoalName = sharedPreferences.getString(AppConstants.PREFERENCES_CURRENT_GOAL, AppConstants.PREFERENCES_NO_GOAL);
-        final String subCatName = sharedPreferences.getString(AppConstants.PREFERENCES_CURRENT_SUB_CAT, null);
+        String activeGoalName = sharedPreferences.getString(AppConstants.PREFERENCES_CURRENT_GOAL, AppConstants.PREFERENCES_NO_GOAL);
+        String subCatName = sharedPreferences.getString(AppConstants.PREFERENCES_CURRENT_SUB_CAT, null);
         holder.mToggleButton.setOnCheckedChangeListener(null); //If the holder is being reloaded the onCheckedListener is already attached; it needs to be removed because setChecked() because triggers onCheckedChangeListener;
         if(activeGoalName.equals(goal.getGoalName())
                 && ((subCatName==null && goal.getSubCategory()==null) || (subCatName!=null && goal.getSubCategory()!=null && subCatName.equals(goal.getSubCategory())))){ //This visually toggles the active goal ON.
@@ -59,6 +61,8 @@ public class GoalRecyclerAdapter extends RecyclerView.Adapter<GoalViewHolder>{
         holder.mRemoveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View view) {
+                String activeGoalName = sharedPreferences.getString(AppConstants.PREFERENCES_CURRENT_GOAL, AppConstants.PREFERENCES_NO_GOAL);
+                String subCatName = sharedPreferences.getString(AppConstants.PREFERENCES_CURRENT_SUB_CAT, null);
                 final Goal goal = mGoals.get(holder.getAdapterPosition());
                 Log.d("ADAPTER", "onClick: "+ goal.getGoalName() + goal.getSubCategory());
                 if((goal.getGoalName().equals(activeGoalName)) &&
@@ -91,6 +95,7 @@ public class GoalRecyclerAdapter extends RecyclerView.Adapter<GoalViewHolder>{
                                             Log.e("GoalRecyclerAdapter", "Removed: "+ rowsremoved,new Exception("Excessive amount of rows deleted"));
                                         }
                                         Log.d("GoalRecyclerAdapter", "Removed :"+removedRows);
+                                        mGoalChangeListener.goalValuesChanged();
                                         dialogInterface.dismiss();
                                     }
                                 }
@@ -112,6 +117,7 @@ public class GoalRecyclerAdapter extends RecyclerView.Adapter<GoalViewHolder>{
                     }
                     if(CurrentWeekGoalManager.getInstance().removeGoal(goal)){
                         notifyItemRemoved(holder.getAdapterPosition());
+                        mGoalChangeListener.goalValuesChanged();
                         Log.d("Test", "After Goal size: " + mGoals.size());
                     }else{
                         Log.w("GoalRecyclerAdapter", "onClick: ", new Exception("Couldn't remove goal because it wasn't found in CurrentWeekGoalManager"));
@@ -181,6 +187,7 @@ public class GoalRecyclerAdapter extends RecyclerView.Adapter<GoalViewHolder>{
                         long previousTotalTime = sharedPreferences.getLong(AppConstants.PREFERENCES_TOTAL_TRACKED_TIME, 0);
                         long newTotal = previousTotalTime+timeSpentLastWeek+ timeSpentLastWeek;
                         sharedPreferences.edit().putLong(AppConstants.PREFERENCES_TOTAL_TRACKED_TIME, newTotal).apply();
+                        mGoalChangeListener.goalValuesChanged();
 
                         stopNotification(compoundButton.getContext());
                     }else if (savedWeekNum == AppUtils.getCurrentWeekNum()){ //The task started and ended in the same week, simply update values.
@@ -197,6 +204,7 @@ public class GoalRecyclerAdapter extends RecyclerView.Adapter<GoalViewHolder>{
                         sqlHelper.addNewWeekReference(week);//Adds this week as an active week for reference in history view, the method ignores duplicate entries.
                         notifyItemChanged(holder.getAdapterPosition());
                         long previousTotalTime = sharedPreferences.getLong(AppConstants.PREFERENCES_TOTAL_TRACKED_TIME, 0);
+                        mGoalChangeListener.goalValuesChanged();
                         sharedPreferences.edit().putLong(AppConstants.PREFERENCES_TOTAL_TRACKED_TIME, timeSpent+previousTotalTime).apply();
                         stopNotification(compoundButton.getContext());
                     }else if (savedWeekNum+1<AppUtils.getCurrentWeekNum()){ //If the current week is 2 or more than the saved week, that means the user just left it on all week, by mistake or to cheat the system!
@@ -232,4 +240,9 @@ public class GoalRecyclerAdapter extends RecyclerView.Adapter<GoalViewHolder>{
     public int getItemCount() {
         return mGoals.size();
     }
+
+    public interface OnGoalChangeListener{
+        public void goalValuesChanged();
+    }
+
 }

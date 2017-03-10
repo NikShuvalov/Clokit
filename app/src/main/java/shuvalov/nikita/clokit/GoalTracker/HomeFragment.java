@@ -6,6 +6,8 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -15,7 +17,7 @@ import shuvalov.nikita.clokit.R;
 import shuvalov.nikita.clokit.pojos.Goal;
 
 
-public class HomeFragment extends Fragment {
+public class HomeFragment extends Fragment implements GoalRecyclerAdapter.OnGoalChangeListener{
     private RecyclerView mGoalRecycler;
     private GoalRecyclerAdapter mAdapter;
     private TextView mWeekText, mUnfinishedText;
@@ -44,7 +46,7 @@ public class HomeFragment extends Fragment {
         mGoalRecycler = (RecyclerView)view.findViewById(R.id.goal_recycler);
 
         CurrentWeekGoalManager currentWeekGoalManager = CurrentWeekGoalManager.getInstance();
-        mAdapter = new GoalRecyclerAdapter(currentWeekGoalManager.getCurrentGoals());
+        mAdapter = new GoalRecyclerAdapter(currentWeekGoalManager.getCurrentGoals(), this);
 
         currentWeekGoalManager.setGoalRecyclerAdapter(mAdapter);
         LinearLayoutManager goalLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL,false);
@@ -55,6 +57,11 @@ public class HomeFragment extends Fragment {
         mWeekText = (TextView)view.findViewById(R.id.week_time_text);
         mUnfinishedText  = (TextView)view.findViewById(R.id.unfinished_work_text);
 
+        updateTimeLeftDisplay();
+        return view;
+    }
+
+    public void updateTimeLeftDisplay(){
         String weekString = "Time until week reset:\n" + AppUtils.getDisplayForTimeLeft();
         mWeekText.setText(weekString);
 
@@ -64,7 +71,11 @@ public class HomeFragment extends Fragment {
         }
         String unfinishedString = "Unfinished work remaining:\n" + AppUtils.getHoursAndMinutes(timeLeft);
         mUnfinishedText.setText(unfinishedString);
+    }
 
-        return view;
+
+    @Override
+    public void goalValuesChanged() {
+        updateTimeLeftDisplay();
     }
 }

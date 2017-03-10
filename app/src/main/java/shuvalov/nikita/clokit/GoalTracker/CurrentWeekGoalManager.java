@@ -1,7 +1,7 @@
 package shuvalov.nikita.clokit.goaltracker;
 
-import java.util.ArrayList;
 
+import java.util.ArrayList;
 import shuvalov.nikita.clokit.pojos.Goal;
 
 /**

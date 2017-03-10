@@ -51,10 +51,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+
         mBackRecentlyPressed = false;
         loadData();
         findViews();
-        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, HomeFragment.newInstance()).commit();
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, HomeFragment.newInstance(),HOME_FRAG).commit();
         mCurrentDisplay = HOME_FRAG;
     }
 
@@ -91,7 +92,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         switch (item.getItemId()){
             case R.id.home_option:
                 if(!mCurrentDisplay.equals(HOME_FRAG)){
-                    getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, HomeFragment.newInstance()).commit();
+                    getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, HomeFragment.newInstance(),HOME_FRAG).commit();
                     mCurrentDisplay = HOME_FRAG;
                 }else{
                     Toast.makeText(this, "Already in home activity", Toast.LENGTH_SHORT).show();
@@ -146,8 +147,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 break;
             case R.id.remove_empty_goals_opt:
                 removeUnusedGoals();
-
-                //ToDo: Need to update the adapter in some way.
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -161,7 +160,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         int activeWeekNum = sharedPreferences.getInt(AppConstants.PREFERENCES_CURRENT_GOAL_WEEK_NUM, -1);
         int removed =0;
         boolean noActive = activeGoalName.equals(AppConstants.PREFERENCES_NO_GOAL);
-        for(Goal goal : manager.getCurrentGoals()){
+        ArrayList<Goal> goals = manager.getCurrentGoals();
+        for(int i = goals.size(); i-1>=0; i--){
+            Goal goal  = goals.get(i-1);
             if(goal.getCurrentMilli()<60000){
                 if(!noActive){
                     if(goal.getGoalName().equals(activeGoalName)
@@ -171,8 +172,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     }
                 }
                 removed++;
-                int i = GoalSQLHelper.getInstance(this).removeCurrentGoal(goal);
-                if(i!=1){
+                int r = GoalSQLHelper.getInstance(this).removeCurrentGoal(goal);
+                if(r!=1){
                     Log.w("MainActivity", "removed: " + i , new Exception("Unexpected amount of goals removed") );
                 }
                 manager.removeGoal(goal);
@@ -183,6 +184,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
         if(removed>0){
             CurrentWeekGoalManager.getInstance().notifyNewData();
+        }
+        if (mCurrentDisplay.equals(HOME_FRAG)) {
+            ((HomeFragment)getSupportFragmentManager().findFragmentByTag(HOME_FRAG)).updateTimeLeftDisplay();
         }
     }
     public void promptUserForGoal(boolean existing) {
@@ -252,6 +256,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                                         if (CurrentWeekGoalManager.getInstance().addCurrentGoal(goal)) {
                                             GoalSQLHelper.getInstance(MainActivity.this).addGoalToWeeklyTable(goal);
                                             CurrentWeekGoalManager.getInstance().notifyNewData();
+                                            if (mCurrentDisplay.equals(HOME_FRAG)) {
+                                                ((HomeFragment)getSupportFragmentManager().findFragmentByTag(HOME_FRAG)).updateTimeLeftDisplay();
+                                            }
                                             dialogInterface.dismiss();
                                         } else {
                                             goalsAdapter.resetSelection();
@@ -314,6 +321,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                                         Goal goal = new Goal(goalName.trim(), 0, totalMillis, AppUtils.getCurrentWeekNum(), subCat.trim());
                                         if(CurrentWeekGoalManager.getInstance().addCurrentGoal(goal)){
                                             GoalSQLHelper.getInstance(MainActivity.this).addGoalToWeeklyTable(goal);
+                                            if (mCurrentDisplay.equals(HOME_FRAG)) {
+                                                ((HomeFragment)getSupportFragmentManager().findFragmentByTag(HOME_FRAG)).updateTimeLeftDisplay();
+                                            }
                                             dialogInterface.dismiss();
                                         }else{
                                             Toast.makeText(MainActivity.this, "This goal is already set for this week", Toast.LENGTH_SHORT).show();
@@ -343,7 +353,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 Toast.makeText(this, "Press back again to close", Toast.LENGTH_SHORT).show();
             }
         }else{
-            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, HomeFragment.newInstance()).commit();
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, HomeFragment.newInstance(),HOME_FRAG).commit();
             mCurrentDisplay = HOME_FRAG;
         }
     }
@@ -361,8 +371,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             for(Goal goal: previousGoals){
                 goal.setCurrentMilli(0);
                 goal.setWeekNum(AppUtils.getCurrentWeekNum());
+                CurrentWeekGoalManager.getInstance().addCurrentGoal(goal);
             }
             sqlHelper.addGoalsToCurrentWeek(previousGoals);
+            if (mCurrentDisplay.equals(HOME_FRAG)) {
+                ((HomeFragment)getSupportFragmentManager().findFragmentByTag(HOME_FRAG)).updateTimeLeftDisplay();
+            }
         }else{
             Toast.makeText(this, "Couldn't find previous active week", Toast.LENGTH_SHORT).show();
         }
