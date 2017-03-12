@@ -1,6 +1,9 @@
 package shuvalov.nikita.clokit;
 
 import org.junit.Test;
+
+import java.util.Calendar;
+
 import static org.junit.Assert.*;
 
 /**
@@ -45,16 +48,18 @@ public class AppUtilsUnitTest {
         long marchFirst2020 = Long.valueOf("1583038800001"); //First day of month, Sunday
         long marchSeventh2020 = Long.valueOf("1583643599999"); //Daylight savings
 
+        long marchTwelve17 = Long.valueOf("1489294800001"); //Actual dst date
+        long marchEighteen17 = Long.valueOf("1489895999999"); //WeeksEnd of dst
 
 
-        //Checks method with milli param
-        assertEquals(firstSaturdayEndOfWeek,AppUtils.getWeekEndMillis(firstSunday2017));
-        assertEquals(mlkWeekEnd, AppUtils.getWeekEndMillis(mlk2017));
-        assertEquals(birthWeeksEnd, AppUtils.getWeekEndMillis(preBirthday));
-        assertEquals(newYearsEve, AppUtils.getWeekEndMillis(xmasEve));
-        assertEquals(marchEleventh, AppUtils.getWeekEndMillis(marchSixth));
-        assertEquals(marchSeventh2020, AppUtils.getWeekEndMillis(marchFirst2020));
 
+        //Checks method with milli param, which I am not currently using.
+//        assertEquals(firstSaturdayEndOfWeek,AppUtils.getWeekEndMillis(firstSunday2017));
+//        assertEquals(mlkWeekEnd, AppUtils.getWeekEndMillis(mlk2017));
+//        assertEquals(birthWeeksEnd, AppUtils.getWeekEndMillis(preBirthday));
+//        assertEquals(newYearsEve, AppUtils.getWeekEndMillis(xmasEve));
+//        assertEquals(marchEleventh, AppUtils.getWeekEndMillis(marchSixth));
+//        assertEquals(marchSeventh2020, AppUtils.getWeekEndMillis(marchFirst2020));
 
         //CHecks method with weekNum param
         assertEquals(firstSaturdayEndOfWeek, AppUtils.getWeekEndMillis(20171));
@@ -63,6 +68,7 @@ public class AppUtilsUnitTest {
         assertEquals(newYearsEve, AppUtils.getWeekEndMillis(201752));
         assertEquals(marchEleventh, AppUtils.getWeekEndMillis(201710));
         assertEquals(marchSeventh2020, AppUtils.getWeekEndMillis(202010));
+        assertEquals(marchEighteen17, AppUtils.getWeekEndMillis(201711));
     }
 
     @Test

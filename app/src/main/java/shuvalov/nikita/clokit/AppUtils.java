@@ -34,16 +34,6 @@ public class AppUtils {
         Calendar cal = Calendar.getInstance();
         cal.set(Calendar.WEEK_OF_YEAR, weekNum);
         cal.set(Calendar.YEAR, yearNum);
-//        int weekOfMonth = cal.get(Calendar.WEEK_OF_MONTH);
-//        int month = cal.get(Calendar.MONTH);
-//        if (month == 2 && weekOfMonth ==2) {
-//            cal.set(Calendar.HOUR_OF_DAY, 1);
-//            cal.set(Calendar.SECOND, 0);
-//            cal.set(Calendar.MINUTE, 0);
-//            cal.set(Calendar.DAY_OF_WEEK, 2);
-//            cal.set(Calendar.MILLISECOND, 1);
-//
-//        }
         cal.set(Calendar.HOUR_OF_DAY, 0);
         cal.set(Calendar.SECOND, 0);
         cal.set(Calendar.MINUTE, 0);
@@ -65,24 +55,12 @@ public class AppUtils {
         Calendar cal = Calendar.getInstance();
         cal.set(Calendar.YEAR, yearNum);
         cal.set(Calendar.WEEK_OF_YEAR, weekNum);
-        int month=cal.get(Calendar.MONTH);
-        int week  = cal.get(Calendar.WEEK_OF_MONTH);
-        if(month == 2 && week == 2){
-            cal.set(Calendar.DAY_OF_WEEK, 7);
-            cal.set(Calendar.HOUR_OF_DAY, 23);
-            cal.set(Calendar.SECOND, 59);
-            cal.set(Calendar.MINUTE, 59);
-            cal.set(Calendar.MILLISECOND, 999);
-            return cal.getTimeInMillis();
-        }else {
-            cal.set(Calendar.WEEK_OF_YEAR, weekNum+1);
-            cal.set(Calendar.DAY_OF_WEEK, 1);
-            cal.set(Calendar.HOUR_OF_DAY, 0);
-            cal.set(Calendar.SECOND, 0);
-            cal.set(Calendar.MINUTE, 0);
-            cal.set(Calendar.MILLISECOND, 1);
-        }
-        return (cal.getTimeInMillis()-2);
+        cal.set(Calendar.DAY_OF_WEEK, 7);
+        cal.set(Calendar.HOUR_OF_DAY, 23);
+        cal.set(Calendar.SECOND, 59);
+        cal.set(Calendar.MINUTE, 59);
+        cal.set(Calendar.MILLISECOND, 999);
+        return cal.getTimeInMillis();
     }
 
 
@@ -93,10 +71,10 @@ public class AppUtils {
      * @param weekStartTimeInMillis Pass the week start time in millis.
      * @return Returns time in millis of 1 week after the milli time entered minus 2 milliseconds.
      */
-    public static long getWeekEndMillis(long weekStartTimeInMillis){
-        return (weekStartTimeInMillis + 604799998); //Should return Saturday 11:59:59:999am if Sunday 12:00:00:001am is passed.
-        //604799998 = milliseconds/week - 2;
-    }
+//    public static long getWeekEndMillis(long weekStartTimeInMillis){
+//        return (weekStartTimeInMillis + 604799998); //Should return Saturday 11:59:59:999am if Sunday 12:00:00:001am is passed.
+//        //604799998 = milliseconds/week - 2;
+//    }
 
     public static String getHoursAndMinutes(long timeInMillis){
         String timeAsString = "";
