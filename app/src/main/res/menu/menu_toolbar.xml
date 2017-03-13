@@ -24,5 +24,9 @@
         android:id="@+id/remove_empty_goals_opt"
         android:title="Rid Untouched Goals"
         app:showAsAction= "never"/>
+    <item
+        android:id="@+id/consolidate_opt"
+        android:title="Consolidate Goals"
+        app:showAsAction= "never"/>
 
 </menu>

@@ -224,15 +224,15 @@ public class GoalRecyclerAdapter extends RecyclerView.Adapter<GoalViewHolder>{
         });
     }
     public void startNotificationService(Context context){
-        Intent intent = new Intent(context, GoalTrackerIntentService.class);
-        //Consider putting name of goal in the intent instead.
+        Intent intent = new Intent(context, GoalTrackerService.class);
+        intent.putExtra(AppConstants.INTENT_MINUTES_LAST_SOUND, 0);
         context.startService(intent);
     }
 
     public void stopNotification(Context context){
         NotificationManager noteMan = (NotificationManager)context.getSystemService(Context.NOTIFICATION_SERVICE);
         noteMan.cancel(AppConstants.NOTIFICATION_ID);
-        Intent intent = new Intent(context, GoalTrackerIntentService.class);
+        Intent intent = new Intent(context, GoalTrackerService.class);
         context.stopService(intent);
     }
 

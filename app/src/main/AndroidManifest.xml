@@ -17,8 +17,9 @@
         </activity>
 
         <service
-            android:name=".goaltracker.GoalTrackerIntentService"
-            android:exported="false">
+            android:name=".goaltracker.GoalTrackerService"
+            android:exported="false"
+            android:process=":remote">
         </service>
     </application>
 </manifest>

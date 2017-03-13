@@ -148,6 +148,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             case R.id.remove_empty_goals_opt:
                 removeUnusedGoals();
                 break;
+            case R.id.consolidate_opt:
+                consolidateGoals();
+                break;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -380,5 +383,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }else{
             Toast.makeText(this, "Couldn't find previous active week", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    /**
+     * Takes all goals of the week with the same name, even different categories and combines it into a single goal of that name and no category.
+     */
+    public void consolidateGoals(){
+
     }
 }
