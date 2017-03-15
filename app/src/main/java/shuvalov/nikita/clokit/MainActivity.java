@@ -378,7 +378,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 ((HomeFragment)getSupportFragmentManager().findFragmentByTag(HOME_FRAG)).updateTimeLeftDisplay();
             }
         }else{
-            Toast.makeText(this, "Couldn't find previous active week", Toast.LENGTH_SHORT).show();
+            String nothingFound = "Couldn't find previous active week";
+            Toast.makeText(this, nothingFound, Toast.LENGTH_SHORT).show();
         }
     }
 }

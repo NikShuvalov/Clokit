@@ -46,8 +46,8 @@ public class GoalRecyclerAdapter extends RecyclerView.Adapter<GoalViewHolder>{
         final SharedPreferences sharedPreferences = holder.mToggleButton.getContext().getSharedPreferences(AppConstants.PREFERENCES_NAME,Context.MODE_PRIVATE);
         Goal goal = mGoals.get(holder.getAdapterPosition());
         holder.bindDataToViews(goal);
-        String activeGoalName = sharedPreferences.getString(AppConstants.PREFERENCES_CURRENT_GOAL, AppConstants.PREFERENCES_NO_GOAL);
-        String subCatName = sharedPreferences.getString(AppConstants.PREFERENCES_CURRENT_SUB_CAT, null);
+        final String activeGoalName = sharedPreferences.getString(AppConstants.PREFERENCES_CURRENT_GOAL, AppConstants.PREFERENCES_NO_GOAL);
+        final String subCatName = sharedPreferences.getString(AppConstants.PREFERENCES_CURRENT_SUB_CAT, null);
         holder.mToggleButton.setOnCheckedChangeListener(null); //If the holder is being reloaded the onCheckedListener is already attached; it needs to be removed because setChecked() because triggers onCheckedChangeListener;
         if(activeGoalName.equals(goal.getGoalName())
                 && ((subCatName==null && goal.getSubCategory()==null) || (subCatName!=null && goal.getSubCategory()!=null && subCatName.equals(goal.getSubCategory())))){ //This visually toggles the active goal ON.
@@ -131,12 +131,20 @@ public class GoalRecyclerAdapter extends RecyclerView.Adapter<GoalViewHolder>{
         });
 
 
-//        holder.mEditButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                //ToDo: Logic for editing or removing entry.
-//            }
-//        });
+        holder.mEditButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Goal goal  = mGoals.get(holder.getAdapterPosition());
+                if(activeGoalName.equals(goal.getGoalName()) &&
+                        ((subCatName==null && goal.getSubCategory()==null) || (subCatName!=null && subCatName.equals(goal.getSubCategory())))){
+
+                    //Edit logic
+                }else{
+                    Toast.makeText(view.getContext(), "Can't edit an active task", Toast.LENGTH_SHORT).show();
+                }
+
+            }
+        });
 
 
         holder.mToggleButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {

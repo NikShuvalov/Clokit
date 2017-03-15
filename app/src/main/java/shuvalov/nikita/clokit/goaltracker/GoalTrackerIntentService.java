@@ -62,7 +62,6 @@ public class GoalTrackerIntentService extends IntentService {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-
         }
     }
 }

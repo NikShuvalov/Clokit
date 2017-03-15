@@ -18,7 +18,7 @@ import shuvalov.nikita.clokit.R;
 public class GoalViewHolder extends RecyclerView.ViewHolder {
     private TextView mGoalText, mCurrentTime, mEndTime, mSubCatText;
     private ProgressBar mProgressBar;
-//    public Button mEditButton;
+    public Button mEditButton;
     public ToggleButton mToggleButton;
     public Button mRemoveButton;
 
@@ -28,7 +28,7 @@ public class GoalViewHolder extends RecyclerView.ViewHolder {
         mCurrentTime =  (TextView)itemView.findViewById(R.id.time_text);
         mEndTime = (TextView)itemView.findViewById(R.id.goal_text);
         mProgressBar = (ProgressBar) itemView.findViewById(R.id.progress_bar);
-//        mEditButton = (Button)itemView.findViewById(R.id.edit_button); //FixMe: Choose to either keep this or nah.
+        mEditButton = (Button)itemView.findViewById(R.id.edit_button);
         mToggleButton = (ToggleButton)itemView.findViewById(R.id.clock_it_button);
         mSubCatText = (TextView)itemView.findViewById(R.id.subcat_name);
         mRemoveButton = (Button)itemView.findViewById(R.id.remove_goal_butt);

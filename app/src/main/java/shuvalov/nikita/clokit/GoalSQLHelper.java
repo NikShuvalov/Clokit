@@ -21,7 +21,7 @@ import shuvalov.nikita.clokit.pojos.Week;
 public class GoalSQLHelper extends SQLiteOpenHelper {
 
     public static final String DATABASE_NAME = "GOAL_DATABASE";
-    public static final int DATABASE_VERSION = 1;
+    public static final int DATABASE_VERSION = 2;
 
 
     //Table names
@@ -82,10 +82,11 @@ public class GoalSQLHelper extends SQLiteOpenHelper {
             "PRIMARY KEY (" + WEEK_NUM_COLUMN+", "+NAME_COLUMN+", "+SUBCATEGORY_COLUMN+"))";
 
     //ToDo: Add this line if I want to track total time in the achievement table. *Don't forget to update the DB version if ya do*
-    //    TOTAL_TIME_TRACKED_COLUMN + " INTEGER,"
+
     public static final String CREATE_ACHIEVEMENTS_TABLE_EXE = "CREATE TABLE "+ ACHIEVEMENTS_TABLE_NAME + " ("+
             ACHIEVEMENT_ID+ " INTEGER PRIMARY KEY," +
             IMAGE_REFERENCE_COLUMN + " INTEGER," +
+            TOTAL_TIME_COLUMN + " INTEGER," +
             NAME_COLUMN + " TEXT)";
 
 
@@ -93,6 +94,8 @@ public class GoalSQLHelper extends SQLiteOpenHelper {
             WEEK_NUM_COLUMN + " TEXT PRIMARY KEY, " +
             START_DAY_COLUMN + " INTEGER, "+
             END_DAY_COLUMN + " INTEGER)";
+
+    private static final String DATABASE_UPGRADE_TO_2_SCRIPT = "ALTER TABLE "+  ACHIEVEMENTS_TABLE_NAME + " ADD COLUMN " + TOTAL_TIME_COLUMN + TOTAL_TIME_COLUMN + " INTEGER;";
 
 
     private static GoalSQLHelper sGoalSQLHelper;
@@ -123,13 +126,10 @@ public class GoalSQLHelper extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int oldVersion, int newVersion) {
         //instead of dropping tables on upgrade: https://thebhwgroup.com/blog/how-android-sqlite-onupgrade
+        if(oldVersion<2){
+            sqLiteDatabase.execSQL(DATABASE_UPGRADE_TO_2_SCRIPT);
+        }
 
-        //But just in case I do want to drop tables for whatever reason.
-//        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS "+ LIFETIME_TABLE_NAME);
-//        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS "+ WEEKLY_TABLE_NAME);
-//        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS "+ WEEKS_REFERENCE_TABLE_NAME);
-//        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS "+ ACHIEVEMENTS_TABLE_NAME);
-//        onCreate(sqLiteDatabase);
 
     }
 
