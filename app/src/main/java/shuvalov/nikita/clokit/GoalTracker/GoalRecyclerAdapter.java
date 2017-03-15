@@ -11,8 +11,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.CompoundButton;
+import android.widget.EditText;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import java.util.ArrayList;
 
@@ -30,6 +33,8 @@ import shuvalov.nikita.clokit.R;
 public class GoalRecyclerAdapter extends RecyclerView.Adapter<GoalViewHolder>{
     private ArrayList<Goal> mGoals;
     private OnGoalChangeListener mGoalChangeListener;
+    private boolean mGoalEdited;
+    private Goal mCachedGoal;
 
     public GoalRecyclerAdapter(ArrayList<Goal> goals, OnGoalChangeListener goalChangeListener) {
         mGoals = goals;
@@ -46,16 +51,11 @@ public class GoalRecyclerAdapter extends RecyclerView.Adapter<GoalViewHolder>{
         final SharedPreferences sharedPreferences = holder.mToggleButton.getContext().getSharedPreferences(AppConstants.PREFERENCES_NAME,Context.MODE_PRIVATE);
         Goal goal = mGoals.get(holder.getAdapterPosition());
         holder.bindDataToViews(goal);
-        final String activeGoalName = sharedPreferences.getString(AppConstants.PREFERENCES_CURRENT_GOAL, AppConstants.PREFERENCES_NO_GOAL);
-        final String subCatName = sharedPreferences.getString(AppConstants.PREFERENCES_CURRENT_SUB_CAT, null);
+        String activeGoalName = sharedPreferences.getString(AppConstants.PREFERENCES_CURRENT_GOAL, AppConstants.PREFERENCES_NO_GOAL);
+        String subCatName = sharedPreferences.getString(AppConstants.PREFERENCES_CURRENT_SUB_CAT, null);
         holder.mToggleButton.setOnCheckedChangeListener(null); //If the holder is being reloaded the onCheckedListener is already attached; it needs to be removed because setChecked() because triggers onCheckedChangeListener;
-        if(activeGoalName.equals(goal.getGoalName())
-                && ((subCatName==null && goal.getSubCategory()==null) || (subCatName!=null && goal.getSubCategory()!=null && subCatName.equals(goal.getSubCategory())))){ //This visually toggles the active goal ON.
-            holder.mToggleButton.setChecked(true);
-            Log.d("Holder", "onBindViewHolder: "+ holder.getAdapterPosition());
-        }else{
-            holder.mToggleButton.setChecked(false);
-        }
+        applyToggleState(holder.mToggleButton, goal, activeGoalName, subCatName);
+
 
 
         holder.mRemoveButton.setOnClickListener(new View.OnClickListener() {
@@ -134,12 +134,111 @@ public class GoalRecyclerAdapter extends RecyclerView.Adapter<GoalViewHolder>{
         holder.mEditButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Goal goal  = mGoals.get(holder.getAdapterPosition());
-                if(activeGoalName.equals(goal.getGoalName()) &&
-                        ((subCatName==null && goal.getSubCategory()==null) || (subCatName!=null && subCatName.equals(goal.getSubCategory())))){
+                String activeGoalName = sharedPreferences.getString(AppConstants.PREFERENCES_CURRENT_GOAL, AppConstants.PREFERENCES_NO_GOAL);
+                String subCatName = sharedPreferences.getString(AppConstants.PREFERENCES_CURRENT_SUB_CAT, null);
+                mGoalEdited=false;
+                final Goal goal  = mGoals.get(holder.getAdapterPosition());
+                mCachedGoal = goal;
 
-                    //Edit logic
-                }else{
+                //Only allow editing if there is no active goal, or if the goal ISN'T the goal that's active.
+                if(activeGoalName.equals(AppConstants.PREFERENCES_NO_GOAL) ||
+                        !(activeGoalName.equals(goal.getGoalName()) && ((subCatName==null && goal.getSubCategory()==null)
+                                || (subCatName!=null && subCatName.equals(goal.getSubCategory()))))){
+                    final View dialogView = LayoutInflater.from(view.getContext()).inflate(R.layout.dialog_editgoal,null);
+                    AlertDialog alertDialog = new AlertDialog.Builder(dialogView.getContext())
+                            .setTitle("Edit Goal")
+                            .setView(dialogView)
+                            .setPositiveButton("Save Changes",null)
+                            .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    dialogInterface.dismiss();
+                                }
+                            })
+                            .create();
+                    alertDialog.setOnShowListener(new DialogInterface.OnShowListener() {
+                        @Override
+                        public void onShow(final DialogInterface dialogInterface) {
+                            final EditText hourEntry = (EditText) dialogView.findViewById(R.id.hour_entry);
+                            final EditText minuteEntry = (EditText)dialogView.findViewById(R.id.minute_entry);
+
+                            Button addTimeButt = (Button) dialogView.findViewById(R.id.add_time_butt);
+                            Button removeTimeButt = (Button)dialogView.findViewById(R.id.remove_time_butt);
+                            Button zeroTimeButt = (Button)dialogView.findViewById(R.id.set_zer0_butt);
+
+                            Button saveChangesButt = ((AlertDialog) dialogInterface).getButton(DialogInterface.BUTTON_POSITIVE);
+
+                            zeroTimeButt.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    mCachedGoal.setCurrentMilli(0);
+                                    mGoalEdited=true;
+                                }
+                            });
+
+                            addTimeButt.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    String hours = hourEntry.getText().toString();
+                                    String minutes = minuteEntry.getText().toString();
+                                    if(hours.isEmpty() && minutes.isEmpty()){
+                                        hourEntry.setError("Need a value to add time");
+                                        minuteEntry.setError("Need a value to add time");
+                                    }else{
+                                        long hourValue = Long.valueOf(hourEntry.getText().toString())*60000*60;
+                                        long minuteValue = Long.valueOf(minuteEntry.getText().toString())*60000;
+                                        long totalTimeAdd = hourValue+minuteValue;
+                                        if (totalTimeAdd == 0){
+                                            Toast.makeText(view.getContext(), "To leave goal unchanged press Cancel instead", Toast.LENGTH_LONG).show();
+                                        }
+                                        mCachedGoal.addTimeSpent(totalTimeAdd);
+                                        mGoalEdited=true;
+                                    }
+                                }
+                            });
+
+                            removeTimeButt.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    String hours = hourEntry.getText().toString();
+                                    String minutes = minuteEntry.getText().toString();
+                                    if(hours.isEmpty() && minutes.isEmpty()){
+                                        hourEntry.setError("Need a value to add time");
+                                        minuteEntry.setError("Need a value to add time");
+                                    }else{
+                                        long hourValue = Long.valueOf(hourEntry.getText().toString())*60000*60;
+                                        long minuteValue = Long.valueOf(minuteEntry.getText().toString())*60000;
+                                        long timeRemoved = hourValue+minuteValue;
+                                        if (timeRemoved == 0){
+                                            Toast.makeText(view.getContext(), "To leave goal unchanged press Cancel instead", Toast.LENGTH_LONG).show();
+                                        }
+                                        mCachedGoal.removeTimeSpent(timeRemoved);
+                                    }
+                                }
+                            });
+
+
+
+                            saveChangesButt.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    if(mGoalEdited){
+                                        goal.applyChangedValues(mCachedGoal);
+                                        Toast.makeText(view.getContext(), "Changes applied", Toast.LENGTH_SHORT).show();
+                                        mGoalChangeListener.goalValuesChanged();
+                                        dialogInterface.dismiss();
+                                    }else{
+                                        Toast.makeText(view.getContext(), "No changes were made", Toast.LENGTH_SHORT).show();
+                                    }
+
+                                }
+                            });
+
+
+                        }
+                    });
+                    alertDialog.show();
+                }else{ //If user tries to edit an active goal.
                     Toast.makeText(view.getContext(), "Can't edit an active task", Toast.LENGTH_SHORT).show();
                 }
 
@@ -231,6 +330,16 @@ public class GoalRecyclerAdapter extends RecyclerView.Adapter<GoalViewHolder>{
             }
         });
     }
+
+    public void applyToggleState(ToggleButton toggle, Goal goal, String activeGoalName, String subCatName){
+        if(activeGoalName.equals(goal.getGoalName())
+                && ((subCatName==null && goal.getSubCategory()==null) || (subCatName!=null && goal.getSubCategory()!=null && subCatName.equals(goal.getSubCategory())))){ //This visually toggles the active goal ON.
+            toggle.setChecked(true);
+        }else{
+            toggle.setChecked(false);
+        }
+
+    }
     public void startNotificationService(Context context){
         Intent intent = new Intent(context, GoalTrackerIntentService.class);
         //Consider putting name of goal in the intent instead.
@@ -249,8 +358,11 @@ public class GoalRecyclerAdapter extends RecyclerView.Adapter<GoalViewHolder>{
         return mGoals.size();
     }
 
+
     public interface OnGoalChangeListener{
         public void goalValuesChanged();
     }
+
+
 
 }

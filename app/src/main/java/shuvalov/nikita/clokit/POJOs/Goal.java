@@ -77,6 +77,14 @@ public class Goal {
         mCurrentMilli+= timeSpent;
         return mCurrentMilli;
     }
+
+    public long removeTimeSpent(long timeRemoved){
+        mCurrentMilli-= timeRemoved;
+        if(mCurrentMilli<0){
+            mCurrentMilli = 0;
+        }
+        return mCurrentMilli;
+    }
     public long getTimeLeft(){
         long timeLeft = mEndMilli-mCurrentMilli;
         if(timeLeft<0){
@@ -84,6 +92,12 @@ public class Goal {
         }
         return timeLeft;
     }
+
+    public void applyChangedValues(Goal cachedGoal){
+        mCurrentMilli = cachedGoal.mCurrentMilli;
+        mWeekBreakdown = cachedGoal.mWeekBreakdown;
+    }
+
 
     /**
      * Goes from 0-6, where 0 = Monday, 6 = Sunday;
@@ -128,4 +142,5 @@ public class Goal {
     public void setSubCategory(String subCategory) {
         mSubCategory = subCategory;
     }
+
 }
