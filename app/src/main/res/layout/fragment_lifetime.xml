@@ -1,15 +1,19 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-             xmlns:tools="http://schemas.android.com/tools"
-             android:layout_width="match_parent"
-             android:layout_height="match_parent"
-             tools:context="shuvalov.nikita.clokit.lifetime_results.LifetimeFragment">
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="shuvalov.nikita.clokit.lifetime_results.LifetimeFragment"
+    android:padding="16dp"
+    android:background="@color/colorbackGround">
 
     <TextView
         android:id="@+id/summary_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textSize="26sp"
-        android:textColor="#333"/>
+        android:textColor="#333"
+        android:gravity="center"/>
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/lifetime_recycler"

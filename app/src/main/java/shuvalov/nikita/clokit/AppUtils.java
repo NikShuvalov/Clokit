@@ -136,6 +136,10 @@ public class AppUtils {
         return Integer.valueOf(timeSpentMinutes);
     }
 
+    public static long getHoursOfWork(long currentMillis){
+        return currentMillis/(60000*60);
+    }
+
     public static String getDisplayForTimeLeft(){
         int currentWeek = getCurrentWeekNum();
         long weekEndMillis = getWeekEndMillis(currentWeek);

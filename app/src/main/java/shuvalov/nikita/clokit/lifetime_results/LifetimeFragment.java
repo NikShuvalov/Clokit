@@ -4,6 +4,7 @@ package shuvalov.nikita.clokit.lifetime_results;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -44,10 +45,21 @@ public class LifetimeFragment extends Fragment {
         lifetrackerManager.sortByTimeAllocated();
 
 
-        LifetimeRecyclerAdapter lifetimeRecyclerAdapter = new LifetimeRecyclerAdapter(LifetimeTrackerManager.getInstance().getLifetimeResults());
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(),LinearLayoutManager.VERTICAL, false);
+        final LifetimeRecyclerAdapter lifetimeRecyclerAdapter = new LifetimeRecyclerAdapter(LifetimeTrackerManager.getInstance().getLifetimeResults());
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(getContext(), 2);
+        gridLayoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
+            @Override
+            public int getSpanSize(int position) {
+                switch(lifetimeRecyclerAdapter.getItemViewType(position)){
+                    case LifetimeRecyclerAdapter.HEADER:
+                        return 2;
+                    default:
+                        return 1;
+                }
+            }
+        });
 
-        lifetimeRecycler.setLayoutManager(linearLayoutManager);
+        lifetimeRecycler.setLayoutManager(gridLayoutManager);
         lifetimeRecycler.setAdapter(lifetimeRecyclerAdapter);
 
         long trackedTime = getContext().getSharedPreferences(AppConstants.PREFERENCES_NAME, Context.MODE_PRIVATE).getLong(AppConstants.PREFERENCES_TOTAL_TRACKED_TIME,0);

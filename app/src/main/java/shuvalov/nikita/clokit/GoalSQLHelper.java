@@ -21,7 +21,7 @@ import shuvalov.nikita.clokit.pojos.Week;
 public class GoalSQLHelper extends SQLiteOpenHelper {
 
     public static final String DATABASE_NAME = "GOAL_DATABASE";
-    public static final int DATABASE_VERSION = 2;
+    public static final int DATABASE_VERSION = 3;
 
 
     //Table names
@@ -34,7 +34,6 @@ public class GoalSQLHelper extends SQLiteOpenHelper {
     public static final String NAME_COLUMN = "NAME";
     public static final String TOTAL_TIME_COLUMN = "TOTAL_TIME";
     public static final String WEEK_NUM_COLUMN = "WEEK";
-
 
     //Weeks Reference columns
     public static final String START_DAY_COLUMN = "STARTED";
@@ -81,13 +80,12 @@ public class GoalSQLHelper extends SQLiteOpenHelper {
             SUNDAY_TIME_COLUMN + " INTEGER, " +
             "PRIMARY KEY (" + WEEK_NUM_COLUMN+", "+NAME_COLUMN+", "+SUBCATEGORY_COLUMN+"))";
 
-    //ToDo: Add this line if I want to track total time in the achievement table. *Don't forget to update the DB version if ya do*
-
     public static final String CREATE_ACHIEVEMENTS_TABLE_EXE = "CREATE TABLE "+ ACHIEVEMENTS_TABLE_NAME + " ("+
-            ACHIEVEMENT_ID+ " INTEGER PRIMARY KEY," +
-            IMAGE_REFERENCE_COLUMN + " INTEGER," +
-            TOTAL_TIME_COLUMN + " INTEGER," +
-            NAME_COLUMN + " TEXT)";
+            ACHIEVEMENT_ID+ " INTEGER, " +
+            IMAGE_REFERENCE_COLUMN + " INTEGER, " +
+            TOTAL_TIME_COLUMN + " INTEGER, " +
+            NAME_COLUMN + " TEXT, "+
+            "PRIMARY KEY (" + NAME_COLUMN + ", " + ACHIEVEMENT_ID+ "))";
 
 
     public static final String CREATE_WEEKLY_REFERENCE_TABLE_EXE = "CREATE TABLE "+ WEEKS_REFERENCE_TABLE_NAME +" (" +
@@ -95,7 +93,8 @@ public class GoalSQLHelper extends SQLiteOpenHelper {
             START_DAY_COLUMN + " INTEGER, "+
             END_DAY_COLUMN + " INTEGER)";
 
-    private static final String DATABASE_UPGRADE_TO_2_SCRIPT = "ALTER TABLE "+  ACHIEVEMENTS_TABLE_NAME + " ADD COLUMN " + TOTAL_TIME_COLUMN + TOTAL_TIME_COLUMN + " INTEGER;";
+    private static final String DATABASE_UPGRADE_TO_2_SCRIPT = "ALTER TABLE "+  ACHIEVEMENTS_TABLE_NAME + " ADD COLUMN " + TOTAL_TIME_COLUMN + " INTEGER;";
+
 
 
     private static GoalSQLHelper sGoalSQLHelper;
@@ -128,6 +127,10 @@ public class GoalSQLHelper extends SQLiteOpenHelper {
         //instead of dropping tables on upgrade: https://thebhwgroup.com/blog/how-android-sqlite-onupgrade
         if(oldVersion<2){
             sqLiteDatabase.execSQL(DATABASE_UPGRADE_TO_2_SCRIPT);
+        }
+        if(oldVersion<3){
+            sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + ACHIEVEMENTS_TABLE_NAME);
+            sqLiteDatabase.execSQL(CREATE_ACHIEVEMENTS_TABLE_EXE);
         }
 
 
@@ -408,6 +411,7 @@ public class GoalSQLHelper extends SQLiteOpenHelper {
         contentValues.put(ACHIEVEMENT_ID, achievement.getId());
         contentValues.put(IMAGE_REFERENCE_COLUMN, achievement.getImageReference());
         contentValues.put(NAME_COLUMN, achievement.getName());
+        contentValues.put(TOTAL_TIME_COLUMN, achievement.getTimeOrRepeats());
         db.insertWithOnConflict(ACHIEVEMENTS_TABLE_NAME,null, contentValues,SQLiteDatabase.CONFLICT_IGNORE);
         db.close();
     }

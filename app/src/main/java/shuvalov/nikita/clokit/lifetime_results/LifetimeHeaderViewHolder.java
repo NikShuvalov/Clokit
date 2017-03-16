@@ -5,39 +5,35 @@ import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
-import shuvalov.nikita.clokit.AppConstants;
 import shuvalov.nikita.clokit.AppUtils;
-import shuvalov.nikita.clokit.pojos.Goal;
 import shuvalov.nikita.clokit.R;
-
-import static android.content.ContentValues.TAG;
+import shuvalov.nikita.clokit.pojos.Goal;
 
 /**
- * Created by NikitaShuvalov on 3/6/17.
+ * Created by NikitaShuvalov on 3/16/17.
  */
 
-public class LifetimeViewHolder extends RecyclerView.ViewHolder {
-    private TextView mGoalText, mTimeText, mRankingText;
+public class LifetimeHeaderViewHolder extends RecyclerView.ViewHolder {
+    private TextView mMainText, mTimeText;
 
-    public LifetimeViewHolder(View itemView) {
+    public LifetimeHeaderViewHolder(View itemView) {
         super(itemView);
-        mGoalText = (TextView)itemView.findViewById(R.id.goal_name_text);
+        mMainText = (TextView)itemView.findViewById(R.id.main_text);
         mTimeText = (TextView)itemView.findViewById(R.id.time_text);
-        mRankingText = (TextView) itemView.findViewById(R.id.ranking_text);
     }
 
     public void bindDataToViews(Goal goal){
         Log.d("VIEWHOLDER", "bindDataToViews: "+ goal.getGoalName());
-        mGoalText.setText(goal.getGoalName());
         long hoursWorked = AppUtils.getHoursOfWork(goal.getCurrentMilli());
-        mRankingText.setText(identifyRank(hoursWorked));
+        String mainString = goal.getGoalName() + " " + identifyRank(hoursWorked);
+        mMainText.setText(mainString);
         mTimeText.setText(AppUtils.getHoursAndMinutes(goal.getCurrentMilli()));
     }
 
     private String identifyRank(long hours){
         hours *= 10; //ToDo: Remove later if wanting more serious values, this is just for testing porpoises! DOLFINS! BLOW-UP THE OCEAN!
         if(hours>10000){
-            return "God";
+            return "Godly";
         }else if(hours>7500){
             return "Transcendent";
         }else if (hours>5000){
