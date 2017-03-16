@@ -1,10 +1,14 @@
 package shuvalov.nikita.clokit.goaltracker;
 
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.Preference;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -12,9 +16,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import shuvalov.nikita.clokit.AppConstants;
 import shuvalov.nikita.clokit.AppUtils;
+import shuvalov.nikita.clokit.GoalSQLHelper;
 import shuvalov.nikita.clokit.R;
 import shuvalov.nikita.clokit.pojos.Goal;
+import shuvalov.nikita.clokit.pojos.Week;
 
 
 public class HomeFragment extends Fragment implements GoalRecyclerAdapter.OnGoalChangeListener{
@@ -73,6 +80,55 @@ public class HomeFragment extends Fragment implements GoalRecyclerAdapter.OnGoal
         mUnfinishedText.setText(unfinishedString);
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        SharedPreferences sharedPreferences = getContext().getSharedPreferences(AppConstants.PREFERENCES_NAME, Context.MODE_PRIVATE);
+        int activeGoalWeekNum = sharedPreferences.getInt(AppConstants.PREFERENCES_CURRENT_GOAL_WEEK_NUM, -1);
+        if(activeGoalWeekNum!= -1 && AppUtils.getCurrentWeekNum() != sharedPreferences.getInt(AppConstants.PREFERENCES_CURRENT_GOAL_WEEK_NUM, -1)){//If the current week isn't default, and isn't the same as the week that's saved.
+            Log.d("TRANSWEEK", "onResume: called ");
+            String lastWeekGoalName = sharedPreferences.getString(AppConstants.PREFERENCES_CURRENT_GOAL, AppConstants.PREFERENCES_NO_GOAL);
+            String lastWeekGoalSubCat = sharedPreferences.getString(AppConstants.PREFERENCES_CURRENT_SUB_CAT, null);
+            long startTime = sharedPreferences.getLong(AppConstants.PREFERENCES_START_TIME, 0);
+
+            Goal lastWeekGoal = GoalSQLHelper.getInstance(getContext()).getSpecificCurrentGoal(lastWeekGoalName,lastWeekGoalSubCat, String.valueOf(activeGoalWeekNum));
+            long weekEndTime = AppUtils.getWeekEndMillis(activeGoalWeekNum);
+            long timeSpentLastWeek = weekEndTime-startTime;
+            lastWeekGoal.addTimeSpent(timeSpentLastWeek);
+            Week lastWeek = new Week(AppUtils.getWeekStartMillis(activeGoalWeekNum), AppUtils.getWeekEndMillis(activeGoalWeekNum),activeGoalWeekNum);
+            updateAllGoalReferences(lastWeekGoal, lastWeek, timeSpentLastWeek, sharedPreferences);
+            AppUtils.addLifeTimeTotalTrackedTime(sharedPreferences,timeSpentLastWeek);
+
+            lastWeekGoal.setWeekNum(AppUtils.getCurrentWeekNum());
+            lastWeekGoal.setCurrentMilli(0);
+            setupGoalForThisWeek(lastWeekGoal, sharedPreferences);
+        }
+    }
+
+    public void setupGoalForThisWeek(Goal lastWeekGoal, SharedPreferences sharedPreferences){
+        GoalSQLHelper sqlhelper = GoalSQLHelper.getInstance(getContext());
+        sqlhelper.addGoalToWeeklyTable(lastWeekGoal);
+        int thisWeekNum = AppUtils.getCurrentWeekNum();
+        Week thisWeek = new Week(AppUtils.getWeekStartMillis(thisWeekNum), AppUtils.getWeekEndMillis(thisWeekNum), thisWeekNum);
+        sqlhelper.addNewWeekReference(thisWeek);
+        CurrentWeekGoalManager.getInstance().addCurrentGoal(lastWeekGoal);
+        mAdapter.notifyDataSetChanged();
+
+        AppUtils.setActiveGoalToPreferences(sharedPreferences, lastWeekGoal);
+    }
+
+    public void updateAllGoalReferences(Goal goal, Week week, long timeSpent, SharedPreferences sharedPreferences){
+        GoalSQLHelper sqlHelper = GoalSQLHelper.getInstance(getContext());
+        sqlHelper.updateTimeSpentOnGoal(goal); //Updates weekly stats
+        sqlHelper.updateLifetimeByGoalName(goal.getGoalName(), timeSpent); //Updates lifetime stats
+        sqlHelper.addNewWeekReference(week);//Adds this week as an active week for reference in history view, the method ignores duplicate entries.
+
+        //Update the visuals
+        goalValuesChanged();
+
+        //Update the total tracked time in preferences.
+        AppUtils.addLifeTimeTotalTrackedTime(sharedPreferences, timeSpent);
+    }
 
     @Override
     public void goalValuesChanged() {

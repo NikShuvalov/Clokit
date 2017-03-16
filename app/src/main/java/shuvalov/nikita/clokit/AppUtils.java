@@ -1,8 +1,11 @@
 package shuvalov.nikita.clokit;
 
+import android.content.SharedPreferences;
 import android.util.Log;
 
 import java.util.Calendar;
+
+import shuvalov.nikita.clokit.pojos.Goal;
 
 /**
  * Created by NikitaShuvalov on 3/3/17.
@@ -138,5 +141,40 @@ public class AppUtils {
         long weekEndMillis = getWeekEndMillis(currentWeek);
         long timeLeft = weekEndMillis - Calendar.getInstance().getTimeInMillis();
         return getHoursAndMinutes(timeLeft);
+    }
+
+    public static boolean isGoalCurrentlyActive(Goal goal, String activeName, String activeSubCat){
+        if (activeName.equals(AppConstants.PREFERENCES_NO_GOAL)) {
+            return false;
+        }else if((goal.getGoalName().equals(activeName)) &&
+                ((goal.getSubCategory()==null && activeSubCat==null) || (goal.getSubCategory()!=null && goal.getSubCategory().equals(activeSubCat)))){
+            return true;
+        }
+        return false;
+    }
+
+    //Consider using boolean to return with the changes made were succesful or not.
+    public static void setActiveGoalToPreferences(SharedPreferences sharedPreferences, Goal goal){
+        sharedPreferences.edit().putString(AppConstants.PREFERENCES_CURRENT_GOAL, goal.getGoalName()).apply(); //Save name of current goal.
+        sharedPreferences.edit().putLong(AppConstants.PREFERENCES_START_TIME, System.currentTimeMillis()).apply(); //Save the current time of the selected goal.
+        sharedPreferences.edit().putInt(AppConstants.PREFERENCES_CURRENT_GOAL_WEEK_NUM, getCurrentWeekNum()).apply(); //Adds the weeknum of when the goal was started
+        sharedPreferences.edit().putString(AppConstants.PREFERENCES_CURRENT_SUB_CAT, goal.getSubCategory()).apply(); //Saves the subcategory of current goal.
+    }
+
+    public static void resetActiveGoalPreferences(SharedPreferences sharedPreferences){
+        sharedPreferences.edit().putString(AppConstants.PREFERENCES_CURRENT_GOAL, AppConstants.PREFERENCES_NO_GOAL).apply();
+        sharedPreferences.edit().putString(AppConstants.PREFERENCES_CURRENT_SUB_CAT, null).apply();
+    }
+
+    public static void addLifeTimeTotalTrackedTime(SharedPreferences sharedPreferences, long addedTime){
+        long previousTotalTime = sharedPreferences.getLong(AppConstants.PREFERENCES_TOTAL_TRACKED_TIME, 0);
+        long newTotal = previousTotalTime + addedTime;
+        sharedPreferences.edit().putLong(AppConstants.PREFERENCES_TOTAL_TRACKED_TIME, newTotal).apply();
+    }
+
+    public static int getWeekOfYear(long timeInMillis){
+        Calendar cal = Calendar.getInstance();
+        cal.setTimeInMillis(timeInMillis);
+        return cal.get(Calendar.WEEK_OF_YEAR);
     }
 }
