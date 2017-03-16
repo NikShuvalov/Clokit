@@ -103,6 +103,7 @@ public class HomeFragment extends Fragment implements GoalRecyclerAdapter.OnGoal
             lastWeekGoal.setCurrentMilli(0);
             setupGoalForThisWeek(lastWeekGoal, sharedPreferences);
         }
+        updateTimeLeftDisplay();
     }
 
     public void setupGoalForThisWeek(Goal lastWeekGoal, SharedPreferences sharedPreferences){
@@ -124,7 +125,7 @@ public class HomeFragment extends Fragment implements GoalRecyclerAdapter.OnGoal
         sqlHelper.addNewWeekReference(week);//Adds this week as an active week for reference in history view, the method ignores duplicate entries.
 
         //Update the visuals
-        goalValuesChanged();
+        updateTimeLeftDisplay();
 
         //Update the total tracked time in preferences.
         AppUtils.addLifeTimeTotalTrackedTime(sharedPreferences, timeSpent);

@@ -1,5 +1,7 @@
 package shuvalov.nikita.clokit.pojos;
 
+import shuvalov.nikita.clokit.AppUtils;
+
 /**
  * Created by NikitaShuvalov on 3/3/17.
  */
@@ -12,6 +14,12 @@ public class Week {
         mStartTime = startTime;
         mEndTime = endTime;
         mWeekNum = weekNum;
+    }
+
+    public Week(int weekNum){
+        mWeekNum = weekNum;
+        mStartTime = AppUtils.getWeekStartMillis(weekNum);//ToDo: Move these functions from appUtils to here probably.
+        mEndTime = AppUtils.getWeekEndMillis(weekNum);
     }
 
     public long getStartTime() {
