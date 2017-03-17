@@ -21,7 +21,6 @@ public class Goal {
     }
 
 
-
     public Goal(String goalName, long currentMilli, long endMilli, long[] weekBreakdown, int weekNum, String subCategory) {
         mGoalName = goalName;
         mCurrentMilli = currentMilli;

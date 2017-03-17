@@ -55,16 +55,19 @@ public class GoalRecyclerAdapter extends RecyclerView.Adapter<GoalViewHolder> {
         String subCatName = sharedPreferences.getString(AppConstants.PREFERENCES_CURRENT_SUB_CAT, null);
         holder.mToggleButton.setOnCheckedChangeListener(null); //If the holder is being reloaded the onCheckedListener is already attached; it needs to be removed because setChecked() because triggers onCheckedChangeListener;
         holder.mToggleButton.setChecked(AppUtils.isGoalCurrentlyActive(goal, activeGoalName, subCatName));
-        setRemoveClickerLogic(holder, activeGoalName, subCatName);
-        setEditClickerLogic(holder, activeGoalName, subCatName);
+        setRemoveClickerLogic(holder);
+        setEditClickerLogic(holder);
         setToggleCheckLogic(holder, sharedPreferences);
 
     }
 
-    private void setRemoveClickerLogic(final GoalViewHolder holder, final String activeGoalName, final String subCatName){
+    private void setRemoveClickerLogic(final GoalViewHolder holder){
         holder.mRemoveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View view) {
+                SharedPreferences sharedPreferences = view.getContext().getSharedPreferences(AppConstants.PREFERENCES_NAME, Context.MODE_PRIVATE);
+                String activeGoalName = sharedPreferences.getString(AppConstants.PREFERENCES_CURRENT_GOAL, AppConstants.PREFERENCES_NO_GOAL);
+                String subCatName = sharedPreferences.getString(AppConstants.PREFERENCES_CURRENT_SUB_CAT, null);
                 final Goal goal = mGoals.get(holder.getAdapterPosition());
                 if (AppUtils.isGoalCurrentlyActive(goal, activeGoalName, subCatName)) {
                     Toast.makeText(view.getContext(), "An active goal can't be removed", Toast.LENGTH_SHORT).show();
@@ -78,10 +81,13 @@ public class GoalRecyclerAdapter extends RecyclerView.Adapter<GoalViewHolder> {
 
     }
 
-    private void setEditClickerLogic(final GoalViewHolder holder, final String activeGoalName, final String subCatName){
+    private void setEditClickerLogic(final GoalViewHolder holder){
         holder.mEditButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                SharedPreferences sharedPreferences = view.getContext().getSharedPreferences(AppConstants.PREFERENCES_NAME, Context.MODE_PRIVATE);
+                String activeGoalName = sharedPreferences.getString(AppConstants.PREFERENCES_CURRENT_GOAL, AppConstants.PREFERENCES_NO_GOAL);
+                String subCatName = sharedPreferences.getString(AppConstants.PREFERENCES_CURRENT_SUB_CAT, null);
                 Goal goal = mGoals.get(holder.getAdapterPosition());
                 mCachedGoal = goal;
                 if (!AppUtils.isGoalCurrentlyActive(goal, activeGoalName, subCatName)) {//Only allow editing if there is no active goal, or if the goal ISN'T the goal that's active.

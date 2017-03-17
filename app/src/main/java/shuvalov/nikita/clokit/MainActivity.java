@@ -156,6 +156,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         CurrentWeekGoalManager manager = CurrentWeekGoalManager.getInstance();
         SharedPreferences sharedPreferences = getSharedPreferences(AppConstants.PREFERENCES_NAME, MODE_PRIVATE);
         String activeGoalName = sharedPreferences.getString(AppConstants.PREFERENCES_CURRENT_GOAL, AppConstants.PREFERENCES_NO_GOAL);
+
         String activeSubCat = sharedPreferences.getString(AppConstants.PREFERENCES_CURRENT_SUB_CAT, null);
         int activeWeekNum = sharedPreferences.getInt(AppConstants.PREFERENCES_CURRENT_GOAL_WEEK_NUM, -1);
         int removed =0;

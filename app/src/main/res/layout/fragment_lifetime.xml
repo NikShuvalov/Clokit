@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     tools:context="shuvalov.nikita.clokit.lifetime_results.LifetimeFragment"
     android:padding="16dp"
-    android:background="@color/colorbackGround">
+    android:background="@color/colorBackGround">
 
     <TextView
         android:id="@+id/summary_text"
