@@ -55,11 +55,32 @@
                     android:text="12hr"
                     android:textColor="#00e"/>
             </LinearLayout>
-            <ProgressBar
-                android:id="@+id/progress_bar"
-                style="?android:attr/progressBarStyleHorizontal"
+            <FrameLayout
+                android:id="@+id/progress_frame"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content"
+                android:layout_gravity="center">
+                <ProgressBar
+                    android:id="@+id/progress_backdrop"
+                    style="?android:attr/progressBarStyleHorizontal"
+                    android:layout_width="300dp"
+                    android:layout_height="300dp"
+                    android:max="100"
+                    android:progress="100"
+                    android:progressDrawable="@drawable/circular_progress_backdrop"
+                    android:layout_gravity="center"/>
+                <ProgressBar
+                    android:id="@+id/progress_bar"
+                    style="?android:attr/progressBarStyleHorizontal"
+                    android:layout_width="300dp"
+                    android:layout_height="300dp"
+                    android:indeterminate="false"
+                    android:progressDrawable="@drawable/circular_progress_bar"
+                    android:layout_gravity="center"/>
+                
+
+            </FrameLayout>
+
             <LinearLayout
                 android:id="@+id/button_row"
                 android:layout_width="match_parent"

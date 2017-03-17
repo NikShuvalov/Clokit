@@ -84,11 +84,14 @@ public class GoalRecyclerAdapter extends RecyclerView.Adapter<GoalViewHolder> im
     public boolean onMenuItemClick(MenuItem item) {
         Context context = mLongClickedHolder.mContainer.getContext();
         switch(item.getItemId()){
-            case R.id.popup_edit_opt:
+            case R.id.popup_adjust_progress_opt:
                 editGoalLogic(context, mLongClickedHolder);
                 return true;
             case R.id.popup_remove_opt:
                 removeGoalLogic(context, mLongClickedHolder);
+                return true;
+            case R.id.popup_edit_opt:
+                //Open up a user interface that allows user to edit name, subcat and goal time.
                 return true;
             default:
                 return false;

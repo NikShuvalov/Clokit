@@ -5,8 +5,11 @@
         android:title="Remove"
         />
     <item
+        android:id="@+id/popup_adjust_progress_opt"
+        android:title="Adjust Progress"/>
+    <item
         android:id="@+id/popup_edit_opt"
-        android:title="Edit"/>
+        android:title="Edit Goal"/>
 
 
 </menu>
