@@ -6,9 +6,11 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -25,16 +27,19 @@ import shuvalov.nikita.clokit.pojos.Goal;
 import shuvalov.nikita.clokit.pojos.Week;
 import shuvalov.nikita.clokit.R;
 
+import static android.content.ContentValues.TAG;
+
 /**
  * Created by NikitaShuvalov on 3/3/17.
  */
 
 //ToDo: Idea? Make another class to manage user input so that less logic can go in here.
-public class GoalRecyclerAdapter extends RecyclerView.Adapter<GoalViewHolder> {
+public class GoalRecyclerAdapter extends RecyclerView.Adapter<GoalViewHolder> implements PopupMenu.OnMenuItemClickListener{
     private ArrayList<Goal> mGoals;
     private OnGoalChangeListener mGoalChangeListener;
     private Goal mCachedGoal;
     private long mEditedTime;
+    private GoalViewHolder mLongClickedHolder;
 
     public GoalRecyclerAdapter(ArrayList<Goal> goals, OnGoalChangeListener goalChangeListener) {
         mGoals = goals;
@@ -55,49 +60,104 @@ public class GoalRecyclerAdapter extends RecyclerView.Adapter<GoalViewHolder> {
         String subCatName = sharedPreferences.getString(AppConstants.PREFERENCES_CURRENT_SUB_CAT, null);
         holder.mToggleButton.setOnCheckedChangeListener(null); //If the holder is being reloaded the onCheckedListener is already attached; it needs to be removed because setChecked() because triggers onCheckedChangeListener;
         holder.mToggleButton.setChecked(AppUtils.isGoalCurrentlyActive(goal, activeGoalName, subCatName));
-        setRemoveClickerLogic(holder);
-        setEditClickerLogic(holder);
+//        setRemoveClickerLogic(holder);
+//        setEditClickerLogic(holder);
         setToggleCheckLogic(holder, sharedPreferences);
-
+        setContainerClickOptions(holder);
     }
 
-    private void setRemoveClickerLogic(final GoalViewHolder holder){
-        holder.mRemoveButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(final View view) {
-                SharedPreferences sharedPreferences = view.getContext().getSharedPreferences(AppConstants.PREFERENCES_NAME, Context.MODE_PRIVATE);
-                String activeGoalName = sharedPreferences.getString(AppConstants.PREFERENCES_CURRENT_GOAL, AppConstants.PREFERENCES_NO_GOAL);
-                String subCatName = sharedPreferences.getString(AppConstants.PREFERENCES_CURRENT_SUB_CAT, null);
-                final Goal goal = mGoals.get(holder.getAdapterPosition());
-                if (AppUtils.isGoalCurrentlyActive(goal, activeGoalName, subCatName)) {
-                    Toast.makeText(view.getContext(), "An active goal can't be removed", Toast.LENGTH_SHORT).show();
-                } else if (goal.getCurrentMilli() > 0) {
-                    warnUser(goal, holder);
-                } else {
-                    removeGoalLogic(holder, goal);
-                }
-            }
-        });
-
-    }
-
-    private void setEditClickerLogic(final GoalViewHolder holder){
-        holder.mEditButton.setOnClickListener(new View.OnClickListener() {
+    private void setContainerClickOptions(final GoalViewHolder holder){
+        mLongClickedHolder = holder;
+        holder.mContainer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                SharedPreferences sharedPreferences = view.getContext().getSharedPreferences(AppConstants.PREFERENCES_NAME, Context.MODE_PRIVATE);
-                String activeGoalName = sharedPreferences.getString(AppConstants.PREFERENCES_CURRENT_GOAL, AppConstants.PREFERENCES_NO_GOAL);
-                String subCatName = sharedPreferences.getString(AppConstants.PREFERENCES_CURRENT_SUB_CAT, null);
-                Goal goal = mGoals.get(holder.getAdapterPosition());
-                mCachedGoal = goal;
-                if (!AppUtils.isGoalCurrentlyActive(goal, activeGoalName, subCatName)) {//Only allow editing if there is no active goal, or if the goal ISN'T the goal that's active.
-                    openEditDialog(view.getContext(), holder.getAdapterPosition());
-                } else { //If user tries to edit an active goal.
-                    Toast.makeText(view.getContext(), "Can't edit an active task", Toast.LENGTH_SHORT).show();
-                }
+                mLongClickedHolder = holder;
+                PopupMenu popupMenu = new PopupMenu(mLongClickedHolder.mContainer.getContext(),view);
+                popupMenu.inflate(R.menu.menu_popup);
+                popupMenu.show();
+                popupMenu.setOnMenuItemClickListener(GoalRecyclerAdapter.this);
             }
         });
     }
+
+    @Override
+    public boolean onMenuItemClick(MenuItem item) {
+        Context context = mLongClickedHolder.mContainer.getContext();
+        switch(item.getItemId()){
+            case R.id.popup_edit_opt:
+                editGoalLogic(context, mLongClickedHolder);
+                return true;
+            case R.id.popup_remove_opt:
+                removeGoalLogic(context, mLongClickedHolder);
+                return true;
+            default:
+                return false;
+        }
+    }
+
+//    private void setRemoveClickerLogic(final GoalViewHolder holder){
+//        holder.mRemoveButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(final View view) {
+//                SharedPreferences sharedPreferences = view.getContext().getSharedPreferences(AppConstants.PREFERENCES_NAME, Context.MODE_PRIVATE);
+//                String activeGoalName = sharedPreferences.getString(AppConstants.PREFERENCES_CURRENT_GOAL, AppConstants.PREFERENCES_NO_GOAL);
+//                String subCatName = sharedPreferences.getString(AppConstants.PREFERENCES_CURRENT_SUB_CAT, null);
+//                final Goal goal = mGoals.get(holder.getAdapterPosition());
+//                if (AppUtils.isGoalCurrentlyActive(goal, activeGoalName, subCatName)) {
+//                    Toast.makeText(view.getContext(), "An active goal can't be removed", Toast.LENGTH_SHORT).show();
+//                } else if (goal.getCurrentMilli() > 0) {
+//                    warnUser(goal, holder);
+//                } else {
+//                    removeGoal(holder, goal);
+//                }
+//            }
+//        });
+//
+//    }
+    private void removeGoalLogic(Context context, GoalViewHolder holder){
+        SharedPreferences sharedPreferences = context.getSharedPreferences(AppConstants.PREFERENCES_NAME, Context.MODE_PRIVATE);
+        String activeGoalName = sharedPreferences.getString(AppConstants.PREFERENCES_CURRENT_GOAL, AppConstants.PREFERENCES_NO_GOAL);
+        String subCatName = sharedPreferences.getString(AppConstants.PREFERENCES_CURRENT_SUB_CAT, null);
+        Goal goal = mGoals.get(holder.getAdapterPosition());
+        if (AppUtils.isGoalCurrentlyActive(goal, activeGoalName, subCatName)) {
+            Toast.makeText(context, "An active goal can't be removed", Toast.LENGTH_SHORT).show();
+        } else if (goal.getCurrentMilli() > 0) {
+            warnUser(goal, holder);
+        } else {
+            removeGoal(holder, goal);
+        }
+    }
+
+    private void editGoalLogic(Context context, GoalViewHolder holder){
+        SharedPreferences sharedPreferences = context.getSharedPreferences(AppConstants.PREFERENCES_NAME, Context.MODE_PRIVATE);
+        String activeGoalName = sharedPreferences.getString(AppConstants.PREFERENCES_CURRENT_GOAL, AppConstants.PREFERENCES_NO_GOAL);
+        String subCatName = sharedPreferences.getString(AppConstants.PREFERENCES_CURRENT_SUB_CAT, null);
+        Goal goal = mGoals.get(holder.getAdapterPosition());
+        mCachedGoal = goal;
+        if (!AppUtils.isGoalCurrentlyActive(goal, activeGoalName, subCatName)) {//Only allow editing if there is no active goal, or if the goal ISN'T the goal that's active.
+            openEditDialog(context, holder.getAdapterPosition());
+        } else { //If user tries to edit an active goal.
+            Toast.makeText(context, "Can't edit an active task", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+//    private void setEditClickerLogic(final GoalViewHolder holder){
+//        holder.mEditButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                SharedPreferences sharedPreferences = view.getContext().getSharedPreferences(AppConstants.PREFERENCES_NAME, Context.MODE_PRIVATE);
+//                String activeGoalName = sharedPreferences.getString(AppConstants.PREFERENCES_CURRENT_GOAL, AppConstants.PREFERENCES_NO_GOAL);
+//                String subCatName = sharedPreferences.getString(AppConstants.PREFERENCES_CURRENT_SUB_CAT, null);
+//                Goal goal = mGoals.get(holder.getAdapterPosition());
+//                mCachedGoal = goal;
+//                if (!AppUtils.isGoalCurrentlyActive(goal, activeGoalName, subCatName)) {//Only allow editing if there is no active goal, or if the goal ISN'T the goal that's active.
+//                    openEditDialog(view.getContext(), holder.getAdapterPosition());
+//                } else { //If user tries to edit an active goal.
+//                    Toast.makeText(view.getContext(), "Can't edit an active task", Toast.LENGTH_SHORT).show();
+//                }
+//            }
+//        });
+//    }
 
     //FixMe: Make shorter... later
     private void setToggleCheckLogic(final GoalViewHolder holder, final SharedPreferences sharedPreferences){
@@ -170,7 +230,7 @@ public class GoalRecyclerAdapter extends RecyclerView.Adapter<GoalViewHolder> {
         newGoal.setCurrentMilli(0);
         newGoal.setWeekNum(newWeekNum);
 
-        GoalSQLHelper sqlHelper = GoalSQLHelper.getInstance(holder.mRemoveButton.getContext());
+        GoalSQLHelper sqlHelper = GoalSQLHelper.getInstance(holder.mContainer.getContext());
         sqlHelper.addGoalToWeeklyTable(newGoal);
         sqlHelper.addNewWeekReference(new Week(newWeekNum));
         CurrentWeekGoalManager.getInstance().addCurrentGoal(newGoal);
@@ -180,12 +240,12 @@ public class GoalRecyclerAdapter extends RecyclerView.Adapter<GoalViewHolder> {
     }
 
     private void warnUser(final Goal goal, final GoalViewHolder holder) {
-        AlertDialog alertDialog = new AlertDialog.Builder(holder.mRemoveButton.getContext()).setMessage("Time spent on this goal for this week will be deleted (Lifetime tracking stats will be unaffected).\nPress \"Okay\" to remove goal for this week.")
+        AlertDialog alertDialog = new AlertDialog.Builder(holder.mContainer.getContext()).setMessage("Time spent on this goal for this week will be deleted (Lifetime tracking stats will be unaffected).\nPress \"Okay\" to remove goal for this week.")
                 .setTitle("Are you sure?")
                 .setPositiveButton("Okay", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        removeGoalLogic(holder, goal);
+                        removeGoal(holder, goal);
                         dialogInterface.dismiss();
                     }
                 })
@@ -198,9 +258,9 @@ public class GoalRecyclerAdapter extends RecyclerView.Adapter<GoalViewHolder> {
         alertDialog.show();
     }
 
-    private void removeGoalLogic(GoalViewHolder holder, Goal goal) {
+    private void removeGoal(GoalViewHolder holder, Goal goal) {
         String weekNum = String.valueOf(goal.getWeekNum());
-        GoalSQLHelper goalSQLHelper = GoalSQLHelper.getInstance(holder.mRemoveButton.getContext());
+        GoalSQLHelper goalSQLHelper = GoalSQLHelper.getInstance(holder.mContainer.getContext());
         int rowsremoved = goalSQLHelper.removeCurrentGoal(goal.getGoalName(), goal.getSubCategory(), weekNum);
         if (rowsremoved > 1) {
             Log.e("GoalRecyclerAdapter", "Removed: " + rowsremoved, new Exception("Excessive amount of rows deleted"));
@@ -239,6 +299,8 @@ public class GoalRecyclerAdapter extends RecyclerView.Adapter<GoalViewHolder> {
     public int getItemCount() {
         return mGoals.size();
     }
+
+
 
 
     public interface OnGoalChangeListener {

@@ -1,5 +1,6 @@
 package shuvalov.nikita.clokit.goaltracker;
 
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.Button;
@@ -18,9 +19,11 @@ import shuvalov.nikita.clokit.R;
 public class GoalViewHolder extends RecyclerView.ViewHolder {
     private TextView mGoalText, mCurrentTime, mEndTime, mSubCatText;
     private ProgressBar mProgressBar;
-    public Button mEditButton;
+//    public Button mEditButton;
     public ToggleButton mToggleButton;
-    public Button mRemoveButton;
+//    public Button mRemoveButton;
+    public CardView mContainer;
+
 
     public GoalViewHolder(View itemView) {
         super(itemView);
@@ -28,10 +31,11 @@ public class GoalViewHolder extends RecyclerView.ViewHolder {
         mCurrentTime =  (TextView)itemView.findViewById(R.id.time_text);
         mEndTime = (TextView)itemView.findViewById(R.id.goal_text);
         mProgressBar = (ProgressBar) itemView.findViewById(R.id.progress_bar);
-        mEditButton = (Button)itemView.findViewById(R.id.edit_button);
+//        mEditButton = (Button)itemView.findViewById(R.id.edit_button);
         mToggleButton = (ToggleButton)itemView.findViewById(R.id.clock_it_button);
         mSubCatText = (TextView)itemView.findViewById(R.id.subcat_name);
-        mRemoveButton = (Button)itemView.findViewById(R.id.remove_goal_butt);
+//        mRemoveButton = (Button)itemView.findViewById(R.id.remove_goal_butt);
+        mContainer = (CardView)itemView.findViewById(R.id.card_container);
     }
 
     public void bindDataToViews(Goal goal){
