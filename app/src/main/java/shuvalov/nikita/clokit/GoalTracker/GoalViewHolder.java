@@ -6,6 +6,8 @@ import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.RotateAnimation;
 import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.ToggleButton;
@@ -34,7 +36,7 @@ public class GoalViewHolder extends RecyclerView.ViewHolder {
         mEndTime = (TextView)itemView.findViewById(R.id.goal_text);
         mProgressBar = (ProgressBar) itemView.findViewById(R.id.progress_bar);
 //        mEditButton = (Button)itemView.findViewById(R.id.edit_button);
-        mToggleButton = (ToggleButton)itemView.findViewById(R.id.clock_it_button);
+        mToggleButton = (ToggleButton) itemView.findViewById(R.id.clock_it_button);
         mSubCatText = (TextView)itemView.findViewById(R.id.subcat_name);
 //        mRemoveButton = (Button)itemView.findViewById(R.id.remove_goal_butt);
         mContainer = (CardView)itemView.findViewById(R.id.card_container);

@@ -55,6 +55,17 @@
                     android:text="12hr"
                     android:textColor="#00e"/>
             </LinearLayout>
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1">
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="2dp"
+                    android:background="#333"/>
+            </RelativeLayout>
+
+
             <FrameLayout
                 android:id="@+id/progress_frame"
                 android:layout_width="match_parent"
@@ -77,30 +88,40 @@
                     android:indeterminate="false"
                     android:progressDrawable="@drawable/circular_progress_bar"
                     android:layout_gravity="center"/>
-                
+
+                <ToggleButton
+                    android:id="@+id/clock_it_button"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:layout_gravity="center"
+                    android:background="@drawable/clocked_toggle"
+                    android:textOn=""
+                    android:textOff=""
+                    android:backgroundTint="#0f0"
+                    />
 
             </FrameLayout>
 
-            <LinearLayout
-                android:id="@+id/button_row"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-                <!--<Button-->
-                    <!--android:id="@+id/edit_button"-->
+            <!--<LinearLayout-->
+                <!--android:id="@+id/button_row"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:orientation="horizontal">-->
+                <!--&lt;!&ndash;<Button&ndash;&gt;-->
+                    <!--&lt;!&ndash;android:id="@+id/edit_button"&ndash;&gt;-->
+                    <!--&lt;!&ndash;android:layout_width="0dp"&ndash;&gt;-->
+                    <!--&lt;!&ndash;android:layout_height="wrap_content"&ndash;&gt;-->
+                    <!--&lt;!&ndash;android:text="Edit"&ndash;&gt;-->
+                    <!--&lt;!&ndash;android:layout_weight="1"/>&ndash;&gt;-->
+                <!--<ToggleButton-->
+                    <!--android:id="@+id/clock_it_button"-->
                     <!--android:layout_width="0dp"-->
                     <!--android:layout_height="wrap_content"-->
-                    <!--android:text="Edit"-->
-                    <!--android:layout_weight="1"/>-->
-                <ToggleButton
-                    android:id="@+id/clock_it_button"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:textOn="Stop"
-                    android:textOff="Start"
-                    android:layout_weight="1"
-                    />
-            </LinearLayout>
+                    <!--android:textOn="Stop"-->
+                    <!--android:textOff="Start"-->
+                    <!--android:layout_weight="1"-->
+                    <!--/>-->
+            <!--</LinearLayout>-->
         </LinearLayout>
     </android.support.v7.widget.CardView>
     <!--<Button-->

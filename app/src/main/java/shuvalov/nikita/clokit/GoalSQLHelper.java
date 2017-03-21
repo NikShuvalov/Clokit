@@ -14,6 +14,8 @@ import shuvalov.nikita.clokit.pojos.Achievement;
 import shuvalov.nikita.clokit.pojos.Goal;
 import shuvalov.nikita.clokit.pojos.Week;
 
+import static android.content.ContentValues.TAG;
+
 /**
  * Created by NikitaShuvalov on 3/3/17.
  */
@@ -218,7 +220,8 @@ public class GoalSQLHelper extends SQLiteOpenHelper {
 
     public Goal getSpecificCurrentGoal(String name, String subcategory,String weekNum){
         SQLiteDatabase db = getReadableDatabase();
-        Cursor cursor = db.query(WEEKLY_TABLE_NAME, null, NAME_COLUMN + " = ? AND " + SUBCATEGORY_COLUMN + " = ? AND " + WEEK_NUM_COLUMN + " = ?", new String[]{name,subcategory, weekNum},null, null, null);
+        Log.d(TAG, "getSpecificCurrentGoal: "+ subcategory + name + weekNum);
+        Cursor cursor = db.query(WEEKLY_TABLE_NAME, null, NAME_COLUMN + " = ? AND " + SUBCATEGORY_COLUMN + " = ? AND " + WEEK_NUM_COLUMN + " = ?", new String[]{name, subcategory, weekNum},null, null, null);
         Goal goal= null;
         if(cursor.moveToFirst()){
             String subCat = cursor.getString(cursor.getColumnIndex(SUBCATEGORY_COLUMN));

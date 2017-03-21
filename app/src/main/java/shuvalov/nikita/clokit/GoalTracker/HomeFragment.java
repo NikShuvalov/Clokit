@@ -85,7 +85,8 @@ public class HomeFragment extends Fragment implements GoalRecyclerAdapter.OnGoal
         super.onResume();
         SharedPreferences sharedPreferences = getContext().getSharedPreferences(AppConstants.PREFERENCES_NAME, Context.MODE_PRIVATE);
         int activeGoalWeekNum = sharedPreferences.getInt(AppConstants.PREFERENCES_CURRENT_GOAL_WEEK_NUM, -1);
-        if(activeGoalWeekNum!= -1 && AppUtils.getCurrentWeekNum() != sharedPreferences.getInt(AppConstants.PREFERENCES_CURRENT_GOAL_WEEK_NUM, -1)){//If the current week isn't default, and isn't the same as the week that's saved.
+        String activeGoalName = sharedPreferences.getString(AppConstants.PREFERENCES_CURRENT_GOAL, AppConstants.PREFERENCES_NO_GOAL);
+        if(!activeGoalName.equals(AppConstants.PREFERENCES_NO_GOAL) && AppUtils.getCurrentWeekNum() != sharedPreferences.getInt(AppConstants.PREFERENCES_CURRENT_GOAL_WEEK_NUM, -1)){//If the current week isn't default, and isn't the same as the week that's saved.
             Log.d("TRANSWEEK", "onResume: called ");
             String lastWeekGoalName = sharedPreferences.getString(AppConstants.PREFERENCES_CURRENT_GOAL, AppConstants.PREFERENCES_NO_GOAL);
             String lastWeekGoalSubCat = sharedPreferences.getString(AppConstants.PREFERENCES_CURRENT_SUB_CAT, null);
