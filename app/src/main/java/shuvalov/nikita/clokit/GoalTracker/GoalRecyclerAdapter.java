@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
@@ -16,6 +17,8 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -39,7 +42,7 @@ public class GoalRecyclerAdapter extends RecyclerView.Adapter<GoalViewHolder> im
     private OnGoalChangeListener mGoalChangeListener;
     private Goal mCachedGoal;
     private long mEditedTime;
-    private GoalViewHolder mLongClickedHolder;
+    private GoalViewHolder mSelectedHolder;
 
     public GoalRecyclerAdapter(ArrayList<Goal> goals, OnGoalChangeListener goalChangeListener) {
         mGoals = goals;
@@ -61,18 +64,18 @@ public class GoalRecyclerAdapter extends RecyclerView.Adapter<GoalViewHolder> im
         holder.mToggleButton.setOnCheckedChangeListener(null); //If the holder is being reloaded the onCheckedListener is already attached; it needs to be removed because setChecked() because triggers onCheckedChangeListener;
         holder.mToggleButton.setChecked(AppUtils.isGoalCurrentlyActive(goal, activeGoalName, subCatName));
 //        setRemoveClickerLogic(holder);
-//        setEditClickerLogic(holder);
+        setEditClickerLogic(holder);
         setToggleCheckLogic(holder, sharedPreferences);
         setContainerClickOptions(holder);
     }
 
     private void setContainerClickOptions(final GoalViewHolder holder){
-        mLongClickedHolder = holder;
+        mSelectedHolder = holder;
         holder.mContainer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mLongClickedHolder = holder;
-                PopupMenu popupMenu = new PopupMenu(mLongClickedHolder.mContainer.getContext(),view);
+                mSelectedHolder = holder;
+                PopupMenu popupMenu = new PopupMenu(mSelectedHolder.mContainer.getContext(),view);
                 popupMenu.inflate(R.menu.menu_popup);
                 popupMenu.show();
                 popupMenu.setOnMenuItemClickListener(GoalRecyclerAdapter.this);
@@ -82,16 +85,13 @@ public class GoalRecyclerAdapter extends RecyclerView.Adapter<GoalViewHolder> im
 
     @Override
     public boolean onMenuItemClick(MenuItem item) {
-        Context context = mLongClickedHolder.mContainer.getContext();
+        Context context = mSelectedHolder.mContainer.getContext();
         switch(item.getItemId()){
             case R.id.popup_adjust_progress_opt:
-                editGoalLogic(context, mLongClickedHolder);
+                editGoalLogic(context, mSelectedHolder);
                 return true;
             case R.id.popup_remove_opt:
-                removeGoalLogic(context, mLongClickedHolder);
-                return true;
-            case R.id.popup_edit_opt:
-                //Open up a user interface that allows user to edit name, subcat and goal time.
+                removeGoalLogic(context, mSelectedHolder);
                 return true;
             default:
                 return false;
@@ -144,23 +144,23 @@ public class GoalRecyclerAdapter extends RecyclerView.Adapter<GoalViewHolder> im
         }
     }
 
-//    private void setEditClickerLogic(final GoalViewHolder holder){
-//        holder.mEditButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                SharedPreferences sharedPreferences = view.getContext().getSharedPreferences(AppConstants.PREFERENCES_NAME, Context.MODE_PRIVATE);
-//                String activeGoalName = sharedPreferences.getString(AppConstants.PREFERENCES_CURRENT_GOAL, AppConstants.PREFERENCES_NO_GOAL);
-//                String subCatName = sharedPreferences.getString(AppConstants.PREFERENCES_CURRENT_SUB_CAT, null);
-//                Goal goal = mGoals.get(holder.getAdapterPosition());
-//                mCachedGoal = goal;
-//                if (!AppUtils.isGoalCurrentlyActive(goal, activeGoalName, subCatName)) {//Only allow editing if there is no active goal, or if the goal ISN'T the goal that's active.
-//                    openEditDialog(view.getContext(), holder.getAdapterPosition());
-//                } else { //If user tries to edit an active goal.
-//                    Toast.makeText(view.getContext(), "Can't edit an active task", Toast.LENGTH_SHORT).show();
-//                }
-//            }
-//        });
-//    }
+    private void setEditClickerLogic(final GoalViewHolder holder){
+        holder.mEditButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                SharedPreferences sharedPreferences = view.getContext().getSharedPreferences(AppConstants.PREFERENCES_NAME, Context.MODE_PRIVATE);
+                String activeGoalName = sharedPreferences.getString(AppConstants.PREFERENCES_CURRENT_GOAL, AppConstants.PREFERENCES_NO_GOAL);
+                String subCatName = sharedPreferences.getString(AppConstants.PREFERENCES_CURRENT_SUB_CAT, null);
+                Goal goal = mGoals.get(holder.getAdapterPosition());
+                mCachedGoal = goal;
+                if (!AppUtils.isGoalCurrentlyActive(goal, activeGoalName, subCatName)) {//Only allow editing if there is no active goal, or if the goal ISN'T the goal that's active.
+                    openEditDialog(view.getContext(), holder.getAdapterPosition());
+                } else { //If user tries to edit an active goal.
+                    Toast.makeText(view.getContext(), "Can't edit an active task", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
 
     //FixMe: Make shorter... later
     private void setToggleCheckLogic(final GoalViewHolder holder, final SharedPreferences sharedPreferences){
@@ -361,15 +361,25 @@ public class GoalRecyclerAdapter extends RecyclerView.Adapter<GoalViewHolder> im
             public void onShow(DialogInterface dialogInterface) {
                 EditText hourEntry = (EditText) dialogView.findViewById(R.id.hour_entry);
                 EditText minuteEntry = (EditText) dialogView.findViewById(R.id.minute_entry);
+                EditText goalEntry = (EditText) dialogView.findViewById(R.id.name_edit_box);
+                EditText subcatEntry = (EditText) dialogView.findViewById(R.id.subcat_edit_box);
+                TextView editTimeView = (TextView) dialogView.findViewById(R.id.adjustment_time_text);
 
-                Button addTimeButt = (Button) dialogView.findViewById(R.id.add_time_butt);
-                Button removeTimeButt = (Button) dialogView.findViewById(R.id.remove_time_butt);
+
+                goalEntry.setText(mCachedGoal.getGoalName());
+                subcatEntry.setText(mCachedGoal.getSubCategory());
+
+                ImageView addTimeButt = (ImageView) dialogView.findViewById(R.id.add_time_butt);
+                ImageView removeTimeButt = (ImageView) dialogView.findViewById(R.id.remove_time_butt);
                 Button zeroTimeButt = (Button) dialogView.findViewById(R.id.set_zer0_butt);
                 Button saveChangesButt = ((AlertDialog) dialogInterface).getButton(DialogInterface.BUTTON_POSITIVE);
 
-                setZeroClickerLogic(zeroTimeButt);
-                setAddClickerLogic(addTimeButt, hourEntry, minuteEntry);
-                setRemoveClickerLogic(removeTimeButt, hourEntry, minuteEntry);
+                editTimeView.setText(AppUtils.getHoursAndMinutes(mEditedTime));
+                editTimeView.setTextColor(Color.BLACK);
+
+                setZeroClickerLogic(zeroTimeButt, editTimeView);
+                setAddClickerLogic(addTimeButt, hourEntry, minuteEntry, editTimeView);
+                setRemoveClickerLogic(removeTimeButt, hourEntry, minuteEntry, editTimeView);
                 setSaveClickerLogic(saveChangesButt, dialogInterface);
             }
 
@@ -389,11 +399,14 @@ public class GoalRecyclerAdapter extends RecyclerView.Adapter<GoalViewHolder> im
                         } else {
                             Toast.makeText(view.getContext(), "No changes were made", Toast.LENGTH_SHORT).show();
                         }
+
+                        //ToDo: Add some logic to handle name/category changes.
                     }
                 });
+
             }
 
-            void setRemoveClickerLogic(Button removeTimeButt, final EditText hourEntry, final EditText minuteEntry) {
+            void setRemoveClickerLogic(ImageView removeTimeButt, final EditText hourEntry, final EditText minuteEntry, final TextView editTimeText) {
                 removeTimeButt.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
@@ -408,10 +421,17 @@ public class GoalRecyclerAdapter extends RecyclerView.Adapter<GoalViewHolder> im
                                 Toast.makeText(view.getContext(), "To leave goal unchanged press Cancel instead", Toast.LENGTH_LONG).show();
                             } else {
                                 long overKill = mCachedGoal.removeTimeSpent(timeRemoved);
-                                mEditedTime+= timeRemoved;
-                                if (overKill<0){ //If the timeRemoved is greater than the amount of time there, the overkill number will be negative and will adjust for the extra value.
+                                mEditedTime-= timeRemoved;
+                                if (overKill>0){ //If the timeRemoved is greater than the amount of time there, the overkill number will be negative and will adjust for the extra value.
                                     mEditedTime+= overKill;
                                 }
+                                editTimeText.setText(AppUtils.getHoursAndMinutes(Math.abs(mEditedTime)));
+                                if(mEditedTime<0){
+                                    editTimeText.setTextColor(Color.RED);
+                                }else if (mEditedTime==0){
+                                    editTimeText.setTextColor(Color.BLACK);
+                                }
+
                             }
                         }
                     }
@@ -419,7 +439,7 @@ public class GoalRecyclerAdapter extends RecyclerView.Adapter<GoalViewHolder> im
                 });
             }
 
-            void setAddClickerLogic(Button addTimeButt, final EditText hourEntry, final EditText minuteEntry){
+            void setAddClickerLogic(ImageView addTimeButt, final EditText hourEntry, final EditText minuteEntry, final TextView editTimeText){
                 addTimeButt.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
@@ -435,6 +455,12 @@ public class GoalRecyclerAdapter extends RecyclerView.Adapter<GoalViewHolder> im
                             }else{
                                 mCachedGoal.addTimeSpent(totalTimeAdd);
                                 mEditedTime+= totalTimeAdd;
+                                editTimeText.setText(AppUtils.getHoursAndMinutes(mEditedTime));
+                                if(mEditedTime>0){
+                                    editTimeText.setTextColor(Color.GREEN);
+                                }else if (mEditedTime==0){
+                                    editTimeText.setTextColor(Color.BLACK);
+                                }
                             }
                         }
                     }
@@ -452,12 +478,14 @@ public class GoalRecyclerAdapter extends RecyclerView.Adapter<GoalViewHolder> im
                 return hourValue + minuteValue;
             }
 
-            void setZeroClickerLogic(Button zeroTimeButt) {
+            void setZeroClickerLogic(Button zeroTimeButt, final TextView editTimeText) {
                 zeroTimeButt.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         mEditedTime -= mCachedGoal.getCurrentMilli();
                         mCachedGoal.setCurrentMilli(0);
+                        editTimeText.setText(AppUtils.getHoursAndMinutes(Math.abs(mEditedTime)));
+                        editTimeText.setTextColor(Color.RED);
                     }
                 });
             }

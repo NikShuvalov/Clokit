@@ -315,7 +315,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                                         minutes = Integer.valueOf(minutesString);
                                     }
                                     long totalMillis = (minutes*1000*60)+(hours*1000*3600);
-                                    if(totalMillis==0){
+                                    if(totalMillis<=0){
                                         hourEntry.setError("A goal time amount is required");
                                         minuteEntry.setError("A goal time amount is required");
                                     }else{

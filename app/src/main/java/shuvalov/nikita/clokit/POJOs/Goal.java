@@ -79,8 +79,9 @@ public class Goal {
 
     public long removeTimeSpent(long timeRemoved){
         mCurrentMilli-= timeRemoved;
-        long overKill = mCurrentMilli;
+        long overKill = 0;
         if(mCurrentMilli<0){
+            overKill = Math.abs(mCurrentMilli);
             mCurrentMilli = 0;
         }
         return overKill;
