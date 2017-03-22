@@ -4,21 +4,30 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:layout_margin="8dp">
+    android:layout_margin="12dp">
 
-    <!--Put goal description instead of "Adjust time:"
-    Included would be the name, subcategory and current time allocated to it.-->
-    <EditText
-        android:id="@+id/name_edit_box"
+    <TextView
+        android:id="@+id/goalname_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Enter new name"/>
-    <EditText
-        android:id="@+id/subcat_edit_box"
+        android:textSize="20sp"
+        android:gravity="center"
+        android:textColor="#000"
+        />
+    <TextView
+        android:id="@+id/subcat_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Enter new subcategory (Optional)"/>
+        android:textSize="16sp"
+        android:gravity="center"
+        android:textColor="#333"
+        android:layout_margin="10dp"/>
 
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="#999"
+        android:layout_margin="5dp"/>
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -36,6 +45,13 @@
         android:gravity="center"
         android:textColor="#000"
         />
+
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="#999"
+        android:layout_margin="5dp"/>
 
     <LinearLayout
         android:id="@+id/edit_row"
@@ -80,11 +96,9 @@
     </LinearLayout>
 
 
-    <LinearLayout
-        android:id="@+id/button_row"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:layout_height="wrap_content">
 
         <!--<Button-->
             <!--android:id="@+id/add_time_butt"-->
@@ -100,12 +114,12 @@
             <!--android:text="Remove time"/>-->
         <Button
             android:id="@+id/set_zer0_butt"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
+            android:layout_centerHorizontal="true"
             android:text="Clear Progress on Goal"/>
 
-    </LinearLayout>
+    </RelativeLayout>
 
 
 </LinearLayout>

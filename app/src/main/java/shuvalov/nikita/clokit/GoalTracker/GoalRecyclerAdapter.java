@@ -346,7 +346,6 @@ public class GoalRecyclerAdapter extends RecyclerView.Adapter<GoalViewHolder> im
         mEditedTime = 0;
         final View dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_editgoal, null);
         AlertDialog alertDialog = new AlertDialog.Builder(dialogView.getContext())
-                .setTitle("Edit Goal")
                 .setView(dialogView)
                 .setPositiveButton("Save Changes", null)
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -361,13 +360,26 @@ public class GoalRecyclerAdapter extends RecyclerView.Adapter<GoalViewHolder> im
             public void onShow(DialogInterface dialogInterface) {
                 EditText hourEntry = (EditText) dialogView.findViewById(R.id.hour_entry);
                 EditText minuteEntry = (EditText) dialogView.findViewById(R.id.minute_entry);
-                EditText goalEntry = (EditText) dialogView.findViewById(R.id.name_edit_box);
-                EditText subcatEntry = (EditText) dialogView.findViewById(R.id.subcat_edit_box);
+                TextView goalNameText = (TextView) dialogView.findViewById(R.id.goalname_text);
+                TextView subCatText = (TextView) dialogView.findViewById(R.id.subcat_text);
                 TextView editTimeView = (TextView) dialogView.findViewById(R.id.adjustment_time_text);
 
+//
+//                TextView.OnEditorActionListener editorListener = new TextView.OnEditorActionListener(){
+//                    @Override
+//                    public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
+//                        mNameChanged=true;
+//                        return false;
+//                    }
+//                };
+//
+//                goalEntry.setOnEditorActionListener(editorListener);
+//                subcatEntry.setOnEditorActionListener(editorListener);
 
-                goalEntry.setText(mCachedGoal.getGoalName());
-                subcatEntry.setText(mCachedGoal.getSubCategory());
+
+
+                goalNameText.setText(mCachedGoal.getGoalName());
+                subCatText.setText(mCachedGoal.getSubCategory());
 
                 ImageView addTimeButt = (ImageView) dialogView.findViewById(R.id.add_time_butt);
                 ImageView removeTimeButt = (ImageView) dialogView.findViewById(R.id.remove_time_butt);
@@ -383,27 +395,39 @@ public class GoalRecyclerAdapter extends RecyclerView.Adapter<GoalViewHolder> im
                 setSaveClickerLogic(saveChangesButt, dialogInterface);
             }
 
-            void setSaveClickerLogic(Button saveChangesButt, final DialogInterface dialogInterface){
+            void setSaveClickerLogic(final Button saveChangesButt, final DialogInterface dialogInterface){
                 saveChangesButt.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+                        //ToDo: Use this code to handle name changes.
+//                        Goal copyToRemove = mCachedGoal;
+//                        if(mNameChanged){
+//                            mCachedGoal.setSubCategory(subcatEdit.getText().toString());
+//                            mCachedGoal.setGoalName(nameEdit.getText().toString());
+//                            if(CurrentWeekGoalManager.getInstance().addCurrentGoal(mCachedGoal)){
+//                                CurrentWeekGoalManager.getInstance().removeGoal(copyToRemove);
+//                                GoalSQLHelper sqlHelper = GoalSQLHelper.getInstance(saveChangesButt.getContext());
+//                                sqlHelper.removeCurrentGoal(copyToRemove);
+//                                sqlHelper.addGoalToWeeklyTable(mCachedGoal);
+//                            }else{
+//
+//                            }
+//                        }
+
                         if (mEditedTime!=0) {
-                            Goal goal = mGoals.get(holderPosition);
-                            goal.applyChangedValues(mCachedGoal);
-                            Toast.makeText(view.getContext(), "Changes applied", Toast.LENGTH_SHORT).show();
-                            updateDisplayOnChange(holderPosition);
-                            updateSQLReferences(view.getContext(),goal, mEditedTime, new Week(goal.getWeekNum()));
-                            //ToDo: Decide if I want lifeTimeTracking to be effected by users adding values. If So, add logic here to add that time.
-                            mEditedTime=0;
-                            dialogInterface.dismiss();
-                        } else {
-                            Toast.makeText(view.getContext(), "No changes were made", Toast.LENGTH_SHORT).show();
+                                Goal goal = mGoals.get(holderPosition);
+                                goal.applyChangedValues(mCachedGoal);
+                                Toast.makeText(view.getContext(), "Changes applied", Toast.LENGTH_SHORT).show();
+                                updateDisplayOnChange(holderPosition);
+                                updateSQLReferences(view.getContext(),goal, mEditedTime, new Week(goal.getWeekNum()));
+                                //ToDo: Decide if I want lifeTimeTracking to be effected by users adding values. If So, add logic here to add that time.
+                                mEditedTime=0;
+                                dialogInterface.dismiss();
+                            } else {
+                                Toast.makeText(view.getContext(), "No changes were made", Toast.LENGTH_SHORT).show();
+                            }
                         }
-
-                        //ToDo: Add some logic to handle name/category changes.
-                    }
-                });
-
+                 });
             }
 
             void setRemoveClickerLogic(ImageView removeTimeButt, final EditText hourEntry, final EditText minuteEntry, final TextView editTimeText) {
