@@ -27,9 +27,8 @@ public class GoalViewHolder extends RecyclerView.ViewHolder {
     private TextView mGoalText, mCurrentTime, mEndTime, mSubCatText;
     public ImageView mEditButton;
     private ProgressBar mProgressBar;
-//    public Button mEditButton;
     public ToggleButton mToggleButton;
-//    public Button mRemoveButton;
+    public Button mRemoveButton;
     public CardView mContainer;
 
 
@@ -42,7 +41,7 @@ public class GoalViewHolder extends RecyclerView.ViewHolder {
         mEditButton = (ImageView) itemView.findViewById(R.id.goal_edit_button);
         mToggleButton = (ToggleButton) itemView.findViewById(R.id.clock_it_button);
         mSubCatText = (TextView)itemView.findViewById(R.id.subcat_name);
-//        mRemoveButton = (Button)itemView.findViewById(R.id.remove_goal_butt);
+        mRemoveButton = (Button)itemView.findViewById(R.id.remove_goal_butt);
         mContainer = (CardView)itemView.findViewById(R.id.card_container);
     }
 

@@ -218,5 +218,4 @@ public class ProgressEditorAlertDialogFactory {
     public interface OnChangeConfirmListener{
         void changeConfirmed();
     }
-
 }
