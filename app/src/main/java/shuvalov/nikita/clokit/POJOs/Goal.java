@@ -99,6 +99,11 @@ public class Goal {
         mWeekBreakdown = cachedGoal.mWeekBreakdown;
     }
 
+    public Goal createCachedCopy(){
+        return new Goal(this.getGoalName(),this.getCurrentMilli(), this.getEndMilli(),this.getWeekBreakdown(),this.getWeekNum(),this.getSubCategory());
+
+    }
+
 
     /**
      * Goes from 0-6, where 0 = Monday, 6 = Sunday;
