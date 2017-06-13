@@ -138,7 +138,7 @@ public class GoalSQLHelper extends SQLiteOpenHelper {
 
     }
 
-    public ArrayList<Goal> getCurrentGoals(int weekNum){
+    public ArrayList<Goal> getGoalsByWeek(int weekNum){
         ArrayList<Goal> currentGoals = new ArrayList<>();
         SQLiteDatabase db = getReadableDatabase();
         String weekNumString = String.valueOf(weekNum);

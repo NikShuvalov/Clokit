@@ -28,10 +28,13 @@ import java.util.ArrayList;
 import shuvalov.nikita.clokit.goaltracker.CurrentWeekGoalManager;
 import shuvalov.nikita.clokit.goaltracker.HomeFragment;
 import shuvalov.nikita.clokit.history.HistoryFragment;
+import shuvalov.nikita.clokit.history.HistoryRecyclerAdapter;
+import shuvalov.nikita.clokit.history.WeekBreakdownFragment;
 import shuvalov.nikita.clokit.lifetime_results.LifetimeFragment;
 import shuvalov.nikita.clokit.pojos.Goal;
+import shuvalov.nikita.clokit.pojos.Week;
 
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, HistoryRecyclerAdapter.WeekSelectedListener{
     DrawerLayout mDrawerLayout;
     NavigationView mNavView;
     Toolbar mToolbar;
@@ -66,7 +69,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     public void loadData(){
         int weekNum = AppUtils.getCurrentWeekNum();
-        CurrentWeekGoalManager.getInstance().setCurrentGoals(GoalSQLHelper.getInstance(this).getCurrentGoals(weekNum));
+        CurrentWeekGoalManager.getInstance().setCurrentGoals(GoalSQLHelper.getInstance(this).getGoalsByWeek(weekNum));
     }
 
     public void findViews(){
@@ -372,7 +375,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         String lastActiveWeek = sqlHelper.getLastActiveWeekNum();
         if(lastActiveWeek!=null){ //If a week is found, adjust values and put in as current week.
             int previousWeek = Integer.valueOf(lastActiveWeek);
-            ArrayList<Goal> previousGoals = sqlHelper.getCurrentGoals(previousWeek);
+            ArrayList<Goal> previousGoals = sqlHelper.getGoalsByWeek(previousWeek);
             for(Goal goal: previousGoals){
                 goal.setCurrentMilli(0);
                 goal.setWeekNum(AppUtils.getCurrentWeekNum());
@@ -386,5 +389,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             String nothingFound = "Couldn't find previous active week";
             Toast.makeText(this, nothingFound, Toast.LENGTH_SHORT).show();
         }
+    }
+
+    @Override
+    public void onWeekSelected(Week week) {
+        int weekNum = week.getWeekNum();
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, WeekBreakdownFragment.newInstance(weekNum)).commit();
     }
 }

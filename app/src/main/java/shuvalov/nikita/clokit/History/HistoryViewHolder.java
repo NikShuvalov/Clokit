@@ -1,5 +1,6 @@
 package shuvalov.nikita.clokit.history;
 
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.TextView;
@@ -14,11 +15,14 @@ import shuvalov.nikita.clokit.R;
 
 public class HistoryViewHolder extends RecyclerView.ViewHolder {
     private TextView mStartText;
+    public CardView mCardView;
 //    private TextView mEndText;
 
     public HistoryViewHolder(View itemView) {
         super(itemView);
         mStartText = (TextView)itemView.findViewById(R.id.week_start_text);
+        mCardView = (CardView)itemView.findViewById(R.id.week_card);
+
 //        mEndText = (TextView)itemView.findViewById(R.id.week_end_text);
     }
 

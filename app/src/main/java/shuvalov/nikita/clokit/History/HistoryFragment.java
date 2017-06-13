@@ -10,7 +10,9 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import shuvalov.nikita.clokit.GoalSQLHelper;
+import shuvalov.nikita.clokit.MainActivity;
 import shuvalov.nikita.clokit.R;
+import shuvalov.nikita.clokit.pojos.Week;
 
 public class HistoryFragment extends Fragment {
 
@@ -35,12 +37,11 @@ public class HistoryFragment extends Fragment {
 
 
         RecyclerView historyRecycler = (RecyclerView)view.findViewById(R.id.history_recycler);
-        HistoryRecyclerAdapter historyAdapter = new HistoryRecyclerAdapter(GoalSQLHelper.getInstance(getContext()).getActiveWeeks());
+        HistoryRecyclerAdapter historyAdapter = new HistoryRecyclerAdapter(GoalSQLHelper.getInstance(getContext()).getActiveWeeks(), (MainActivity)getActivity());
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(),LinearLayoutManager.VERTICAL,false);
 
         historyRecycler.setAdapter(historyAdapter);
         historyRecycler.setLayoutManager(linearLayoutManager);
         return view;
     }
-
 }
