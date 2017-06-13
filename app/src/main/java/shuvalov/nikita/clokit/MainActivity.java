@@ -59,6 +59,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mCurrentDisplay = HOME_FRAG;
     }
 
+    public void debugClearCurrentGoal(){
+        getSharedPreferences(AppConstants.PREFERENCES_NAME, MODE_PRIVATE).edit().putString(AppConstants.PREFERENCES_CURRENT_GOAL, AppConstants.PREFERENCES_NO_GOAL).apply();
+    }
+
 
     public void loadData(){
         int weekNum = AppUtils.getCurrentWeekNum();

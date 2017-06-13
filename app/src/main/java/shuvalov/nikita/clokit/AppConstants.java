@@ -42,5 +42,4 @@ public class AppConstants {
     public static final int ACHIEVEMENT_GRANDMASTER_ID =8; //5000 hours
     public static final int ACHIEVEMENT_TRANSCENDED_ID = 9; //7500 hours
     public static final int ACHIEVEMENT_GOD_ID = 10; //10000 hours
-
 }
