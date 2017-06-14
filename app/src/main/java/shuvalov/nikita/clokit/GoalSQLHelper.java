@@ -267,6 +267,7 @@ public class GoalSQLHelper extends SQLiteOpenHelper {
                 goals.add(new Goal(goalName, progressMilli, goalTimeMilli,
                         new long[]{mondayMilli, tuesdayMilli, wednesdayMilli, thursdayMilli, fridayMilli, saturdayMilli, sundayMilli},
                         weekNum, subcat));
+                cursor.moveToNext();
             }
         }
         cursor.close();

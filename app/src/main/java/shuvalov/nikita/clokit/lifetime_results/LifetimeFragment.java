@@ -15,6 +15,7 @@ import android.widget.TextView;
 import shuvalov.nikita.clokit.AppConstants;
 import shuvalov.nikita.clokit.AppUtils;
 import shuvalov.nikita.clokit.GoalSQLHelper;
+import shuvalov.nikita.clokit.MainActivity;
 import shuvalov.nikita.clokit.R;
 
 
@@ -45,7 +46,7 @@ public class LifetimeFragment extends Fragment {
         lifetrackerManager.sortByTimeAllocated();
 
 
-        final LifetimeRecyclerAdapter lifetimeRecyclerAdapter = new LifetimeRecyclerAdapter(LifetimeTrackerManager.getInstance().getLifetimeResults());
+        final LifetimeRecyclerAdapter lifetimeRecyclerAdapter = new LifetimeRecyclerAdapter(LifetimeTrackerManager.getInstance().getLifetimeResults(), (MainActivity)getActivity());
         GridLayoutManager gridLayoutManager = new GridLayoutManager(getContext(), 2);
         gridLayoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
             @Override

@@ -29,7 +29,6 @@ public class LineGraphView extends View {
         mLifetimeGoal = goals;
         mLineGraphRect= new Rect();
         preparePaints();
-//        invalidate();
     }
 
     private void preparePaints(){
@@ -56,6 +55,9 @@ public class LineGraphView extends View {
     private void definePaths(){
         int totalGoalTime = 0;
         int totalProgressTime = 0;
+        if(mLifetimeGoal==null || mLifetimeGoal.isEmpty()) {
+            return;
+        }
         int startWeek = mLifetimeGoal.get(0).getWeekNum();
         int endWeek = AppUtils.getCurrentWeekNum();
         float interval = mLineGraphRect.width()/((endWeek - startWeek) +1f);
@@ -113,9 +115,11 @@ public class LineGraphView extends View {
     }
 
     private void drawGraph(Canvas canvas){
-        canvas.drawPath(mGoalPath, mGoalPaint);
-        canvas.drawPath(mProgressPath, mProgressPaint);
-        canvas.drawPath(mGoalPath, mGoalLinePaint);
-        canvas.drawPath(mProgressPath, mProgressLinePaint);
+        if(mGoalPath != null && mProgressPath != null) {
+            canvas.drawPath(mGoalPath, mGoalPaint);
+            canvas.drawPath(mProgressPath, mProgressPaint);
+            canvas.drawPath(mGoalPath, mGoalLinePaint);
+            canvas.drawPath(mProgressPath, mProgressLinePaint);
+        }
     }
 }

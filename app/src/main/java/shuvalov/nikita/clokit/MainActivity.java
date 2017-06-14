@@ -3,6 +3,7 @@ package shuvalov.nikita.clokit;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.PersistableBundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
@@ -31,33 +32,49 @@ import shuvalov.nikita.clokit.history.HistoryFragment;
 import shuvalov.nikita.clokit.history.HistoryRecyclerAdapter;
 import shuvalov.nikita.clokit.history.WeekBreakdownFragment;
 import shuvalov.nikita.clokit.lifetime_results.LifetimeFragment;
+import shuvalov.nikita.clokit.lifetime_results.LifetimeRecyclerAdapter;
+import shuvalov.nikita.clokit.lifetime_results.LifetimeStatsFragment;
 import shuvalov.nikita.clokit.pojos.Goal;
 import shuvalov.nikita.clokit.pojos.Week;
 
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, HistoryRecyclerAdapter.WeekSelectedListener{
+public class MainActivity extends AppCompatActivity
+        implements NavigationView.OnNavigationItemSelectedListener, HistoryRecyclerAdapter.WeekSelectedListener, LifetimeRecyclerAdapter.GoalSelectedListener{
+
     DrawerLayout mDrawerLayout;
     NavigationView mNavView;
     Toolbar mToolbar;
     private String mCurrentDisplay;
     private boolean mBackRecentlyPressed;
+    private String mBreakdownName;
+    private int mBreakdownWeek;
+
+    public static final String CURRENT_DISPLAY_KEY = "Current Display key";
+    public static final String WEEK_NUMBER_KEY = "Week display key";
+    public static final String GOAL_NAME_KEY = "Goal display key";
 
     public static final String HOME_FRAG = "Home fragment";
     public static final String HISTORY_FRAG = "History fragment";
     public static final String ACHIEVEMENTS_FRAG = "Achievements fragment";
     public static final String LIFETIME_FRAG = "Lifetime fragment";
     public static final String WEEK_BREAKDOWN_FRAG = "Week Breakdown Fragment";
+    public static final String LIFETIME_STATS_FRAG = "The fragment that displays the stats of the lifetime goals and such";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-
         mBackRecentlyPressed = false;
         loadData();
         findViews();
-        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, HomeFragment.newInstance(),HOME_FRAG).commit();
-        mCurrentDisplay = HOME_FRAG;
+        if(savedInstanceState==null){
+            startHomeFragment();
+        }
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        mCurrentDisplay = savedInstanceState.getString(CURRENT_DISPLAY_KEY);
     }
 
     public void debugClearCurrentGoal(){
@@ -97,17 +114,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         switch (item.getItemId()){
             case R.id.home_option:
                 if(!mCurrentDisplay.equals(HOME_FRAG)){
-                    getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, HomeFragment.newInstance(),HOME_FRAG).commit();
-                    mCurrentDisplay = HOME_FRAG;
+                    startHomeFragment();
                 }else{
                     Toast.makeText(this, "Already in home activity", Toast.LENGTH_SHORT).show();
                 }
                 break;
             case R.id.history_option:
                 if(!mCurrentDisplay.equals(HISTORY_FRAG)){
-                    mBackRecentlyPressed = false;
-                    mCurrentDisplay = HISTORY_FRAG;
-                    getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, HistoryFragment.newInstance()).commit();
+                    startHistoryFragment();
                 }else{
                     Toast.makeText(this, "Already in history activity", Toast.LENGTH_SHORT).show();
                 }
@@ -123,9 +137,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 break;
             case R.id.lifetime_option:
                 if(!mCurrentDisplay.equals(LIFETIME_FRAG)){
-                    mBackRecentlyPressed = false;
-                    getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, LifetimeFragment.newInstance()).commit();
-                    mCurrentDisplay = LIFETIME_FRAG;
+                    startLifetimeFragment();
                 }else{
                     Toast.makeText(this, "Already in lifetime activity", Toast.LENGTH_SHORT).show();
                 }
@@ -195,6 +207,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             ((HomeFragment)getSupportFragmentManager().findFragmentByTag(HOME_FRAG)).updateTimeLeftDisplay();
         }
     }
+
     public void promptUserForGoal(boolean existing) {
         final AlertDialog.Builder builder = new AlertDialog.Builder(this).setPositiveButton("Add Goal",null)
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -346,6 +359,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString(CURRENT_DISPLAY_KEY, mCurrentDisplay);
+    }
+
+    @Override
     public void onBackPressed() {
         if(mCurrentDisplay.equals(HOME_FRAG)){
             if(mBackRecentlyPressed){
@@ -359,13 +378,45 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 Toast.makeText(this, "Press back again to close", Toast.LENGTH_SHORT).show();
             }
         }else if(mCurrentDisplay.equals(WEEK_BREAKDOWN_FRAG)){
-            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, HistoryFragment.newInstance(), WEEK_BREAKDOWN_FRAG).commit();
-            mCurrentDisplay = HISTORY_FRAG;
+            startHistoryFragment();
+        }else if (mCurrentDisplay.equals(LIFETIME_STATS_FRAG)){
+            startLifetimeFragment();
         }
         else{
-            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, HomeFragment.newInstance(),HOME_FRAG).commit();
-            mCurrentDisplay = HOME_FRAG;
+            startHomeFragment();
         }
+    }
+
+    private void startHistoryFragment(){
+        mBackRecentlyPressed = false;
+        mCurrentDisplay = HISTORY_FRAG;
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, HistoryFragment.newInstance(), HISTORY_FRAG).commit();
+    }
+
+    private void startHomeFragment(){
+        mBackRecentlyPressed = false;
+        mCurrentDisplay = HOME_FRAG;
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, HomeFragment.newInstance(),HOME_FRAG).commit();
+    }
+
+    private void startWeekBreakdownFragment(int weekNum){
+        mBackRecentlyPressed = false;
+        mBreakdownWeek = weekNum;
+        mCurrentDisplay = WEEK_BREAKDOWN_FRAG;
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, WeekBreakdownFragment.newInstance(weekNum), WEEK_BREAKDOWN_FRAG).addToBackStack(String.valueOf(weekNum)).commit();
+    }
+
+    private void startLifetimeStatsFragment(String goalName){
+        mBackRecentlyPressed = false;
+        mBreakdownName = goalName;
+        mCurrentDisplay = LIFETIME_STATS_FRAG;
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, LifetimeStatsFragment.newInstance(goalName),LIFETIME_STATS_FRAG).addToBackStack(goalName).commit();
+    }
+
+    private void startLifetimeFragment(){
+        mBackRecentlyPressed = false;
+        mCurrentDisplay = LIFETIME_FRAG;
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, LifetimeFragment.newInstance(), LIFETIME_FRAG).commit();
     }
 
     /**
@@ -395,8 +446,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     public void onWeekSelected(Week week) {
-        int weekNum = week.getWeekNum();
-        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, WeekBreakdownFragment.newInstance(weekNum)).addToBackStack(String.valueOf(weekNum)).commit();
-        mCurrentDisplay = WEEK_BREAKDOWN_FRAG;
+        startWeekBreakdownFragment(week.getWeekNum());
+    }
+
+    @Override
+    public void onGoalSelected(String goalName) {
+        startLifetimeStatsFragment(goalName);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
     }
 }

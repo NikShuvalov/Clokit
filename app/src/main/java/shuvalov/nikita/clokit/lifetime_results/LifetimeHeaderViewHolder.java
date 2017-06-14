@@ -1,5 +1,6 @@
 package shuvalov.nikita.clokit.lifetime_results;
 
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
@@ -15,11 +16,13 @@ import shuvalov.nikita.clokit.pojos.Goal;
 
 public class LifetimeHeaderViewHolder extends RecyclerView.ViewHolder {
     private TextView mMainText, mTimeText;
+    public CardView mContainerCard;
 
     public LifetimeHeaderViewHolder(View itemView) {
         super(itemView);
         mMainText = (TextView)itemView.findViewById(R.id.main_text);
         mTimeText = (TextView)itemView.findViewById(R.id.time_text);
+        mContainerCard = (CardView)itemView.findViewById(R.id.container_card);
     }
 
     public void bindDataToViews(Goal goal){
