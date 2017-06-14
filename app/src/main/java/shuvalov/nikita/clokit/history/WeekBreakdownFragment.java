@@ -1,7 +1,6 @@
 package shuvalov.nikita.clokit.history;
 
 
-import android.content.Context;
 import android.graphics.Paint;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -16,6 +15,8 @@ import java.util.ArrayList;
 
 import shuvalov.nikita.clokit.GoalSQLHelper;
 import shuvalov.nikita.clokit.R;
+import shuvalov.nikita.clokit.graph_views.LineGraphView;
+import shuvalov.nikita.clokit.graph_views.PieChartView;
 import shuvalov.nikita.clokit.pojos.Goal;
 
 public class WeekBreakdownFragment extends Fragment {
@@ -52,6 +53,7 @@ public class WeekBreakdownFragment extends Fragment {
         mGraphContainer = (FrameLayout) view.findViewById(R.id.graph_container);
         mPieChartView = new PieChartView(getContext(), mWeekGoals);
         mGraphContainer.addView(mPieChartView);
+        mPieChartView.invalidate();
         mLegendRecycler = (RecyclerView)view.findViewById(R.id.stats_recycler);
         setUpRecycler();
         return view;

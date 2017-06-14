@@ -245,6 +245,35 @@ public class GoalSQLHelper extends SQLiteOpenHelper {
         return goal;
     }
 
+    public ArrayList<Goal> getLifetimeListForGoal(String goalName){
+        ArrayList<Goal> goals = new ArrayList<>();
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor cursor = db.query(WEEKLY_TABLE_NAME, null, NAME_COLUMN + " = ?", new String[]{goalName},null, null, WEEK_NUM_COLUMN  + " ASC");
+        if(cursor.moveToFirst()){
+            while(!cursor.isAfterLast()){
+                String subcat = cursor.getString(cursor.getColumnIndex(SUBCATEGORY_COLUMN));
+                int weekNum = cursor.getInt(cursor.getColumnIndex(WEEK_NUM_COLUMN));
+                long progressMilli = cursor.getLong(cursor.getColumnIndex(TOTAL_TIME_COLUMN));
+                long goalTimeMilli = cursor.getLong(cursor.getColumnIndex(GOAL_TIME_COLUMN));
+
+                long mondayMilli = cursor.getLong(cursor.getColumnIndex(MONDAY_TIME_COLUMN));
+                long tuesdayMilli = cursor.getLong(cursor.getColumnIndex(TUESDAY_TIME_COLUMN));
+                long wednesdayMilli = cursor.getLong(cursor.getColumnIndex(WEDNESDAY_TIME_COLUMN));
+                long thursdayMilli = cursor.getLong(cursor.getColumnIndex(THURSDAY_TIME_COLUMN));
+                long fridayMilli = cursor.getLong(cursor.getColumnIndex(FRIDAY_TIME_COLUMN));
+                long saturdayMilli = cursor.getLong(cursor.getColumnIndex(SATURDAY_TIME_COLUMN));
+                long sundayMilli = cursor.getLong(cursor.getColumnIndex(SUNDAY_TIME_COLUMN));
+
+                goals.add(new Goal(goalName, progressMilli, goalTimeMilli,
+                        new long[]{mondayMilli, tuesdayMilli, wednesdayMilli, thursdayMilli, fridayMilli, saturdayMilli, sundayMilli},
+                        weekNum, subcat));
+            }
+        }
+        cursor.close();
+        db.close();
+        return goals;
+    }
+
     public ArrayList<Week> getActiveWeeks(){
         ArrayList<Week> activeWeeks = new ArrayList<>();
         SQLiteDatabase db = getReadableDatabase();

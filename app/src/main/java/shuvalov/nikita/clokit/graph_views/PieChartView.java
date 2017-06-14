@@ -1,4 +1,4 @@
-package shuvalov.nikita.clokit.history;
+package shuvalov.nikita.clokit.graph_views;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -41,7 +41,6 @@ public class PieChartView extends View {
         mColorPaints = new ArrayList<>();
         mCircle = new RectF();
         prepColors();
-        invalidate();
     }
 
     @Override
@@ -70,6 +69,20 @@ public class PieChartView extends View {
             startAngle+= arc;
         }
     }
+//
+//    private void prepColors(){
+//        for(int colorBin = 1; colorBin< 8; colorBin ++){
+//            int blue = colorBin % 2 == 0 ? 0 : 255;
+//            int green = colorBin % 4 == 2 || colorBin%4 == 3 ? 255:0;
+//            int red = colorBin / 4 > 0 ? 255 : 0;
+//            for(int i= 0; i <6; i++){
+//                Paint p = new Paint();
+//                p.setStyle(Paint.Style.FILL);
+//                p.setColor(Color.argb(255, red, green, blue));
+//                mColorPaints.add(p);
+//            }
+//        }
+//    }
 
     private void prepColors(){
         for(int colorBin =1; colorBin < 8; colorBin++) {
