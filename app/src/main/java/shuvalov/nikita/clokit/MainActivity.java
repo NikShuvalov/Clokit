@@ -45,9 +45,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public static final String HISTORY_FRAG = "History fragment";
     public static final String ACHIEVEMENTS_FRAG = "Achievements fragment";
     public static final String LIFETIME_FRAG = "Lifetime fragment";
-
-
-
+    public static final String WEEK_BREAKDOWN_FRAG = "Week Breakdown Fragment";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -360,7 +358,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 mBackRecentlyPressed = true;
                 Toast.makeText(this, "Press back again to close", Toast.LENGTH_SHORT).show();
             }
-        }else{
+        }else if(mCurrentDisplay.equals(WEEK_BREAKDOWN_FRAG)){
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, HistoryFragment.newInstance(), WEEK_BREAKDOWN_FRAG).commit();
+            mCurrentDisplay = HISTORY_FRAG;
+        }
+        else{
             getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, HomeFragment.newInstance(),HOME_FRAG).commit();
             mCurrentDisplay = HOME_FRAG;
         }
@@ -394,6 +396,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public void onWeekSelected(Week week) {
         int weekNum = week.getWeekNum();
-        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, WeekBreakdownFragment.newInstance(weekNum)).commit();
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, WeekBreakdownFragment.newInstance(weekNum)).addToBackStack(String.valueOf(weekNum)).commit();
+        mCurrentDisplay = WEEK_BREAKDOWN_FRAG;
     }
 }

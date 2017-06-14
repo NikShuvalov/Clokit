@@ -4,7 +4,6 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.PointF;
 import android.graphics.RectF;
 import android.util.Log;
 import android.view.View;
@@ -64,7 +63,6 @@ public class PieChartView extends View {
         float startAngle = 0;
         for(int i = 0; i < mGoals.size(); i ++){
             Goal g = mGoals.get(i);
-            Log.d("FUN", "onDraw: GOLAS");
             float arc = ((float)g.getCurrentMilli()/mTotalTime) * 360f;
 
             canvas.drawArc(mCircle,startAngle,arc, true, mColorPaints.get(i));
@@ -86,4 +84,7 @@ public class PieChartView extends View {
     }
 
 
+    public ArrayList<Paint> getColorPaints() {
+        return mColorPaints;
+    }
 }

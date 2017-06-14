@@ -67,13 +67,13 @@ public class AppUtils {
     }
 
 
-    /**
-     * This method is less reliable, because it's just hardcoded to add the number of milliseconds in a week - 2 to the millis passed.
-     * That being said, though it's less reliable, it's also more flexible if user sets there own week start time, instead of midnight Monday.
-     *
-     * @param weekStartTimeInMillis Pass the week start time in millis.
-     * @return Returns time in millis of 1 week after the milli time entered minus 2 milliseconds.
-     */
+//    /**
+//     * This method is less reliable, because it's just hardcoded to add the number of milliseconds in a week - 2 to the millis passed.
+//     * That being said, though it's less reliable, it's also more flexible if user sets there own week start time, instead of midnight Monday.
+//     *
+//     * @param weekStartTimeInMillis Pass the week start time in millis.
+//     * @return Returns time in millis of 1 week after the milli time entered minus 2 milliseconds.
+//     */
 //    public static long getWeekEndMillis(long weekStartTimeInMillis){
 //        return (weekStartTimeInMillis + 604799998); //Should return Saturday 11:59:59:999am if Sunday 12:00:00:001am is passed.
 //        //604799998 = milliseconds/week - 2;
