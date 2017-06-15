@@ -5,14 +5,11 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
-import android.util.Log;
 import android.view.View;
 
 import java.util.ArrayList;
 
 import shuvalov.nikita.clokit.pojos.Goal;
-
-import static android.content.ContentValues.TAG;
 
 /**
  * Created by NikitaShuvalov on 6/13/17.
@@ -20,23 +17,30 @@ import static android.content.ContentValues.TAG;
 
 public class PieChartView extends View {
     private ArrayList<Goal> mGoals;
-    private int mTotalTime;
+    private int mTotalClockedTime;
     private RectF mCircle;
-    private Paint mLinePaint;
+    private Paint mLinePaint, mUnclokedPaint;
     private ArrayList<Paint> mColorPaints;
+    private boolean mUseUnclockedTime;
+
+    public static final int TOTAL_WEEK_TIME = 604800000;
 
     public PieChartView(Context context, ArrayList<Goal> goals) {
         super(context);
         mGoals = goals;
-        mTotalTime = 0;
+        mUseUnclockedTime = false;
+        mTotalClockedTime = 0;
         for(Goal g: goals){
-            mTotalTime+=g.getCurrentMilli();
+            mTotalClockedTime +=g.getCurrentMilli();
         }
-
         mLinePaint = new Paint();
         mLinePaint.setColor(Color.BLACK);
         mLinePaint.setStyle(Paint.Style.STROKE);
         mLinePaint.setStrokeWidth(4f);
+
+        mUnclokedPaint = new Paint();
+        mUnclokedPaint.setColor(Color.LTGRAY);
+        mUnclokedPaint.setStyle(Paint.Style.FILL);
 
         mColorPaints = new ArrayList<>();
         mCircle = new RectF();
@@ -62,27 +66,18 @@ public class PieChartView extends View {
         float startAngle = 0;
         for(int i = 0; i < mGoals.size(); i ++){
             Goal g = mGoals.get(i);
-            float arc = ((float)g.getCurrentMilli()/mTotalTime) * 360f;
+            float arc = mUseUnclockedTime ? ((float)g.getCurrentMilli()/TOTAL_WEEK_TIME) * 360f:((float)g.getCurrentMilli()/ mTotalClockedTime) * 360f;
 
             canvas.drawArc(mCircle,startAngle,arc, true, mColorPaints.get(i));
             canvas.drawArc(mCircle,startAngle,arc, true, mLinePaint);
             startAngle+= arc;
         }
+        if(mUseUnclockedTime){
+            canvas.drawArc(mCircle, startAngle, 360 - startAngle, true, mUnclokedPaint);
+            canvas.drawArc(mCircle, startAngle, 360 - startAngle, true, mLinePaint);
+        }
     }
-//
-//    private void prepColors(){
-//        for(int colorBin = 1; colorBin< 8; colorBin ++){
-//            int blue = colorBin % 2 == 0 ? 0 : 255;
-//            int green = colorBin % 4 == 2 || colorBin%4 == 3 ? 255:0;
-//            int red = colorBin / 4 > 0 ? 255 : 0;
-//            for(int i= 0; i <6; i++){
-//                Paint p = new Paint();
-//                p.setStyle(Paint.Style.FILL);
-//                p.setColor(Color.argb(255, red, green, blue));
-//                mColorPaints.add(p);
-//            }
-//        }
-//    }
+
 
     private void prepColors(){
         for(int colorBin =1; colorBin < 8; colorBin++) {
@@ -96,8 +91,18 @@ public class PieChartView extends View {
         }
     }
 
-
     public ArrayList<Paint> getColorPaints() {
         return mColorPaints;
+    }
+
+    public void setUseUnclockedTime(boolean useUnclockedTime) {
+        if(mUseUnclockedTime!= useUnclockedTime){
+            mUseUnclockedTime = useUnclockedTime;
+            invalidate();
+        }
+    }
+
+    public int getUnclockedTime(){
+        return TOTAL_WEEK_TIME - mTotalClockedTime;
     }
 }

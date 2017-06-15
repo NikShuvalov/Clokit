@@ -13,6 +13,8 @@ public class AppConstants {
     public static final String PREFERENCES_START_TIME = "The holy start time";
     public static final String PREFERENCES_TOTAL_TRACKED_TIME = "The holy total of time tracker";
 
+    public static final String UNCLOCKED_TIME = "Unclock'ed time";
+
     public static final int NOTIFICATION_ID = 1452156;
 
     //Time spent on a goal in a given week
