@@ -56,15 +56,7 @@ public class HomeFragment extends Fragment implements GoalRecyclerAdapter.OnGoal
         CurrentWeekGoalManager currentWeekGoalManager = CurrentWeekGoalManager.getInstance();
         mAdapter = new GoalRecyclerAdapter(currentWeekGoalManager.getCurrentGoals(), this);
         currentWeekGoalManager.setGoalRecyclerAdapter(mAdapter);
-        LinearLayoutManager goalLayoutManager;
-        goalLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
-
-//        if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
-//            goalLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
-//        }else{
-//            goalLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
-//
-//        }
+        LinearLayoutManager goalLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
 
         mGoalRecycler.setAdapter(mAdapter);
         mGoalRecycler.setLayoutManager(goalLayoutManager);
@@ -95,7 +87,6 @@ public class HomeFragment extends Fragment implements GoalRecyclerAdapter.OnGoal
         int activeGoalWeekNum = sharedPreferences.getInt(AppConstants.PREFERENCES_CURRENT_GOAL_WEEK_NUM, -1);
         String activeGoalName = sharedPreferences.getString(AppConstants.PREFERENCES_CURRENT_GOAL, AppConstants.PREFERENCES_NO_GOAL);
         if(!activeGoalName.equals(AppConstants.PREFERENCES_NO_GOAL) && AppUtils.getCurrentWeekNum() != sharedPreferences.getInt(AppConstants.PREFERENCES_CURRENT_GOAL_WEEK_NUM, -1)){//If the current week isn't default, and isn't the same as the week that's saved.
-            Log.d("TRANSWEEK", "onResume: called ");
             String lastWeekGoalName = sharedPreferences.getString(AppConstants.PREFERENCES_CURRENT_GOAL, AppConstants.PREFERENCES_NO_GOAL);
             String lastWeekGoalSubCat = sharedPreferences.getString(AppConstants.PREFERENCES_CURRENT_SUB_CAT, null);
             long startTime = sharedPreferences.getLong(AppConstants.PREFERENCES_START_TIME, 0);

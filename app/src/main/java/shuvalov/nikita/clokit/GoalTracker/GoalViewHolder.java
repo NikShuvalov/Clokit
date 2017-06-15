@@ -7,9 +7,11 @@ import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.RotateAnimation;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
@@ -32,17 +34,32 @@ public class GoalViewHolder extends RecyclerView.ViewHolder {
     public CardView mContainer;
 
 
-    public GoalViewHolder(View itemView) {
+    public GoalViewHolder(View itemView, int parentSize) {
         super(itemView);
         mGoalText = (TextView)itemView.findViewById(R.id.goal_name);
         mCurrentTime =  (TextView)itemView.findViewById(R.id.time_text);
         mEndTime = (TextView)itemView.findViewById(R.id.goal_text);
-        mProgressBar = (ProgressBar) itemView.findViewById(R.id.progress_bar);
         mEditButton = (ImageView) itemView.findViewById(R.id.goal_edit_button);
-        mToggleButton = (ToggleButton) itemView.findViewById(R.id.clock_it_button);
         mSubCatText = (TextView)itemView.findViewById(R.id.subcat_name);
         mRemoveButton = (Button)itemView.findViewById(R.id.remove_goal_butt);
         mContainer = (CardView)itemView.findViewById(R.id.card_container);
+        mProgressBar = (ProgressBar) itemView.findViewById(R.id.progress_bar);
+        mToggleButton = (ToggleButton) itemView.findViewById(R.id.clock_it_button);
+//
+//        RelativeLayout.LayoutParams containerParams = (RelativeLayout.LayoutParams) mContainer.getLayoutParams();
+//        containerParams.width = parentSize-32;
+//        mContainer.setLayoutParams(containerParams);
+//
+        FrameLayout.LayoutParams buttonParams = (FrameLayout.LayoutParams) mToggleButton.getLayoutParams();
+        buttonParams.height = (parentSize - 62)/3;
+        buttonParams.width = (parentSize-62)/3;
+        mToggleButton.setLayoutParams(buttonParams);
+
+        FrameLayout.LayoutParams progressParams = (FrameLayout.LayoutParams) mProgressBar.getLayoutParams();
+        progressParams.height = parentSize - 62;
+        progressParams.width = parentSize - 62;
+        mProgressBar.setLayoutParams(progressParams);
+        itemView.findViewById(R.id.progress_backdrop).setLayoutParams(progressParams);
     }
 
     public void bindDataToViews(Goal goal){
@@ -77,4 +94,13 @@ public class GoalViewHolder extends RecyclerView.ViewHolder {
         }
         mProgressBar.setProgress(progress);
     }
+//
+//    public void onLayoutInflated(int parentWidth){
+//        FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) mProgressBar.getLayoutParams();
+//        Log.d(TAG, "onLayoutInflated: " + parentWidth);
+//        params.height = parentWidth;
+//        params.width = parentWidth;
+//        mProgressBar.setLayoutParams(params);
+//        itemView.findViewById(R.id.progress_backdrop).setLayoutParams(params);
+//    }
 }

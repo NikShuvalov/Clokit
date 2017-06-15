@@ -45,7 +45,9 @@ public class GoalRecyclerAdapter extends RecyclerView.Adapter<GoalViewHolder> im
 
     @Override
     public GoalViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new GoalViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.viewholder_goal, null));
+        int parentSize = parent.getWidth() < parent.getHeight() ? parent.getWidth() :
+                 parent.getHeight();
+        return new GoalViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.viewholder_goal, null), parentSize);
     }
 
     @Override
@@ -75,6 +77,7 @@ public class GoalRecyclerAdapter extends RecyclerView.Adapter<GoalViewHolder> im
             }
         });
     }
+
 
     @Override
     public boolean onMenuItemClick(MenuItem item) {
