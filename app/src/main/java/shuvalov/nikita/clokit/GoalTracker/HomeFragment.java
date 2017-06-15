@@ -3,6 +3,7 @@ package shuvalov.nikita.clokit.goaltracker;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.support.v4.app.Fragment;
@@ -54,9 +55,16 @@ public class HomeFragment extends Fragment implements GoalRecyclerAdapter.OnGoal
 
         CurrentWeekGoalManager currentWeekGoalManager = CurrentWeekGoalManager.getInstance();
         mAdapter = new GoalRecyclerAdapter(currentWeekGoalManager.getCurrentGoals(), this);
-
         currentWeekGoalManager.setGoalRecyclerAdapter(mAdapter);
-        LinearLayoutManager goalLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL,false);
+        LinearLayoutManager goalLayoutManager;
+        goalLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
+
+//        if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+//            goalLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
+//        }else{
+//            goalLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
+//
+//        }
 
         mGoalRecycler.setAdapter(mAdapter);
         mGoalRecycler.setLayoutManager(goalLayoutManager);

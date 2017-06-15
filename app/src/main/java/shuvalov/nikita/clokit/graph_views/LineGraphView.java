@@ -21,12 +21,13 @@ import shuvalov.nikita.clokit.pojos.Goal;
 
 public class LineGraphView extends View {
     private ArrayList<Goal> mLifetimeGoal;
-    private Paint mGoalLinePaint, mProgressLinePaint, mGoalPaint, mProgressPaint;
+    private Paint mGoalLinePaint, mProgressLinePaint, mGoalPaint, mProgressPaint, mWhitePaint;
+    private Paint mLegendGoalPaint, mLegendActualPaint;
     private Path mGoalPath, mProgressPath;
-    private Rect mLineGraphRect;
+    private Rect mLineGraphRect, mLegendRect;
     private float mVerticalScale;
-    private Paint mTextPaint, mAxisPaint;
-    private float mXLabelInterval, mYLabelInterval, mAxisTextSize;
+    private Paint mTextPaint, mAxisPaint, mAxisLabelPaint;
+    private float mYLabelInterval, mAxisTextSize;
     private int mTotalProgress, mTotalGoal;
 
 
@@ -35,6 +36,7 @@ public class LineGraphView extends View {
         super(context);
         mLifetimeGoal = goals;
         mLineGraphRect= new Rect();
+        mLegendRect = new Rect();
         preparePaints();
     }
 
@@ -43,7 +45,7 @@ public class LineGraphView extends View {
         mGoalLinePaint.setStyle(Paint.Style.STROKE);
         mGoalLinePaint.setARGB(255, 0, 0, 0);
         mGoalLinePaint.setStrokeWidth(4f);
-        mGoalLinePaint.setPathEffect(new DashPathEffect(new float[]{10, 10}, 0f));
+        mGoalLinePaint.setPathEffect(new DashPathEffect(new float[]{5, 5}, 0f));
 
         mProgressLinePaint = new Paint();
         mProgressLinePaint.setStyle(Paint.Style.STROKE);
@@ -63,6 +65,22 @@ public class LineGraphView extends View {
 
         mAxisPaint = new Paint();
         mAxisPaint.setColor(Color.BLACK);
+
+        mAxisLabelPaint  =new Paint();
+        mAxisLabelPaint.setColor(Color.BLACK);
+
+        mWhitePaint = new Paint();
+        mWhitePaint.setColor(Color.WHITE);
+
+        mLegendGoalPaint = new Paint();
+        mLegendGoalPaint.setARGB(255, 200, 200, 255);
+        mLegendGoalPaint.setStrokeWidth(4f);
+        mLegendGoalPaint.setPathEffect(new DashPathEffect(new float[]{5, 5}, 0f));
+
+
+        mLegendActualPaint = new Paint();
+        mLegendActualPaint.setARGB(125, 0, 0, 255);
+        mLegendActualPaint.setStrokeWidth(4f);
     }
 
     private void definePaths(){
@@ -120,26 +138,47 @@ public class LineGraphView extends View {
     @Override
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         super.onLayout(changed, left, top, right, bottom);
+        setChartRect(left, top, right, bottom);
+        setLegendRect();
+        definePaths();
+
+    }
+
+    private void setChartRect(int left, int top, int right, int bottom){
         int width = right - left;
         int height = bottom - top;
         int centerY = (top+bottom)/2;
         if (height > width) {
             height = (int) (width / 1.78);
             mLineGraphRect.set(right/10, centerY - height/2, (int)(right*.9), centerY + height/2);
+            determineVerticalScale(height *.9f);
         }else{
+            height = (int)(height*.8);
             mLineGraphRect.set(right/10, centerY - height/2, (int)(right*.9), centerY + (int)(height/2.2));
+            determineVerticalScale(height *.9f);
         }
-        determineVerticalScale(height *.9f);
-        definePaths();
+        setTextSize(width,height);
+    }
 
+    private void setLegendRect(){
+        int left = mLineGraphRect.left + (int)(mLineGraphRect.width()*.03);
+        int top = mLineGraphRect.top + (int)(mLineGraphRect.height()*.03);
+        int right = (int)(left + mLineGraphRect.width()*.2);
+        int bottom = (int)( top + mLineGraphRect.height()*.2);
+        mLegendRect.set(left, top, right, bottom);
+    }
+
+    private void setTextSize(int width, int height){
         float textSize = width/20;
         mAxisTextSize = height/30f;
         mTextPaint.setTextSize(textSize);
         mAxisPaint.setTextSize(mAxisTextSize);
+        mLegendGoalPaint.setTextSize(mAxisTextSize);
+        mLegendActualPaint.setTextSize(mAxisTextSize);
+        mAxisLabelPaint.setTextSize(mAxisTextSize*2);
     }
 
     private void determineVerticalScale(float maxHeight){
-        Log.d("Max", "determineVerticalScale: "+maxHeight);
         int totalProgress = 0;
         int totalGoal = 0;
         for(Goal g: mLifetimeGoal){
@@ -164,6 +203,7 @@ public class LineGraphView extends View {
         if(mGoalPath !=null && mProgressPath!=null) {
             drawGraph(canvas);
             drawAxes(canvas);
+            drawLegend(canvas);
         }else{
             canvas.drawText("Not enough data to graph", canvas.getWidth()/5, canvas.getHeight()/2, mTextPaint);
         }
@@ -187,10 +227,10 @@ public class LineGraphView extends View {
         long endMillis = AppUtils.getWeekEndMillis(endWeek);
         long milliInterval = (endMillis - startMillis)/4;
         float x;
+        float y1 = 0;
         for(int i =0; i < 5; i ++) {
             x = left + (xIntervalLength*i);
             float y0 = mLineGraphRect.bottom;
-            float y1;
             if((y1 = mLineGraphRect.bottom + mLineGraphRect.height()/20) >= canvas.getClipBounds().bottom){
                 y1 = (mLineGraphRect.bottom*3 + canvas.getClipBounds().bottom)/4;
             }
@@ -198,7 +238,6 @@ public class LineGraphView extends View {
             String date = AppUtils.getDate(startMillis + (milliInterval*i));
             canvas.drawText(date, x-xIntervalLength/5f,y1 + (y1-y0), mAxisPaint);
         }
-
         //Draw y Axis lines & values
         float yIntervalLength = mLineGraphRect.height()/4f;
         float y;
@@ -210,6 +249,9 @@ public class LineGraphView extends View {
             x1 = x0 - 20;
             canvas.drawLine(x0, y, x1, y, mProgressLinePaint);
             String yLabelText = String.valueOf((int)((0+mYLabelInterval*i)/60));
+            if(i == 0){
+                yLabelText += " hrs";
+            }
             canvas.drawText(yLabelText,x1 - (yLabelText.length()*(int)(mAxisTextSize/1.5)),y + mAxisTextSize/2,mAxisPaint);
         }
 
@@ -220,7 +262,24 @@ public class LineGraphView extends View {
         canvas.drawLine(mLineGraphRect.right, yProgress, mLineGraphRect.right+20,yProgress,mProgressLinePaint);
         canvas.drawText(String.valueOf(mTotalGoal/60), mLineGraphRect.right+30, yGoal, mAxisPaint);
         canvas.drawText(String.valueOf(mTotalProgress/60), mLineGraphRect.right+30, yProgress, mAxisPaint);
+    }
 
+    private void drawLegend(Canvas canvas){
+        canvas.drawRect(mLegendRect,mWhitePaint);
+        canvas.drawRect(mLegendRect,mProgressLinePaint);
 
+        float x0 = mLegendRect.right - mLegendRect.width()*.2f;
+        float x1 = mLegendRect.right - mLegendRect.width()*.05f;
+        float y0 = mLegendRect.top + mLegendRect.height()*.35f;
+        float y1 = mLegendRect.top + mLegendRect.height()*.7f;
+        Path dashedLine = new Path();
+        dashedLine.moveTo(x0, y0);
+        dashedLine.lineTo(x1, y0);
+        canvas.drawPath(dashedLine, mGoalLinePaint);
+        canvas.drawLine(x0, y1, x1, y1, mProgressLinePaint);
+
+        float textXStart = mLegendRect.left + mLegendRect.width()*.1f ;
+        canvas.drawText("Goal",textXStart, y0, mAxisPaint);
+        canvas.drawText("Actual", textXStart, y1, mAxisPaint);
     }
 }
