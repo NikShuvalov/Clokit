@@ -45,12 +45,8 @@ public class MainActivity extends AppCompatActivity
     Toolbar mToolbar;
     private String mCurrentDisplay;
     private boolean mBackRecentlyPressed;
-    private String mBreakdownName;
-    private int mBreakdownWeek;
 
     public static final String CURRENT_DISPLAY_KEY = "Current Display key";
-    public static final String WEEK_NUMBER_KEY = "Week display key";
-    public static final String GOAL_NAME_KEY = "Goal display key";
 
     public static final String HOME_FRAG = "Home fragment";
     public static final String HISTORY_FRAG = "History fragment";
@@ -401,14 +397,12 @@ public class MainActivity extends AppCompatActivity
 
     private void startWeekBreakdownFragment(int weekNum){
         mBackRecentlyPressed = false;
-        mBreakdownWeek = weekNum;
         mCurrentDisplay = WEEK_BREAKDOWN_FRAG;
         getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, WeekBreakdownFragment.newInstance(weekNum), WEEK_BREAKDOWN_FRAG).addToBackStack(String.valueOf(weekNum)).commit();
     }
 
     private void startLifetimeStatsFragment(String goalName){
         mBackRecentlyPressed = false;
-        mBreakdownName = goalName;
         mCurrentDisplay = LIFETIME_STATS_FRAG;
         getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, LifetimeStatsFragment.newInstance(goalName),LIFETIME_STATS_FRAG).addToBackStack(goalName).commit();
     }
