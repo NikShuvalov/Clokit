@@ -1,21 +1,34 @@
 package shuvalov.nikita.clokit.lifetime_results;
 
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.ViewPager;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
+
+import java.util.ArrayList;
 
 import shuvalov.nikita.clokit.GoalSQLHelper;
 import shuvalov.nikita.clokit.R;
 import shuvalov.nikita.clokit.graph_views.LineGraphView;
+import shuvalov.nikita.clokit.pojos.Goal;
 
 
-public class LifetimeStatsFragment extends Fragment {
-    private FrameLayout mGraphContainer;
+public class LifetimeStatsFragment extends Fragment implements View.OnClickListener{
     private String mGoalName;
+    private ViewPager mViewPager;
+    private ImageView mChartButton, mStatsButton;
+    private RelativeLayout mChartBg, mStatsBg;
+    private LifetimeStatsPagerAdapter mLifetimeStatsPagerAdapter;
 
     public static final String GOAL_NAME = "Goal name";
 
@@ -43,9 +56,55 @@ public class LifetimeStatsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view =inflater.inflate(R.layout.fragment_lifetime_stats, container, false);
-        mGraphContainer = (FrameLayout)view.findViewById(R.id.graph_container);
-        mGraphContainer.addView(new LineGraphView(getContext(), GoalSQLHelper.getInstance(container.getContext()).getLifetimeListForGoal(mGoalName)));
+
+        ArrayList<Goal> goals = GoalSQLHelper.getInstance(container.getContext()).getLifetimeListForGoal(mGoalName);
+        LifetimeStatsManager.getInstance().setLifetimeGoalList(goals);
+        mLifetimeStatsPagerAdapter = new LifetimeStatsPagerAdapter(getChildFragmentManager());
+
+        mViewPager = (ViewPager) view.findViewById(R.id.view_pager);
+        mChartButton = (ImageView) view.findViewById(R.id.chart_option);
+        mStatsButton = (ImageView) view.findViewById(R.id.stats_option);
+        mChartBg = (RelativeLayout)view.findViewById(R.id.chart_bg);
+        mStatsBg = (RelativeLayout)view.findViewById(R.id.stats_bg);
+
+        changeButtonColors();
+
+        mChartButton.setOnClickListener(this);
+        mStatsButton.setOnClickListener(this);
+
+        mViewPager.setAdapter(mLifetimeStatsPagerAdapter);
+
+
         return view;
     }
 
+    private void changeButtonColors(){
+        if(mViewPager.getCurrentItem() == 0){
+            mChartButton.setBackgroundResource(R.drawable.ic_show_chart_selected);
+            mStatsButton.setBackgroundResource(R.drawable.ic_list);
+            mChartBg.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+            mStatsBg.setBackgroundColor(Color.WHITE);
+        }else{
+            mChartButton.setBackgroundResource(R.drawable.ic_show_chart);
+            mStatsButton.setBackgroundResource(R.drawable.ic_list_selected);
+            mStatsBg.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+            mChartBg.setBackgroundColor(Color.WHITE);
+        }
+    }
+
+
+
+    @Override
+    public void onClick(View view) {
+        switch(view.getId()){
+            case R.id.chart_option:
+                mViewPager.setCurrentItem(0);
+                changeButtonColors();
+                break;
+            case R.id.stats_option:
+                mViewPager.setCurrentItem(1);
+                changeButtonColors();
+                break;
+        }
+    }
 }
