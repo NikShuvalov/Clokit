@@ -7,6 +7,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -58,10 +59,13 @@ public class LifetimeStatsFragment extends Fragment implements View.OnClickListe
         View view =inflater.inflate(R.layout.fragment_lifetime_stats, container, false);
 
         ArrayList<Goal> goals = GoalSQLHelper.getInstance(container.getContext()).getLifetimeListForGoal(mGoalName);
-        LifetimeStatsManager.getInstance().setLifetimeGoalList(goals);
+        LifetimeStatsManager lifetimeStatsManager = LifetimeStatsManager.getInstance();
+        lifetimeStatsManager.setLifetimeGoalList(goals);
         mLifetimeStatsPagerAdapter = new LifetimeStatsPagerAdapter(getChildFragmentManager());
 
         mViewPager = (ViewPager) view.findViewById(R.id.view_pager);
+        mViewPager.setCurrentItem(lifetimeStatsManager.getSelectedOption());
+
         mChartButton = (ImageView) view.findViewById(R.id.chart_option);
         mStatsButton = (ImageView) view.findViewById(R.id.stats_option);
         mChartBg = (RelativeLayout)view.findViewById(R.id.chart_bg);
@@ -79,14 +83,14 @@ public class LifetimeStatsFragment extends Fragment implements View.OnClickListe
     }
 
     private void changeButtonColors(){
-        if(mViewPager.getCurrentItem() == 0){
-            mChartButton.setBackgroundResource(R.drawable.ic_show_chart_selected);
-            mStatsButton.setBackgroundResource(R.drawable.ic_list);
+        if(LifetimeStatsManager.getInstance().getSelectedOption() == 0){
+            mChartButton.setImageResource(R.drawable.ic_show_chart_selected);
+            mStatsButton.setImageResource(R.drawable.ic_list);
             mChartBg.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
             mStatsBg.setBackgroundColor(Color.WHITE);
         }else{
-            mChartButton.setBackgroundResource(R.drawable.ic_show_chart);
-            mStatsButton.setBackgroundResource(R.drawable.ic_list_selected);
+            mChartButton.setImageResource(R.drawable.ic_show_chart);
+            mStatsButton.setImageResource(R.drawable.ic_list_selected);
             mStatsBg.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
             mChartBg.setBackgroundColor(Color.WHITE);
         }
@@ -98,10 +102,12 @@ public class LifetimeStatsFragment extends Fragment implements View.OnClickListe
     public void onClick(View view) {
         switch(view.getId()){
             case R.id.chart_option:
+                LifetimeStatsManager.getInstance().setSelectedOption(0);
                 mViewPager.setCurrentItem(0);
                 changeButtonColors();
                 break;
             case R.id.stats_option:
+                LifetimeStatsManager.getInstance().setSelectedOption(1);
                 mViewPager.setCurrentItem(1);
                 changeButtonColors();
                 break;

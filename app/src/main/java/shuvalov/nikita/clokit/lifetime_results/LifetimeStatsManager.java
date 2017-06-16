@@ -10,12 +10,15 @@ import shuvalov.nikita.clokit.pojos.Goal;
 
 public class LifetimeStatsManager {
     private ArrayList<Goal> mLifetimeGoalList;
-    private String mGoalName;
+    private int mSelectedOption;
+    private long mTotalTime;
 
     private static LifetimeStatsManager sLifeTimeStatsManager;
 
     private LifetimeStatsManager() {
+        mSelectedOption = 0;
         mLifetimeGoalList = new ArrayList<>();
+        mTotalTime = -1;
     }
 
     public static LifetimeStatsManager getInstance() {
@@ -31,10 +34,24 @@ public class LifetimeStatsManager {
 
     public void setLifetimeGoalList(ArrayList<Goal> lifetimeGoalList) {
         mLifetimeGoalList = lifetimeGoalList;
+        for(Goal g: lifetimeGoalList){
+            mTotalTime+= g.getCurrentMilli();
+        }
     }
 
     public String getGoalName(){
         return mLifetimeGoalList.get(0).getGoalName();
     }
 
+    public void setSelectedOption(int selectedOption) {
+        mSelectedOption = selectedOption;
+    }
+
+    public int getSelectedOption() {
+        return mSelectedOption;
+    }
+
+    public long getTotalTime() {
+        return mTotalTime;
+    }
 }

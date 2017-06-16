@@ -29,7 +29,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:scaleType="fitCenter"
-                    android:background="@drawable/ic_show_chart_selected"
+                    android:src="@drawable/ic_show_chart_selected"
                     />
 
             </RelativeLayout>
@@ -44,7 +44,7 @@
                     android:id="@+id/stats_option"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:background="@drawable/ic_list"
+                    android:src="@drawable/ic_list"
                     />
 
             </RelativeLayout>

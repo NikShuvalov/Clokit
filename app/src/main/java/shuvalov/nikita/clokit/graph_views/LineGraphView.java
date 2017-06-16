@@ -193,8 +193,6 @@ public class LineGraphView extends View {
                 totalGoal*10/36f;
         mTotalGoal = totalGoal;
         mTotalProgress = totalProgress;
-        Log.d("Max", "totalGoal: "+totalGoal);
-        Log.d("Max", "totalProgress"+totalProgress);
     }
 
     @Override
@@ -227,7 +225,7 @@ public class LineGraphView extends View {
         long endMillis = AppUtils.getWeekEndMillis(endWeek);
         long milliInterval = (endMillis - startMillis)/4;
         float x;
-        float y1 = 0;
+        float y1;
         for(int i =0; i < 5; i ++) {
             x = left + (xIntervalLength*i);
             float y0 = mLineGraphRect.bottom;
