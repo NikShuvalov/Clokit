@@ -60,6 +60,7 @@ public class LifetimeStatsFragment extends Fragment implements View.OnClickListe
 
         ArrayList<Goal> goals = GoalSQLHelper.getInstance(container.getContext()).getLifetimeListForGoal(mGoalName);
         LifetimeStatsManager lifetimeStatsManager = LifetimeStatsManager.getInstance();
+        lifetimeStatsManager.setGoalName(mGoalName);
         lifetimeStatsManager.setLifetimeGoalList(goals);
         mLifetimeStatsPagerAdapter = new LifetimeStatsPagerAdapter(getChildFragmentManager());
 

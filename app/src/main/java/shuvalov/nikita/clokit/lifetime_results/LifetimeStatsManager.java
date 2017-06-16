@@ -12,6 +12,7 @@ public class LifetimeStatsManager {
     private ArrayList<Goal> mLifetimeGoalList;
     private int mSelectedOption;
     private long mTotalTime;
+    private String mGoalName;
 
     private static LifetimeStatsManager sLifeTimeStatsManager;
 
@@ -33,6 +34,8 @@ public class LifetimeStatsManager {
     }
 
     public void setLifetimeGoalList(ArrayList<Goal> lifetimeGoalList) {
+        mTotalTime = 0;
+        mSelectedOption = 0;
         mLifetimeGoalList = lifetimeGoalList;
         for(Goal g: lifetimeGoalList){
             mTotalTime+= g.getCurrentMilli();
@@ -40,7 +43,11 @@ public class LifetimeStatsManager {
     }
 
     public String getGoalName(){
-        return mLifetimeGoalList.get(0).getGoalName();
+        return mGoalName;
+    }
+
+    public void setGoalName(String goalName){
+        mGoalName = goalName;
     }
 
     public void setSelectedOption(int selectedOption) {
@@ -54,4 +61,6 @@ public class LifetimeStatsManager {
     public long getTotalTime() {
         return mTotalTime;
     }
+
+
 }

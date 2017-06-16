@@ -5,11 +5,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
-import java.util.HashMap;
-
 import shuvalov.nikita.clokit.AppUtils;
 import shuvalov.nikita.clokit.R;
-import shuvalov.nikita.clokit.pojos.Goal;
 
 /**
  * Created by NikitaShuvalov on 6/15/17.

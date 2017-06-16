@@ -14,7 +14,7 @@ public class TimeAllocatedComparator implements Comparator<Goal> {
     @Override
     public int compare(Goal goal2, Goal goal) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            return Long.compare(goal.getCurrentMilli(),goal2.getCurrentMilli());
+            return Long.compare(goal.getCurrentMilli()/60000,goal2.getCurrentMilli()/60000);
         }else{
             int goalMinutes = (int)goal.getCurrentMilli()/60000;
             int goal2Minutes = (int)goal2.getCurrentMilli()/60000;
