@@ -86,14 +86,15 @@ public class HomeFragment extends Fragment implements GoalRecyclerAdapter.OnGoal
         SharedPreferences sharedPreferences = getContext().getSharedPreferences(AppConstants.PREFERENCES_NAME, Context.MODE_PRIVATE);
         int activeGoalWeekNum = sharedPreferences.getInt(AppConstants.PREFERENCES_CURRENT_GOAL_WEEK_NUM, -1);
         String activeGoalName = sharedPreferences.getString(AppConstants.PREFERENCES_CURRENT_GOAL, AppConstants.PREFERENCES_NO_GOAL);
-        if(!activeGoalName.equals(AppConstants.PREFERENCES_NO_GOAL) && AppUtils.getCurrentWeekNum() != sharedPreferences.getInt(AppConstants.PREFERENCES_CURRENT_GOAL_WEEK_NUM, -1)){//If the current week isn't default, and isn't the same as the week that's saved.
-            String lastWeekGoalName = sharedPreferences.getString(AppConstants.PREFERENCES_CURRENT_GOAL, AppConstants.PREFERENCES_NO_GOAL);
+
+        if(!activeGoalName.equals(AppConstants.PREFERENCES_NO_GOAL) && AppUtils.getCurrentWeekNum() != activeGoalWeekNum){//If the current week isn't default, and isn't the same as the week that's saved.
+
             String lastWeekGoalSubCat = sharedPreferences.getString(AppConstants.PREFERENCES_CURRENT_SUB_CAT, null);
             long startTime = sharedPreferences.getLong(AppConstants.PREFERENCES_START_TIME, 0);
-
-            Goal lastWeekGoal = GoalSQLHelper.getInstance(getContext()).getSpecificCurrentGoal(lastWeekGoalName,lastWeekGoalSubCat, String.valueOf(activeGoalWeekNum));
+            Goal lastWeekGoal = GoalSQLHelper.getInstance(getContext()).getSpecificCurrentGoal(activeGoalName,lastWeekGoalSubCat, String.valueOf(activeGoalWeekNum));
             long weekEndTime = AppUtils.getWeekEndMillis(activeGoalWeekNum);
             long timeSpentLastWeek = weekEndTime-startTime;
+
             lastWeekGoal.addTimeSpent(timeSpentLastWeek);
             Week lastWeek = new Week(AppUtils.getWeekStartMillis(activeGoalWeekNum), AppUtils.getWeekEndMillis(activeGoalWeekNum),activeGoalWeekNum);
             updateAllGoalReferences(lastWeekGoal, lastWeek, timeSpentLastWeek, sharedPreferences);
@@ -106,7 +107,7 @@ public class HomeFragment extends Fragment implements GoalRecyclerAdapter.OnGoal
         updateTimeLeftDisplay();
     }
 
-    public void setupGoalForThisWeek(Goal lastWeekGoal, SharedPreferences sharedPreferences){
+    private void setupGoalForThisWeek(Goal lastWeekGoal, SharedPreferences sharedPreferences){
         GoalSQLHelper sqlhelper = GoalSQLHelper.getInstance(getContext());
         sqlhelper.addGoalToWeeklyTable(lastWeekGoal);
         int thisWeekNum = AppUtils.getCurrentWeekNum();
@@ -115,7 +116,10 @@ public class HomeFragment extends Fragment implements GoalRecyclerAdapter.OnGoal
         CurrentWeekGoalManager.getInstance().addCurrentGoal(lastWeekGoal);
         mAdapter.notifyDataSetChanged();
 
-        AppUtils.setActiveGoalToPreferences(sharedPreferences, lastWeekGoal);
+        sharedPreferences.edit().putString(AppConstants.PREFERENCES_CURRENT_GOAL, lastWeekGoal.getGoalName()).apply(); //Save name of current goal.
+        sharedPreferences.edit().putLong(AppConstants.PREFERENCES_START_TIME, AppUtils.getWeekStartMillis(thisWeekNum)).apply(); //Save the current time of the selected goal.
+        sharedPreferences.edit().putInt(AppConstants.PREFERENCES_CURRENT_GOAL_WEEK_NUM, thisWeekNum).apply(); //Adds the weeknum of when the goal was started
+        sharedPreferences.edit().putString(AppConstants.PREFERENCES_CURRENT_SUB_CAT, lastWeekGoal.getSubCategory()).apply(); //Saves the subcategory of current goal.
     }
 
     public void updateAllGoalReferences(Goal goal, Week week, long timeSpent, SharedPreferences sharedPreferences){

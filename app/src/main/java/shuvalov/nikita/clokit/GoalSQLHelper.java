@@ -598,5 +598,4 @@ public class GoalSQLHelper extends SQLiteOpenHelper {
         }
         addGoalToWeeklyTable(existingEntry);
     }
-
 }

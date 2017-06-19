@@ -3,7 +3,6 @@ package shuvalov.nikita.clokit;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.PersistableBundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
@@ -74,7 +73,7 @@ public class MainActivity extends AppCompatActivity
         mCurrentDisplay = savedInstanceState.getString(CURRENT_DISPLAY_KEY);
     }
 
-    public void debugClearCurrentGoal(){
+    public void debugClearCurrentGoal(){ //FixMe:Remove me
         getSharedPreferences(AppConstants.PREFERENCES_NAME, MODE_PRIVATE).edit().putString(AppConstants.PREFERENCES_CURRENT_GOAL, AppConstants.PREFERENCES_NO_GOAL).apply();
     }
 
@@ -92,7 +91,7 @@ public class MainActivity extends AppCompatActivity
         setSupportActionBar(mToolbar);
 
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this,mDrawerLayout, mToolbar, R.string.open_nav,R.string.close_nav);
-        mDrawerLayout.setDrawerListener(toggle);
+        mDrawerLayout.addDrawerListener(toggle);
         toggle.syncState();
 
         mNavView.setNavigationItemSelectedListener(this);
