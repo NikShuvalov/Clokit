@@ -44,4 +44,5 @@ public class HistoryFragment extends Fragment {
         historyRecycler.setLayoutManager(linearLayoutManager);
         return view;
     }
+
 }

@@ -542,6 +542,38 @@ public class GoalSQLHelper extends SQLiteOpenHelper {
         c.close();
     }
 
+    public void refactorGoalSubCat(String goalName, String oldSubcat, String newSubCat){
+        SQLiteDatabase db = getWritableDatabase();
+        Cursor c = db.query(WEEKLY_TABLE_NAME, null, NAME_COLUMN + " = ? AND " + SUBCATEGORY_COLUMN + " = ?", new String[]{goalName, oldSubcat}, null, null, null);
+        if(c.moveToFirst()){
+            while(!c.isAfterLast()){
+                long[] weekBreakdown = new long[7];
+                weekBreakdown[0] = c.getLong(c.getColumnIndex(MONDAY_TIME_COLUMN));
+                weekBreakdown[1] = c.getLong(c.getColumnIndex(TUESDAY_TIME_COLUMN));
+                weekBreakdown[2] = c.getLong(c.getColumnIndex(WEDNESDAY_TIME_COLUMN));
+                weekBreakdown[3] = c.getLong(c.getColumnIndex(THURSDAY_TIME_COLUMN));
+                weekBreakdown[4] = c.getLong(c.getColumnIndex(FRIDAY_TIME_COLUMN));
+                weekBreakdown[5] = c.getLong(c.getColumnIndex(SATURDAY_TIME_COLUMN));
+                weekBreakdown[6] = c.getLong(c.getColumnIndex(SUNDAY_TIME_COLUMN));
+
+                long timeSpent = c.getLong(c.getColumnIndex(TOTAL_TIME_COLUMN));
+                long goalTime = c.getLong(c.getColumnIndex(GOAL_TIME_COLUMN));
+                int weekNum = c.getInt(c.getColumnIndex(WEEK_NUM_COLUMN));
+                Goal refactoredGoal = new Goal(
+                        goalName,timeSpent
+                        ,goalTime
+                        ,weekBreakdown
+                        ,weekNum,
+                        newSubCat
+                );
+                mergeGoalIfExists(refactoredGoal);
+                removeCurrentGoal(goalName, oldSubcat,String.valueOf(weekNum));
+                c.moveToNext();
+            }
+        }
+        db.close();
+        c.close();
+    }
 
     private int removeLifetimeEntry(String goalName){
         SQLiteDatabase db = getWritableDatabase();
