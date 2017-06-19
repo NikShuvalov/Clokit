@@ -1,6 +1,7 @@
 package shuvalov.nikita.clokit.history;
 
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -26,6 +27,7 @@ public class WeeklyStatsViewHolder extends RecyclerView.ViewHolder {
     }
 
     public void bindDataToViews(Goal goal,int color){
+        Log.d("Week", "bindDataToViews: " + goal.getWeekNum());
         mGoalText.setText(goal.getGoalName());
         mTimeText.setText(AppUtils.getHoursAndMinutes(goal.getCurrentMilli()));
         mSubCatText.setText(goal.getSubCategory());

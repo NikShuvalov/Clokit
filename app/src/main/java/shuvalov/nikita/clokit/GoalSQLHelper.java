@@ -21,7 +21,6 @@ import static android.content.ContentValues.TAG;
  */
 
 public class GoalSQLHelper extends SQLiteOpenHelper {
-
     public static final String DATABASE_NAME = "GOAL_DATABASE";
     public static final int DATABASE_VERSION = 3;
 
@@ -51,7 +50,6 @@ public class GoalSQLHelper extends SQLiteOpenHelper {
     public static final String FRIDAY_TIME_COLUMN = "FRIDAY";
     public static final String SATURDAY_TIME_COLUMN = "SATURDAY";
     public static final String SUNDAY_TIME_COLUMN = "SUNDAY";
-
     public static final String SUBCATEGORY_COLUMN = "SUBCATEGORY";
 
 
@@ -220,7 +218,6 @@ public class GoalSQLHelper extends SQLiteOpenHelper {
 
     public Goal getSpecificCurrentGoal(String name, String subcategory,String weekNum){
         SQLiteDatabase db = getReadableDatabase();
-        Log.d(TAG, "getSpecificCurrentGoal: "+ subcategory + name + weekNum);
         Cursor cursor = db.query(WEEKLY_TABLE_NAME, null, NAME_COLUMN + " = ? AND " + SUBCATEGORY_COLUMN + " = ? AND " + WEEK_NUM_COLUMN + " = ?", new String[]{name, subcategory, weekNum},null, null, null);
         Goal goal= null;
         if(cursor.moveToFirst()){
@@ -504,6 +501,70 @@ public class GoalSQLHelper extends SQLiteOpenHelper {
         db.close();
         c.close();
         return null;
+    }
+
+    public void refactorGoalName(String goalNameToChange, String newGoalName){
+        SQLiteDatabase db = getWritableDatabase();
+        Cursor c = db.query(WEEKLY_TABLE_NAME, null, NAME_COLUMN + " = ?", new String[]{goalNameToChange}, null, null, null);
+        if(c.moveToFirst()){
+            while(!c.isAfterLast()){
+                long[] weekBreakdown = new long[7];
+                weekBreakdown[0] = c.getLong(c.getColumnIndex(MONDAY_TIME_COLUMN));
+                weekBreakdown[1] = c.getLong(c.getColumnIndex(TUESDAY_TIME_COLUMN));
+                weekBreakdown[2] = c.getLong(c.getColumnIndex(WEDNESDAY_TIME_COLUMN));
+                weekBreakdown[3] = c.getLong(c.getColumnIndex(THURSDAY_TIME_COLUMN));
+                weekBreakdown[4] = c.getLong(c.getColumnIndex(FRIDAY_TIME_COLUMN));
+                weekBreakdown[5] = c.getLong(c.getColumnIndex(SATURDAY_TIME_COLUMN));
+                weekBreakdown[6] = c.getLong(c.getColumnIndex(SUNDAY_TIME_COLUMN));
+
+                long timeSpent = c.getLong(c.getColumnIndex(TOTAL_TIME_COLUMN));
+                long goalTime = c.getLong(c.getColumnIndex(GOAL_TIME_COLUMN));
+                int weekNum = c.getInt(c.getColumnIndex(WEEK_NUM_COLUMN));
+                String subCat = c.getString(c.getColumnIndex(SUBCATEGORY_COLUMN));
+
+                Goal refactoredGoal = new Goal(
+                        newGoalName,timeSpent
+                        ,goalTime
+                        ,weekBreakdown
+                        ,weekNum,
+                        subCat
+                );
+                mergeGoalIfExists(refactoredGoal);
+                updateLifetimeByGoalName(newGoalName,timeSpent);
+                if(removeLifetimeEntry(goalNameToChange)==0){
+                    Log.w("SQL Error", "Attempt to delete an entry that doesn't exist");
+                }
+                removeCurrentGoal(goalNameToChange, subCat,String.valueOf(weekNum));
+                c.moveToNext();
+            }
+        }
+        db.close();
+        c.close();
+    }
+
+
+    private int removeLifetimeEntry(String goalName){
+        SQLiteDatabase db = getWritableDatabase();
+        int i = db.delete(LIFETIME_TABLE_NAME, NAME_COLUMN + " = ? ", new String[]{goalName});
+        db.close();
+        return i;
+
+    }
+
+    private void mergeGoalIfExists(Goal goal){
+        Goal existingEntry = getSpecificCurrentGoal(goal.getGoalName(), goal.getSubCategory(), String.valueOf(goal.getWeekNum()));
+        if(existingEntry==null){
+            addGoalToWeeklyTable(goal);
+            return;
+        }
+        long newCurrentMilli = existingEntry.getCurrentMilli() + goal.getCurrentMilli();
+        long newGoalMilli = existingEntry.getEndMilli() + goal.getEndMilli();
+        existingEntry.setCurrentMilli(newCurrentMilli);
+        existingEntry.setEndMilli(newGoalMilli);
+        for(int i = 0; i<7; i++){
+            existingEntry.getWeekBreakdown()[i] += goal.getWeekBreakdown()[i];
+        }
+        addGoalToWeeklyTable(existingEntry);
     }
 
 }

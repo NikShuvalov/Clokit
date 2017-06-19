@@ -99,9 +99,8 @@ public class Goal {
         mWeekBreakdown = cachedGoal.mWeekBreakdown;
     }
 
-    public Goal createCachedCopy(){ //FixMe: Why was I calling the methods instead of just getting it directly from the Goal object?
-        return new Goal(this.getGoalName(),this.getCurrentMilli(), this.getEndMilli(),this.getWeekBreakdown(),this.getWeekNum(),this.getSubCategory());
-
+    public Goal createCachedCopy(){
+        return new Goal(mGoalName, mCurrentMilli, mEndMilli, mWeekBreakdown, mWeekNum, mSubCategory);
     }
 
 
