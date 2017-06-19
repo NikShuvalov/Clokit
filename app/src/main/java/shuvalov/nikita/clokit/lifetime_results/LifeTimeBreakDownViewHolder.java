@@ -8,6 +8,8 @@ import android.widget.TextView;
 import shuvalov.nikita.clokit.AppUtils;
 import shuvalov.nikita.clokit.R;
 
+import static android.view.View.GONE;
+
 /**
  * Created by NikitaShuvalov on 6/15/17.
  */
@@ -25,7 +27,6 @@ public class LifeTimeBreakDownViewHolder extends RecyclerView.ViewHolder {
     }
 
     public void bindDataToViews(String subCat, long milli, long total){
-        Log.d("Boop", "bindDataToViews: "+ total);
         if(subCat== null || subCat.isEmpty()){
             mCatText.setText(UNDEFINED);
         }else {
@@ -41,5 +42,14 @@ public class LifeTimeBreakDownViewHolder extends RecyclerView.ViewHolder {
         }
         String percentageText = percent + " %";
         mPercentText.setText(percentageText);
+    }
+
+    public void emptyListPrompt(){
+        String text = "There's no entries to show yet; go work on your goals!";
+        mCatText.setText(text);
+        mCatText.setTextSize(20f);
+        mTimeText.setVisibility(GONE);
+        mPercentText.setVisibility(GONE);
+
     }
 }

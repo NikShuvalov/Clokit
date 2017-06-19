@@ -40,12 +40,18 @@ public class LifeTimeBreakdownRecyclerAdapter extends RecyclerView.Adapter<LifeT
 
     @Override
     public void onBindViewHolder(LifeTimeBreakDownViewHolder holder, int position) {
-        String key = mKeys.get(position);
-        holder.bindDataToViews(key, mConsolidatedGoals.get(key),LifetimeStatsManager.getInstance().getTotalTime());
+        if(mKeys.isEmpty()){
+            holder.emptyListPrompt();
+        }else {
+            String key = mKeys.get(position);
+            holder.bindDataToViews(key, mConsolidatedGoals.get(key), LifetimeStatsManager.getInstance().getTotalTime());
+        }
     }
 
     @Override
     public int getItemCount() {
-        return mKeys.size();
+        return mKeys.size()== 0 ?
+                1:
+                mKeys.size();
     }
 }

@@ -34,8 +34,8 @@ public class LifetimeStatsManager {
     }
 
     public void setLifetimeGoalList(ArrayList<Goal> lifetimeGoalList) {
+
         mTotalTime = 0;
-        mSelectedOption = 0;
         mLifetimeGoalList = lifetimeGoalList;
         for(Goal g: lifetimeGoalList){
             mTotalTime+= g.getCurrentMilli();

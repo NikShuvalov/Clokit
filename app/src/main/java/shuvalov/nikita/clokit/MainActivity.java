@@ -34,6 +34,7 @@ import shuvalov.nikita.clokit.history.WeekBreakdownFragment;
 import shuvalov.nikita.clokit.lifetime_results.LifetimeFragment;
 import shuvalov.nikita.clokit.lifetime_results.LifetimeRecyclerAdapter;
 import shuvalov.nikita.clokit.lifetime_results.LifetimeStatsFragment;
+import shuvalov.nikita.clokit.lifetime_results.LifetimeStatsManager;
 import shuvalov.nikita.clokit.pojos.Goal;
 import shuvalov.nikita.clokit.pojos.Week;
 
@@ -410,6 +411,7 @@ public class MainActivity extends AppCompatActivity
     private void startLifetimeFragment(){
         mBackRecentlyPressed = false;
         mCurrentDisplay = LIFETIME_FRAG;
+        LifetimeStatsManager.getInstance().setSelectedOption(0);
         getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, LifetimeFragment.newInstance(), LIFETIME_FRAG).commit();
     }
 

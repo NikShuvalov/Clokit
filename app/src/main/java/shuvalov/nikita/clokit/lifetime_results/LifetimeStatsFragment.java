@@ -24,7 +24,7 @@ import shuvalov.nikita.clokit.graph_views.LineGraphView;
 import shuvalov.nikita.clokit.pojos.Goal;
 
 
-public class LifetimeStatsFragment extends Fragment implements View.OnClickListener{
+public class LifetimeStatsFragment extends Fragment implements View.OnClickListener, ViewPager.OnPageChangeListener{
     private String mGoalName;
     private ViewPager mViewPager;
     private ImageView mChartButton, mStatsButton;
@@ -78,6 +78,7 @@ public class LifetimeStatsFragment extends Fragment implements View.OnClickListe
         mStatsButton.setOnClickListener(this);
 
         mViewPager.setAdapter(mLifetimeStatsPagerAdapter);
+        mViewPager.addOnPageChangeListener(this);
 
 
         return view;
@@ -113,5 +114,21 @@ public class LifetimeStatsFragment extends Fragment implements View.OnClickListe
                 changeButtonColors();
                 break;
         }
+    }
+
+    @Override
+    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+    }
+
+    @Override
+    public void onPageSelected(int position) {
+        LifetimeStatsManager.getInstance().setSelectedOption(position);
+        changeButtonColors();
+    }
+
+    @Override
+    public void onPageScrollStateChanged(int state) {
+
     }
 }

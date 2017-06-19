@@ -30,7 +30,6 @@ public class LifetimeViewHolder extends RecyclerView.ViewHolder {
     }
 
     public void bindDataToViews(Goal goal){
-        Log.d("VIEWHOLDER", "bindDataToViews: "+ goal.getGoalName());
         mGoalText.setText(goal.getGoalName());
         long hoursWorked = AppUtils.getHoursOfWork(goal.getCurrentMilli());
         mRankingText.setText(identifyRank(hoursWorked));

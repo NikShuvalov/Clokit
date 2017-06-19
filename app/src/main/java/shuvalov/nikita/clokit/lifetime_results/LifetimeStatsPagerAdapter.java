@@ -4,6 +4,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.PagerAdapter;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -34,5 +35,6 @@ public class LifetimeStatsPagerAdapter extends FragmentPagerAdapter {
     public int getCount() {
         return 2;
     }
+
 
 }
