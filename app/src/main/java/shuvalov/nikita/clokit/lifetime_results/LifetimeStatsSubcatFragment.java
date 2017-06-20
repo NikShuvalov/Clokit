@@ -1,6 +1,7 @@
 package shuvalov.nikita.clokit.lifetime_results;
 
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -12,10 +13,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Collections;
 
+import shuvalov.nikita.clokit.AppConstants;
+import shuvalov.nikita.clokit.AppUtils;
 import shuvalov.nikita.clokit.GoalSQLHelper;
 import shuvalov.nikita.clokit.R;
 import shuvalov.nikita.clokit.pojos.Goal;
@@ -83,25 +87,47 @@ public class LifetimeStatsSubcatFragment extends Fragment implements LifeTimeBre
     private void createDialog(){
         View view = LayoutInflater.from(getContext()).inflate(R.layout.dialog_rename, null);
         final EditText nameEntry = (EditText)view.findViewById(R.id.name_entry);
-        new AlertDialog.Builder(getContext())
+        AlertDialog alertDialog = new AlertDialog.Builder(getContext())
                 .setView(view)
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         dialogInterface.dismiss();
                     }
-                }).setPositiveButton("Rename", new DialogInterface.OnClickListener() {
+                }).setPositiveButton("Rename", null).create();
+        alertDialog.setOnShowListener(new DialogInterface.OnShowListener() {
+            @Override
+            public void onShow(final DialogInterface dialogInterface) {
+                Button confirmButton = ((AlertDialog) dialogInterface).getButton(DialogInterface.BUTTON_POSITIVE);
+                final EditText editText = (EditText)((AlertDialog) dialogInterface).findViewById(R.id.name_entry);
+                confirmButton.setOnClickListener(new View.OnClickListener() {
                     @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        renameSelectedGoals(nameEntry.getText().toString());
+                    public void onClick(View view) {
+                        String entered = editText.getText().toString();
+                        if(!entered.trim().equals("")){
+                            renameSelectedGoals(entered);
+                            dialogInterface.dismiss();
+                        }else{
+                            nameEntry.setError("Can't be empty");
+                        }
                     }
-                }).create().show();
+                });
+
+            }
+        });
+        alertDialog.show();
     }
 
     private void renameSelectedGoals(String newSubCat){
         ArrayList<String> selectedGoals = mAdapter.getSelectedSubCategories();
         for(String subcat: selectedGoals){
-            GoalSQLHelper.getInstance(getContext()).refactorGoalSubCat(LifetimeStatsManager.getInstance().getGoalName(),subcat, newSubCat);
+            if(AppUtils.isGoalCurrentlyActive(getContext().getSharedPreferences(AppConstants.PREFERENCES_NAME, Context.MODE_PRIVATE),LifetimeStatsManager.getInstance().getGoalName(),subcat)) {
+                String messageText = String.format("Active Category: \"%s\" wasn't edited",subcat);
+                Toast.makeText(getContext(), messageText, Toast.LENGTH_LONG).show();
+            }else{
+                GoalSQLHelper.getInstance(getContext()).refactorGoalSubCat(LifetimeStatsManager.getInstance().getGoalName(), subcat, newSubCat);
+
+            }
         }
         mAdapter.unselectAll();
         updatelifetimeStatsList();
@@ -110,6 +136,7 @@ public class LifetimeStatsSubcatFragment extends Fragment implements LifeTimeBre
     private void updatelifetimeStatsList(){
         LifetimeStatsManager lifetimeStatsManager = LifetimeStatsManager.getInstance();
         ArrayList<Goal> goals = GoalSQLHelper.getInstance(getContext()).getLifetimeListForGoal(lifetimeStatsManager.getGoalName());
+        Collections.sort(goals,new TimeAllocatedComparator());
         lifetimeStatsManager.setLifetimeGoalList(goals);
         mAdapter.updateGoalList(lifetimeStatsManager.getLifetimeGoalList());
     }

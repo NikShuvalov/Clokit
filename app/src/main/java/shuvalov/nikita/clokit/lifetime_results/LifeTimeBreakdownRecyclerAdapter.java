@@ -52,19 +52,19 @@ public class LifeTimeBreakdownRecyclerAdapter extends RecyclerView.Adapter<LifeT
 
     @Override
     public void onBindViewHolder(final LifeTimeBreakDownViewHolder holder, int position) {
-        holder.mCheckBox.setChecked(mCheckedPositions.get(position));
-        holder.mCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                mCheckedPositions.set(holder.getAdapterPosition(), b);
-                mGoalCheckedListener.onCheckedStatusChange(b || mCheckedPositions.contains(true));
-            }
-        });
         if(mKeys.isEmpty()){
             holder.emptyListPrompt();
         }else {
             String key = mKeys.get(position);
             holder.bindDataToViews(key, mConsolidatedGoals.get(key), LifetimeStatsManager.getInstance().getTotalTime());
+            holder.mCheckBox.setChecked(mCheckedPositions.get(position));
+            holder.mCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                    mCheckedPositions.set(holder.getAdapterPosition(), b);
+                    mGoalCheckedListener.onCheckedStatusChange(b || mCheckedPositions.contains(true));
+                }
+            });
         }
     }
 
@@ -104,6 +104,4 @@ public class LifeTimeBreakdownRecyclerAdapter extends RecyclerView.Adapter<LifeT
         notifyDataSetChanged();
         mGoalCheckedListener.onCheckedStatusChange(false);
     }
-
-
 }

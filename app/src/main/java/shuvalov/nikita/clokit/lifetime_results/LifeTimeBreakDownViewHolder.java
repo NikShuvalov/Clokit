@@ -18,7 +18,6 @@ public class LifeTimeBreakDownViewHolder extends RecyclerView.ViewHolder{
     public static final String UNDEFINED = "Undefined";
     private TextView mCatText, mTimeText, mPercentText;
     public CheckBox mCheckBox;
-    private boolean mChecked;
 
 
     public LifeTimeBreakDownViewHolder(View itemView) {
@@ -54,13 +53,7 @@ public class LifeTimeBreakDownViewHolder extends RecyclerView.ViewHolder{
         mCatText.setTextSize(20f);
         mTimeText.setVisibility(GONE);
         mPercentText.setVisibility(GONE);
+        mCheckBox.setVisibility(GONE);
     }
 
-    public void setChecked(boolean b){
-        mChecked =b;
-    }
-
-    public boolean isChecked(){
-        return mChecked;
-    }
 }

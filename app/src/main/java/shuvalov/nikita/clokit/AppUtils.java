@@ -159,6 +159,24 @@ public class AppUtils {
         return false;
     }
 
+    public static boolean isGoalCurrentlyActive(SharedPreferences sharedPreferences, String goalName, String subCat){
+        String activeName = sharedPreferences.getString(AppConstants.PREFERENCES_CURRENT_GOAL, AppConstants.PREFERENCES_NO_GOAL);
+        if (activeName.equals(AppConstants.PREFERENCES_NO_GOAL)) {
+            return false;
+        }
+        String activeSubCat = sharedPreferences.getString(AppConstants.PREFERENCES_CURRENT_SUB_CAT, AppConstants.PREFERENCES_NO_GOAL);
+        if (!activeName.equals(goalName)){
+            return false;
+        }else if(activeSubCat.equals(AppConstants.PREFERENCES_NO_GOAL)){
+            if(subCat.isEmpty()) {
+                return true;
+            }
+        }else if(activeSubCat.equals(subCat)){
+                return true;
+            }
+        return false;
+    }
+
     //Consider using boolean to return with the changes made were succesful or not.
     public static void setActiveGoalToPreferences(SharedPreferences sharedPreferences, Goal goal){
         sharedPreferences.edit().putString(AppConstants.PREFERENCES_CURRENT_GOAL, goal.getGoalName()).apply(); //Save name of current goal.

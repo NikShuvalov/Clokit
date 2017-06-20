@@ -543,6 +543,9 @@ public class GoalSQLHelper extends SQLiteOpenHelper {
     }
 
     public void refactorGoalSubCat(String goalName, String oldSubcat, String newSubCat){
+        if(newSubCat.equals(oldSubcat)){
+            return;
+        }
         SQLiteDatabase db = getWritableDatabase();
         Cursor c = db.query(WEEKLY_TABLE_NAME, null, NAME_COLUMN + " = ? AND " + SUBCATEGORY_COLUMN + " = ?", new String[]{goalName, oldSubcat}, null, null, null);
         if(c.moveToFirst()){
@@ -567,7 +570,9 @@ public class GoalSQLHelper extends SQLiteOpenHelper {
                         newSubCat
                 );
                 mergeGoalIfExists(refactoredGoal);
-                removeCurrentGoal(goalName, oldSubcat,String.valueOf(weekNum));
+                if(!oldSubcat.equals(newSubCat)) {
+                    removeCurrentGoal(goalName, oldSubcat, String.valueOf(weekNum));
+                }
                 c.moveToNext();
             }
         }
