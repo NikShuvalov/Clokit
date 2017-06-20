@@ -45,11 +45,7 @@ public class GoalViewHolder extends RecyclerView.ViewHolder {
         mContainer = (CardView)itemView.findViewById(R.id.card_container);
         mProgressBar = (ProgressBar) itemView.findViewById(R.id.progress_bar);
         mToggleButton = (ToggleButton) itemView.findViewById(R.id.clock_it_button);
-//
-//        RelativeLayout.LayoutParams containerParams = (RelativeLayout.LayoutParams) mContainer.getLayoutParams();
-//        containerParams.width = parentSize-32;
-//        mContainer.setLayoutParams(containerParams);
-//
+
         FrameLayout.LayoutParams buttonParams = (FrameLayout.LayoutParams) mToggleButton.getLayoutParams();
         buttonParams.height = (parentSize - 62)/3;
         buttonParams.width = (parentSize-62)/3;
@@ -88,19 +84,10 @@ public class GoalViewHolder extends RecyclerView.ViewHolder {
         if(progress>1000){
             progress=1000;
         }
-        Log.d(TAG, "updateProgressBar: "+progress);
         if(progress==0){ //Apparently progressbars take values between 0 and the set maxValue. Setting progress = 0 results in no changes which screws up my recycler.
             progress=1;
         }
         mProgressBar.setProgress(progress);
     }
-//
-//    public void onLayoutInflated(int parentWidth){
-//        FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) mProgressBar.getLayoutParams();
-//        Log.d(TAG, "onLayoutInflated: " + parentWidth);
-//        params.height = parentWidth;
-//        params.width = parentWidth;
-//        mProgressBar.setLayoutParams(params);
-//        itemView.findViewById(R.id.progress_backdrop).setLayoutParams(params);
-//    }
+
 }

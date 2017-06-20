@@ -26,7 +26,6 @@ public class GoalTrackerIntentService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        Log.d(TAG, "Started handleIntent");
         NotificationCompat.Builder noteBuilder = new NotificationCompat.Builder(getApplicationContext());
         SharedPreferences sharedPreferences = getSharedPreferences(AppConstants.PREFERENCES_NAME,MODE_PRIVATE);
         String goalName = sharedPreferences.getString(AppConstants.PREFERENCES_CURRENT_GOAL, AppConstants.PREFERENCES_NO_GOAL);

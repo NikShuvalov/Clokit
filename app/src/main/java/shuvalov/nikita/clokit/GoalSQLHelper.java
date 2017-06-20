@@ -503,6 +503,7 @@ public class GoalSQLHelper extends SQLiteOpenHelper {
         return null;
     }
 
+    //ToDo: Implement this somewhere so that user can change goalNames
     public void refactorGoalName(String goalNameToChange, String newGoalName){
         SQLiteDatabase db = getWritableDatabase();
         Cursor c = db.query(WEEKLY_TABLE_NAME, null, NAME_COLUMN + " = ?", new String[]{goalNameToChange}, null, null, null);

@@ -27,7 +27,6 @@ public class WeeklyStatsViewHolder extends RecyclerView.ViewHolder {
     }
 
     public void bindDataToViews(Goal goal,int color){
-        Log.d("Week", "bindDataToViews: " + goal.getWeekNum());
         mGoalText.setText(goal.getGoalName());
         mTimeText.setText(AppUtils.getHoursAndMinutes(goal.getCurrentMilli()));
         mSubCatText.setText(goal.getSubCategory());

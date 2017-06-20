@@ -46,6 +46,7 @@ public class LifetimeFragment extends Fragment {
 
 
         final LifetimeRecyclerAdapter lifetimeRecyclerAdapter = new LifetimeRecyclerAdapter(LifetimeTrackerManager.getInstance().getLifetimeResults(), (MainActivity)getActivity());
+
         GridLayoutManager gridLayoutManager = new GridLayoutManager(getContext(), 2);
         gridLayoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
             @Override

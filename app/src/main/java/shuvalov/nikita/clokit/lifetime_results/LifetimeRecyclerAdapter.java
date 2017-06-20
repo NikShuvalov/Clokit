@@ -43,7 +43,6 @@ public class LifetimeRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.V
             ((LifetimeHeaderViewHolder) holder).mContainerCard.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Log.d("Click", "onClick: "+goal.getGoalName());
                     mGoalSelectedListener.onGoalSelected(goal.getGoalName());
                 }
             });
@@ -53,7 +52,6 @@ public class LifetimeRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.V
 
                 @Override
                 public void onClick(View view) {
-                    Log.d("Click", "onClick: "+goal.getGoalName());
                     mGoalSelectedListener.onGoalSelected(goal.getGoalName());
                 }
             });

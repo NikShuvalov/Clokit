@@ -16,19 +16,16 @@ import shuvalov.nikita.clokit.R;
 public class HistoryViewHolder extends RecyclerView.ViewHolder {
     private TextView mStartText;
     public CardView mCardView;
-//    private TextView mEndText;
 
     public HistoryViewHolder(View itemView) {
         super(itemView);
         mStartText = (TextView)itemView.findViewById(R.id.week_start_text);
         mCardView = (CardView)itemView.findViewById(R.id.week_card);
 
-//        mEndText = (TextView)itemView.findViewById(R.id.week_end_text);
     }
 
     public void bindDataToViews(Week week){
         String startDateText = "Week of: " + AppUtils.getDate(week.getStartTime());
         mStartText.setText(startDateText);
-//        mEndText.setText(AppUtils.getDate(week.getEndTime()));
     }
 }

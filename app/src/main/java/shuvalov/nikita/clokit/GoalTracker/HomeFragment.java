@@ -36,9 +36,7 @@ public class HomeFragment extends Fragment implements GoalRecyclerAdapter.OnGoal
     }
 
     public static HomeFragment newInstance() {
-        HomeFragment fragment = new HomeFragment();
-
-        return fragment;
+        return new HomeFragment();
     }
 
     @Override

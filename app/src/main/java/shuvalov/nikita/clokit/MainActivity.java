@@ -50,7 +50,6 @@ public class MainActivity extends AppCompatActivity
 
     public static final String HOME_FRAG = "Home fragment";
     public static final String HISTORY_FRAG = "History fragment";
-    public static final String ACHIEVEMENTS_FRAG = "Achievements fragment";
     public static final String LIFETIME_FRAG = "Lifetime fragment";
     public static final String WEEK_BREAKDOWN_FRAG = "Week Breakdown Fragment";
     public static final String LIFETIME_STATS_FRAG = "The fragment that displays the stats of the lifetime goals and such";
@@ -72,11 +71,6 @@ public class MainActivity extends AppCompatActivity
         super.onRestoreInstanceState(savedInstanceState);
         mCurrentDisplay = savedInstanceState.getString(CURRENT_DISPLAY_KEY);
     }
-
-    public void debugClearCurrentGoal(){ //FixMe:Remove me
-        getSharedPreferences(AppConstants.PREFERENCES_NAME, MODE_PRIVATE).edit().putString(AppConstants.PREFERENCES_CURRENT_GOAL, AppConstants.PREFERENCES_NO_GOAL).apply();
-    }
-
 
     public void loadData(){
         int weekNum = AppUtils.getCurrentWeekNum();
@@ -122,15 +116,6 @@ public class MainActivity extends AppCompatActivity
                     Toast.makeText(this, "Already in history activity", Toast.LENGTH_SHORT).show();
                 }
                 break;
-            case R.id.achievements_option:
-                if(!mCurrentDisplay.equals(ACHIEVEMENTS_FRAG)){
-                    mBackRecentlyPressed = false;
-//                    mCurrentDisplay = ACHIEVEMENTS_FRAG;
-                    Toast.makeText(this, "Not yet Implemented", Toast.LENGTH_SHORT).show();
-                }else{
-                    Toast.makeText(this, "Already in achievement activity", Toast.LENGTH_SHORT).show();
-                }
-                break;
             case R.id.lifetime_option:
                 if(!mCurrentDisplay.equals(LIFETIME_FRAG)){
                     startLifetimeFragment();
@@ -148,9 +133,6 @@ public class MainActivity extends AppCompatActivity
         switch(item.getItemId()){
             case R.id.new_goal_opt:
                 promptUserForGoal(false);
-                break;
-            case R.id.settings_opt:
-                //ToDo: Take to settings page.
                 break;
             case R.id.existing_goal_opt:
                 promptUserForGoal(true);
@@ -383,33 +365,45 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        menu.setGroupVisible(0, mCurrentDisplay.equals(HOME_FRAG));
+        return super.onPrepareOptionsMenu(menu);
+    }
+
     private void startHistoryFragment(){
         mBackRecentlyPressed = false;
         mCurrentDisplay = HISTORY_FRAG;
+        invalidateOptionsMenu();
         getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, HistoryFragment.newInstance(), HISTORY_FRAG).commit();
     }
 
     private void startHomeFragment(){
         mBackRecentlyPressed = false;
         mCurrentDisplay = HOME_FRAG;
+        invalidateOptionsMenu();
         getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, HomeFragment.newInstance(),HOME_FRAG).commit();
     }
 
     private void startWeekBreakdownFragment(int weekNum){
         mBackRecentlyPressed = false;
         mCurrentDisplay = WEEK_BREAKDOWN_FRAG;
+        invalidateOptionsMenu();
         getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, WeekBreakdownFragment.newInstance(weekNum), WEEK_BREAKDOWN_FRAG).addToBackStack(String.valueOf(weekNum)).commit();
     }
 
     private void startLifetimeStatsFragment(String goalName){
         mBackRecentlyPressed = false;
         mCurrentDisplay = LIFETIME_STATS_FRAG;
+        invalidateOptionsMenu();
         getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, LifetimeStatsFragment.newInstance(goalName),LIFETIME_STATS_FRAG).addToBackStack(goalName).commit();
     }
 
     private void startLifetimeFragment(){
         mBackRecentlyPressed = false;
         mCurrentDisplay = LIFETIME_FRAG;
+        invalidateOptionsMenu();
         LifetimeStatsManager.getInstance().setSelectedOption(0);
         getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, LifetimeFragment.newInstance(), LIFETIME_FRAG).commit();
     }

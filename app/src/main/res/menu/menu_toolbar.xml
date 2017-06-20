@@ -5,11 +5,6 @@
         android:id="@+id/new_goal_opt"
         android:title="Add New Goal"
         app:showAsAction="never"/>
-    <item
-        android:id="@+id/settings_opt"
-        android:title="Settings"
-        app:showAsAction = "ifRoom"
-        android:icon="@android:drawable/ic_menu_preferences"/>
 
     <item
         android:id="@+id/existing_goal_opt"

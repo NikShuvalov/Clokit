@@ -201,4 +201,33 @@ public class AppUtils {
         cal.setTimeInMillis(timeInMillis);
         return cal.get(Calendar.WEEK_OF_YEAR);
     }
+
+    public static String identifyRank(long hours){
+        hours *= 10; //ToDo: Remove later if wanting more serious values, this is just for testing porpoises! DOLFINS! BLOW-UP THE OCEAN!
+        if(hours>10000){
+            return "God";
+        }else if(hours>7500){
+            return "Transcendent";
+        }else if (hours>5000){
+            return "GrandMaster";
+        }else if (hours>2500){
+            return "Master";
+        }else if (hours>1000){
+            return "Professional";
+        }else if (hours>750){
+            return "Expert";
+        }else if (hours>500){
+            return "Journeyman";
+        }else if (hours >250){
+            return "Apprentice";
+        }else if (hours>100){
+            return "Novice";
+        }else if (hours>50){
+            return "Beginner";
+        }else if (hours>10){
+            return "Initiate";
+        }else{
+            return "Newbie";
+        }
+    }
 }

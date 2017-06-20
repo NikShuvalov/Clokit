@@ -185,12 +185,11 @@ public class GoalRecyclerAdapter extends RecyclerView.Adapter<GoalViewHolder> im
         int savedWeekNum = sharedPreferences.getInt(AppConstants.PREFERENCES_CURRENT_GOAL_WEEK_NUM, -1);
         AppUtils.resetActiveGoalPreferences(sharedPreferences);
         if (savedWeekNum == -1) {
-            Log.e("GoalRecyclerAdapter", "Missing preference value", new Exception());
+            Log.e("GoalRecyclerAdapter", "Missing preference value", new Exception("Expected Preference Value not found"));
         }else if (savedWeekOfYear+1 == currentWeekOfYear) { //The task crossed over into a second week.
             // This snippet of code can only be called RARELY and is a fail-safe.
             // This only happens if the user leaves the app open with screen on when passing into the new week.
             // Otherwise, the goals should be reset in the homefragment onResume.
-            Log.d("GoalRecyclerAdapter", "Crossed weeks");
             long weekEndTime = AppUtils.getWeekEndMillis(savedWeekNum);
             long timeSpentLastWeek = weekEndTime - startTime;
             updateAllGoalReferences(holder, timeSpentLastWeek, savedWeekNum, sharedPreferences);
@@ -259,7 +258,6 @@ public class GoalRecyclerAdapter extends RecyclerView.Adapter<GoalViewHolder> im
         }
         if (CurrentWeekGoalManager.getInstance().removeGoal(goal)) {
             updateDisplayOnRemove(holder.getAdapterPosition());
-            Log.d("Test", "After Goal size: " + mGoals.size());
         } else {
             Log.w("GoalRecyclerAdapter", "onClick: ", new Exception("Couldn't remove goal because it wasn't found in CurrentWeekGoalManager"));
         }
@@ -270,7 +268,6 @@ public class GoalRecyclerAdapter extends RecyclerView.Adapter<GoalViewHolder> im
             } else if (removedRows > 1) { //If more than one row is being deleted then we have a problem.
                 Log.e("GoalRecyclerAdapter", "Removed: " + rowsremoved, new Exception("Excessive amount of rows deleted"));
             }
-            Log.d("GoalRecyclerAdapter", "Removed :" + removedRows);
         }
     }
 

@@ -65,8 +65,7 @@ public class ExistingGoalsRecyclerAdapter extends RecyclerView.Adapter<ExistingV
         if(mSelectedPosition == -1){
             return null; //There is nothing selected, return null and handle it in whatever is calling the method.
         }
-        Goal selectedGoal = mExistingGoals.get(mSelectedPosition);
-        return selectedGoal;
+        return mExistingGoals.get(mSelectedPosition);
     }
 
     public void resetSelection(){

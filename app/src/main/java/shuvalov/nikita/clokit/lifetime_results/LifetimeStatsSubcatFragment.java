@@ -28,7 +28,6 @@ import shuvalov.nikita.clokit.pojos.Goal;
 public class LifetimeStatsSubcatFragment extends Fragment implements LifeTimeBreakdownRecyclerAdapter.GoalCheckedListener, View.OnClickListener{
     private RecyclerView mRecyclerView;
     private LifeTimeBreakdownRecyclerAdapter mAdapter;
-    private Button mCancelButton, mMergeButton;
 
     public LifetimeStatsSubcatFragment() {
     }
@@ -48,10 +47,8 @@ public class LifetimeStatsSubcatFragment extends Fragment implements LifeTimeBre
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_lifetime_stats_subcat, container, false);
         mRecyclerView = (RecyclerView) view.findViewById(R.id.subcat_recycler);
-        mCancelButton = ((LifetimeStatsFragment)getParentFragment()).getCancelButton();
-        mMergeButton = ((LifetimeStatsFragment)getParentFragment()).getRenameButton();
-        mCancelButton.setOnClickListener(this);
-        mMergeButton.setOnClickListener(this);
+        (((LifetimeStatsFragment)getParentFragment()).getCancelButton()).setOnClickListener(this);
+        (((LifetimeStatsFragment)getParentFragment()).getRenameButton()).setOnClickListener(this);
 
         ArrayList<Goal> goalList = LifetimeStatsManager.getInstance().getLifetimeGoalList();
         Collections.sort(goalList,new TimeAllocatedComparator());

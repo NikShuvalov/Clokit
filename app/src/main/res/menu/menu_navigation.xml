@@ -8,9 +8,6 @@
         android:id="@+id/history_option"
         android:title="History"/>
     <item
-        android:id="@+id/achievements_option"
-        android:title = "Achievements"/>
-    <item
         android:id="@+id/lifetime_option"
         android:title="Lifetime stats"/>
 </menu>
