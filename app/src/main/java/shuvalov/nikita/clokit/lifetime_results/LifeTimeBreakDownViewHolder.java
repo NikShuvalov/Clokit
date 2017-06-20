@@ -1,8 +1,8 @@
 package shuvalov.nikita.clokit.lifetime_results;
 
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.TextView;
 
 import shuvalov.nikita.clokit.AppUtils;
@@ -14,9 +14,11 @@ import static android.view.View.GONE;
  * Created by NikitaShuvalov on 6/15/17.
  */
 
-public class LifeTimeBreakDownViewHolder extends RecyclerView.ViewHolder {
+public class LifeTimeBreakDownViewHolder extends RecyclerView.ViewHolder{
     public static final String UNDEFINED = "Undefined";
     private TextView mCatText, mTimeText, mPercentText;
+    public CheckBox mCheckBox;
+    private boolean mChecked;
 
 
     public LifeTimeBreakDownViewHolder(View itemView) {
@@ -24,9 +26,11 @@ public class LifeTimeBreakDownViewHolder extends RecyclerView.ViewHolder {
         mCatText = (TextView)itemView.findViewById(R.id.sub_cat_text);
         mTimeText = (TextView)itemView.findViewById(R.id.time_text);
         mPercentText = (TextView)itemView.findViewById(R.id.time_percentage_text);
+        mCheckBox = (CheckBox)itemView.findViewById(R.id.checkbox);
     }
 
     public void bindDataToViews(String subCat, long milli, long total){
+        //ToDo: Color highlight selected rows?
         if(subCat== null || subCat.isEmpty()){
             mCatText.setText(UNDEFINED);
         }else {
@@ -50,6 +54,13 @@ public class LifeTimeBreakDownViewHolder extends RecyclerView.ViewHolder {
         mCatText.setTextSize(20f);
         mTimeText.setVisibility(GONE);
         mPercentText.setVisibility(GONE);
+    }
 
+    public void setChecked(boolean b){
+        mChecked =b;
+    }
+
+    public boolean isChecked(){
+        return mChecked;
     }
 }

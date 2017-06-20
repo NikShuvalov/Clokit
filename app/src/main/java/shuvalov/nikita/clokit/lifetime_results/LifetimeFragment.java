@@ -5,7 +5,6 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -66,7 +65,6 @@ public class LifetimeFragment extends Fragment {
         long trackedTime = getContext().getSharedPreferences(AppConstants.PREFERENCES_NAME, Context.MODE_PRIVATE).getLong(AppConstants.PREFERENCES_TOTAL_TRACKED_TIME,0);
         String summaryText = "Total tracked time:\n" + AppUtils.getLifetimeSummaryText(trackedTime);
         ((TextView)view.findViewById(R.id.summary_text)).setText(summaryText);
-
         return view;
     }
 

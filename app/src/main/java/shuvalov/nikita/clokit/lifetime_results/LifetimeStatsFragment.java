@@ -11,6 +11,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -28,8 +30,13 @@ public class LifetimeStatsFragment extends Fragment implements View.OnClickListe
     private String mGoalName;
     private ViewPager mViewPager;
     private ImageView mChartButton, mStatsButton;
+    private Button mCancelButton, mRenameButton;
     private RelativeLayout mChartBg, mStatsBg;
     private LifetimeStatsPagerAdapter mLifetimeStatsPagerAdapter;
+    private View mBottomPanel, mFauxNavBar;
+    private boolean mOptionsDisplayed;
+
+
 
     public static final String GOAL_NAME = "Goal name";
 
@@ -48,6 +55,7 @@ public class LifetimeStatsFragment extends Fragment implements View.OnClickListe
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mOptionsDisplayed = false;
         if(getArguments()!=null){
             mGoalName = getArguments().getString(GOAL_NAME);
         }
@@ -58,7 +66,7 @@ public class LifetimeStatsFragment extends Fragment implements View.OnClickListe
                              Bundle savedInstanceState) {
         View view =inflater.inflate(R.layout.fragment_lifetime_stats, container, false);
 
-        ArrayList<Goal> goals = GoalSQLHelper.getInstance(container.getContext()).getLifetimeListForGoal(mGoalName);
+        ArrayList<Goal> goals = GoalSQLHelper.getInstance(getContext()).getLifetimeListForGoal(mGoalName);
         LifetimeStatsManager lifetimeStatsManager = LifetimeStatsManager.getInstance();
         lifetimeStatsManager.setGoalName(mGoalName);
         lifetimeStatsManager.setLifetimeGoalList(goals);
@@ -67,15 +75,21 @@ public class LifetimeStatsFragment extends Fragment implements View.OnClickListe
         mViewPager = (ViewPager) view.findViewById(R.id.view_pager);
         mViewPager.setCurrentItem(lifetimeStatsManager.getSelectedOption());
 
+        mFauxNavBar = view.findViewById(R.id.faux_bot_navbar);
         mChartButton = (ImageView) view.findViewById(R.id.chart_option);
         mStatsButton = (ImageView) view.findViewById(R.id.stats_option);
         mChartBg = (RelativeLayout)view.findViewById(R.id.chart_bg);
         mStatsBg = (RelativeLayout)view.findViewById(R.id.stats_bg);
+        mBottomPanel = view.findViewById(R.id.bottom_options_panel);
+        mCancelButton = (Button)view.findViewById(R.id.cancel_action);
+        mRenameButton = (Button)view.findViewById(R.id.merge_action);
 
         changeButtonColors();
 
         mChartButton.setOnClickListener(this);
         mStatsButton.setOnClickListener(this);
+        mCancelButton.setOnClickListener(this);
+        mRenameButton.setOnClickListener(this);
 
         mViewPager.setAdapter(mLifetimeStatsPagerAdapter);
         mViewPager.addOnPageChangeListener(this);
@@ -102,7 +116,7 @@ public class LifetimeStatsFragment extends Fragment implements View.OnClickListe
 
     @Override
     public void onClick(View view) {
-        switch(view.getId()){
+        switch (view.getId()) {
             case R.id.chart_option:
                 LifetimeStatsManager.getInstance().setSelectedOption(0);
                 mViewPager.setCurrentItem(0);
@@ -130,5 +144,68 @@ public class LifetimeStatsFragment extends Fragment implements View.OnClickListe
     @Override
     public void onPageScrollStateChanged(int state) {
 
+    }
+
+    public void replaceBottomView(final View viewToHide, final View viewToShow) {
+        Animation hideAnim = AnimationUtils.loadAnimation(getContext(), R.anim.bottom_panel_hide);
+        hideAnim.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                viewToHide.clearAnimation();
+                showView(viewToShow);
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
+        viewToHide.setAnimation(hideAnim);
+        viewToHide.setVisibility(View.INVISIBLE);
+    }
+
+    public void showView(final View v) {
+        Animation showAnim = AnimationUtils.loadAnimation(getContext(), R.anim.bottom_panel_show);
+        showAnim.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                v.clearAnimation();
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
+        v.setAnimation(showAnim);
+        v.setVisibility(View.VISIBLE);
+    }
+
+    public void swapPanelsIfNeeded(boolean displayEditOptions){
+        if(displayEditOptions && !mOptionsDisplayed) {
+            replaceBottomView(mFauxNavBar, mBottomPanel);
+            mOptionsDisplayed = true;
+        }else if (!displayEditOptions && mOptionsDisplayed){
+            replaceBottomView(mBottomPanel, mFauxNavBar);
+            mOptionsDisplayed = false;
+        }
+    }
+
+    public Button getCancelButton(){
+        return mCancelButton;
+    }
+
+    public Button getRenameButton(){
+        return mRenameButton;
     }
 }

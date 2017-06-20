@@ -58,4 +58,10 @@
         android:layout_above="@id/faux_bot_navbar"/>
 
 
+    <include
+        layout="@layout/bottom_options_panel"
+        android:visibility="invisible"/>
+
+
+
 </RelativeLayout>
