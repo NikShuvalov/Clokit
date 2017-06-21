@@ -10,13 +10,18 @@
         android:id="@+id/button_row"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#333"
+            android:layout_alignParentTop="true"/>
 
         <View
             android:id="@+id/button_divider"
-            android:layout_width="2dp"
+            android:layout_width="1dp"
             android:layout_height="match_parent"
             android:layout_centerHorizontal="true"
-            android:background="@android:color/black"/>
+            android:background="#333"/>
         <Button
             android:id="@+id/cancel_action"
             android:layout_width="match_parent"

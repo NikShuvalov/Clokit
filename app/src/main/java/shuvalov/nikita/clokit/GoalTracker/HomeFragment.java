@@ -7,6 +7,7 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -53,8 +54,15 @@ public class HomeFragment extends Fragment implements GoalRecyclerAdapter.OnGoal
 
         CurrentWeekGoalManager currentWeekGoalManager = CurrentWeekGoalManager.getInstance();
         mAdapter = new GoalRecyclerAdapter(currentWeekGoalManager.getCurrentGoals(), this);
+        RecyclerView.LayoutManager goalLayoutManager;
         currentWeekGoalManager.setGoalRecyclerAdapter(mAdapter);
-        LinearLayoutManager goalLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
+
+        int orientation = getResources().getConfiguration().orientation;
+        if(orientation == Configuration.ORIENTATION_PORTRAIT) {
+            goalLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
+        }else{
+            goalLayoutManager = new GridLayoutManager(getContext(),2);
+        }
 
         mGoalRecycler.setAdapter(mAdapter);
         mGoalRecycler.setLayoutManager(goalLayoutManager);

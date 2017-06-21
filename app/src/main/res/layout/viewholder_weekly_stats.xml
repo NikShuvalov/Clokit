@@ -48,8 +48,8 @@
 
     <View
         android:layout_width="match_parent"
-        android:layout_height="4dp"
-        android:background="#666"
+        android:layout_height="2dp"
+        android:background="#333"
         android:layout_below="@id/sub_cat_text"/>
 
 </RelativeLayout>
