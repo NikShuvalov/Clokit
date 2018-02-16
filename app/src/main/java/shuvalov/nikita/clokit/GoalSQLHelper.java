@@ -9,12 +9,12 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import shuvalov.nikita.clokit.pojos.Achievement;
 import shuvalov.nikita.clokit.pojos.Goal;
 import shuvalov.nikita.clokit.pojos.Week;
-
-import static android.content.ContentValues.TAG;
+import shuvalov.nikita.clokit.todo_list.ToDoItem;
 
 /**
  * Created by NikitaShuvalov on 3/3/17.
@@ -22,7 +22,7 @@ import static android.content.ContentValues.TAG;
 
 public class GoalSQLHelper extends SQLiteOpenHelper {
     public static final String DATABASE_NAME = "GOAL_DATABASE";
-    public static final int DATABASE_VERSION = 3;
+    public static final int DATABASE_VERSION = 4;
 
 
     //Table names
@@ -30,6 +30,7 @@ public class GoalSQLHelper extends SQLiteOpenHelper {
     public static final String WEEKLY_TABLE_NAME = "WEEKLY_TABLE";
     public static final String WEEKS_REFERENCE_TABLE_NAME = "ACTIVE_WEEKS_TABLE";
     public static final String ACHIEVEMENTS_TABLE_NAME = "ACHIEVEMENTS_TABLE";
+    private static final String TO_DO_TABLE_NAME = "TO_DO_TABLE";
 
     //Non-table-specific(Shared) columns
     public static final String NAME_COLUMN = "NAME";
@@ -59,6 +60,12 @@ public class GoalSQLHelper extends SQLiteOpenHelper {
     //Achievement Specific columns
     public static final String ACHIEVEMENT_ID = "ACHIEVEMENT_ID";
     public static final String IMAGE_REFERENCE_COLUMN = "IMAGE_REFERENCE";
+
+    //To-Do List columns
+    private static final String DETAILS_COLUMN = "DETAILS";
+    private static final String CREATED_TIME_COLUMN = "START";
+    private static final String DUE_TIME_COLUMN = "DUE";
+    private static final String COMPLETED_COLUMN = "COMPLETED";
 
     //String for creating tables
     public static final String CREATE_LIFETIME_TABLE_EXE = "CREATE TABLE "+ LIFETIME_TABLE_NAME + " ("+
@@ -93,8 +100,14 @@ public class GoalSQLHelper extends SQLiteOpenHelper {
             START_DAY_COLUMN + " INTEGER, "+
             END_DAY_COLUMN + " INTEGER)";
 
-    private static final String DATABASE_UPGRADE_TO_2_SCRIPT = "ALTER TABLE "+  ACHIEVEMENTS_TABLE_NAME + " ADD COLUMN " + TOTAL_TIME_COLUMN + " INTEGER;";
+    private static final String CREATE_TODO_TABLE_EXE = "CREATE TABLE "+ TO_DO_TABLE_NAME + " (" +
+            NAME_COLUMN + " TEXT, " +
+            DETAILS_COLUMN + " TEXT, " +
+            CREATED_TIME_COLUMN + " INTEGER PRIMARY KEY, " +
+            DUE_TIME_COLUMN + " INTEGER, " +
+            COMPLETED_COLUMN + " INTEGER)";
 
+    private static final String DATABASE_UPGRADE_TO_2_SCRIPT = "ALTER TABLE "+  ACHIEVEMENTS_TABLE_NAME + " ADD COLUMN " + TOTAL_TIME_COLUMN + " INTEGER;";
 
 
     private static GoalSQLHelper sGoalSQLHelper;
@@ -131,6 +144,9 @@ public class GoalSQLHelper extends SQLiteOpenHelper {
         if(oldVersion<3){
             sqLiteDatabase.execSQL("DROP TABLE IF EXISTS " + ACHIEVEMENTS_TABLE_NAME);
             sqLiteDatabase.execSQL(CREATE_ACHIEVEMENTS_TABLE_EXE);
+        }
+        if(oldVersion<4){
+            sqLiteDatabase.execSQL(CREATE_TODO_TABLE_EXE);
         }
 
 
@@ -603,5 +619,52 @@ public class GoalSQLHelper extends SQLiteOpenHelper {
             existingEntry.getWeekBreakdown()[i] += goal.getWeekBreakdown()[i];
         }
         addGoalToWeeklyTable(existingEntry);
+    }
+
+    private ToDoItem parseToDoItemCursor(Cursor c){
+        String name = c.getString(c.getColumnIndex(NAME_COLUMN));
+        String details = c.getString(c.getColumnIndex(DETAILS_COLUMN));
+        long start = c.getLong(c.getColumnIndex(CREATED_TIME_COLUMN));
+        long due = c.getLong(c.getColumnIndex(DUE_TIME_COLUMN));
+        boolean isComplete = c.getInt(c.getColumnIndex(COMPLETED_COLUMN)) == 1;
+        return new ToDoItem(name, details, start, due, isComplete);
+    }
+
+    private ContentValues parseToDoItemContentValues(ToDoItem item){
+        ContentValues cv = new ContentValues();
+        cv.put(NAME_COLUMN, item.getName());
+        cv.put(DETAILS_COLUMN, item.getDescription());
+        cv.put(CREATED_TIME_COLUMN, item.getCreated());
+        cv.put(DUE_TIME_COLUMN, item.getDue());
+        cv.put(COMPLETED_COLUMN, item.isComplete() ? 1 : 0);
+        return cv;
+    }
+
+    public void addToDoItem(ToDoItem item){
+        SQLiteDatabase db = getWritableDatabase();
+        db.insertWithOnConflict(TO_DO_TABLE_NAME, null, parseToDoItemContentValues(item), SQLiteDatabase.CONFLICT_REPLACE);
+        db.close();
+    }
+
+    public List<ToDoItem> getToDoList(){
+        SQLiteDatabase db = getReadableDatabase();
+        List<ToDoItem> toDoList = new ArrayList<>();
+        Cursor c = db.query(TO_DO_TABLE_NAME, null, null, null, null, null, null);
+        if(c.moveToFirst()){
+            while(!c.isAfterLast()){
+                toDoList.add(parseToDoItemCursor(c));
+                c.moveToNext();
+            }
+        }
+        c.close();
+        db.close();
+        return toDoList;
+    }
+
+    public boolean updateToDoItem(ToDoItem item){
+        SQLiteDatabase db = getWritableDatabase();
+        boolean updated = db.update(TO_DO_TABLE_NAME, parseToDoItemContentValues(item), CREATED_TIME_COLUMN + " = ? ", new String[]{String.valueOf(item.getCreated())}) == 1;
+        db.close();
+        return updated;
     }
 }

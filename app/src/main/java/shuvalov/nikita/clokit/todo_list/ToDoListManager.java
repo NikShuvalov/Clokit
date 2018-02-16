@@ -14,7 +14,6 @@ public class ToDoListManager {
 
     public ToDoListManager() {
         mToDoItems = new ArrayList<>();
-        mToDoItems.add(new ToDoItem("Fix Everything", "All the things", 0, 0));
     }
 
     public static ToDoListManager getInstance() {

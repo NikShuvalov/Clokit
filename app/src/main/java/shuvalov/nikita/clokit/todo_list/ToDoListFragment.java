@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -17,13 +18,16 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import java.util.Calendar;
+import java.util.List;
+
+import shuvalov.nikita.clokit.GoalSQLHelper;
 import shuvalov.nikita.clokit.R;
 
 
 public class ToDoListFragment extends Fragment implements FloatingActionButton.OnClickListener{
     private ToDoRecyclerAdapter mAdapter;
     private RecyclerView mRecyclerView;
-    private FloatingActionButton mFab;
 
     private OnFragmentInteractionListener mListener;
 
@@ -45,8 +49,7 @@ public class ToDoListFragment extends Fragment implements FloatingActionButton.O
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_to_do_list, container, false);
         mRecyclerView = (RecyclerView)view.findViewById(R.id.todo_recycler);
-        mFab = (FloatingActionButton)view.findViewById(R.id.fab);
-        mFab.setOnClickListener(this);
+        view.findViewById(R.id.fab).setOnClickListener(this);
         initRecycler();
         return view;
     }
@@ -100,7 +103,9 @@ public class ToDoListFragment extends Fragment implements FloatingActionButton.O
             public void onClick(DialogInterface dialogInterface, int i) {
                 String description = descriptionEditText.getText().toString();
                 String title = titleEditText.getText().toString();
-                ToDoListManager.getInstance().addToDoItem(new ToDoItem(title, description, 0 , 0));
+                ToDoItem toDoItem = new ToDoItem(title, description, Calendar.getInstance().getTimeInMillis(), 0);
+                ToDoListManager.getInstance().addToDoItem(toDoItem);
+                GoalSQLHelper.getInstance(getContext()).addToDoItem(toDoItem);
                 mAdapter.refreshItems();
             }
         }).create().show();

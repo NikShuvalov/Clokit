@@ -3,12 +3,11 @@ package shuvalov.nikita.clokit.todo_list;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
-import android.widget.CheckBox;
 import android.widget.CompoundButton;
-import android.widget.Toast;
 
 import java.util.List;
 
+import shuvalov.nikita.clokit.GoalSQLHelper;
 import shuvalov.nikita.clokit.R;
 
 /**
@@ -39,7 +38,7 @@ public class ToDoRecyclerAdapter extends RecyclerView.Adapter<ToDoViewHolder> {
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                 toDoItem.setComplete(b);
                 holder.setToDoItem(toDoItem);
-                //ToDo: Save changes to status of toDo item
+                GoalSQLHelper.getInstance(compoundButton.getContext()).updateToDoItem(toDoItem);
             }
         });
 

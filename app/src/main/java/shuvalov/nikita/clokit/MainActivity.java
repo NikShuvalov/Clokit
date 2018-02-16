@@ -37,6 +37,7 @@ import shuvalov.nikita.clokit.lifetime_results.LifetimeStatsFragment;
 import shuvalov.nikita.clokit.lifetime_results.LifetimeStatsManager;
 import shuvalov.nikita.clokit.pojos.Goal;
 import shuvalov.nikita.clokit.pojos.Week;
+import shuvalov.nikita.clokit.todo_list.ToDoAsyncTask;
 import shuvalov.nikita.clokit.todo_list.ToDoListFragment;
 
 public class MainActivity extends AppCompatActivity
@@ -423,6 +424,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void startToDoFragment(){
+        new ToDoAsyncTask().execute(this);//FixMe: Make this less likely to fuck things up
         mCurrentDisplay = TODO_LIST_FRAG;
         mBackRecentlyPressed = false;
         invalidateOptionsMenu();

@@ -11,6 +11,7 @@ public class ToDoItem {
 
     public ToDoItem(String name, String description, long created, long due, boolean isComplete) {
         this.name = name;
+        this.description = description;
         this.created = created;
         this.due = due;
         this.isComplete = isComplete;
