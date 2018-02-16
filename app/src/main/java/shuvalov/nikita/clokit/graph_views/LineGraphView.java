@@ -190,7 +190,7 @@ public class LineGraphView extends View {
                 maxHeight/totalGoal;
         mYLabelInterval = totalProgress > totalGoal ?
                 totalProgress * 10/36f :
-                totalGoal*10/36f;
+                totalGoal * 10/36f;
         mTotalGoal = totalGoal;
         mTotalProgress = totalProgress;
     }

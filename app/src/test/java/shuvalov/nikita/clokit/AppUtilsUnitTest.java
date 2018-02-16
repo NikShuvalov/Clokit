@@ -19,8 +19,6 @@ public class AppUtilsUnitTest {
         long preBirthday = Long.valueOf("1492920000001");
         long xmasEve = Long.valueOf("1514091600001"); //Last week of the year, last monday of year
 
-        //ToDo: Add tests for daylight savings bullshit
-
         assertEquals(firstMonday2017, AppUtils.getWeekStartMillis(20171));
         assertEquals(mlk2017, AppUtils.getWeekStartMillis(20173));
         assertEquals(preBirthday, AppUtils.getWeekStartMillis(201717));

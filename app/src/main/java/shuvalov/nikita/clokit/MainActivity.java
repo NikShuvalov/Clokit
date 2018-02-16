@@ -3,6 +3,7 @@ package shuvalov.nikita.clokit;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
@@ -36,9 +37,13 @@ import shuvalov.nikita.clokit.lifetime_results.LifetimeStatsFragment;
 import shuvalov.nikita.clokit.lifetime_results.LifetimeStatsManager;
 import shuvalov.nikita.clokit.pojos.Goal;
 import shuvalov.nikita.clokit.pojos.Week;
+import shuvalov.nikita.clokit.todo_list.ToDoListFragment;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, HistoryRecyclerAdapter.WeekSelectedListener, LifetimeRecyclerAdapter.GoalSelectedListener{
+        implements NavigationView.OnNavigationItemSelectedListener,
+        HistoryRecyclerAdapter.WeekSelectedListener,
+        LifetimeRecyclerAdapter.GoalSelectedListener,
+        ToDoListFragment.OnFragmentInteractionListener{
 
     DrawerLayout mDrawerLayout;
     NavigationView mNavView;
@@ -48,11 +53,13 @@ public class MainActivity extends AppCompatActivity
 
     public static final String CURRENT_DISPLAY_KEY = "Current Display key";
 
+    //ToDo: Refactor into ENUM
     public static final String HOME_FRAG = "Home fragment";
     public static final String HISTORY_FRAG = "History fragment";
     public static final String LIFETIME_FRAG = "Lifetime fragment";
     public static final String WEEK_BREAKDOWN_FRAG = "Week Breakdown Fragment";
     public static final String LIFETIME_STATS_FRAG = "The fragment that displays the stats of the lifetime goals and such";
+    public static final String TODO_LIST_FRAG = "The To-Do List fragment";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -121,6 +128,13 @@ public class MainActivity extends AppCompatActivity
                     startLifetimeFragment();
                 }else{
                     Toast.makeText(this, "Already in lifetime activity", Toast.LENGTH_SHORT).show();
+                }
+                break;
+            case R.id.todo_option:
+                if(!mCurrentDisplay.equals(TODO_LIST_FRAG)){
+                    startToDoFragment();
+                }else{
+                    Toast.makeText(this, "Already in To-Do list", Toast.LENGTH_SHORT).show();
                 }
                 break;
         }
@@ -408,6 +422,13 @@ public class MainActivity extends AppCompatActivity
         getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, LifetimeFragment.newInstance(), LIFETIME_FRAG).commit();
     }
 
+    private void startToDoFragment(){
+        mCurrentDisplay = TODO_LIST_FRAG;
+        mBackRecentlyPressed = false;
+        invalidateOptionsMenu();
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, ToDoListFragment.newInstance(), TODO_LIST_FRAG).commit();
+    }
+
     /**
      * Copies the last active week's goals, clears the progress, adjusts the weeknumber and places it back in the database as new tasks.
      * This keeps the total goalTime
@@ -446,5 +467,10 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onPause() {
         super.onPause();
+    }
+
+    @Override
+    public void onFragmentInteraction(Uri uri) {
+
     }
 }
