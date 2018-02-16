@@ -667,4 +667,10 @@ public class GoalSQLHelper extends SQLiteOpenHelper {
         db.close();
         return updated;
     }
+
+    public void removeCompletedToDo(){
+        SQLiteDatabase db = getWritableDatabase();
+        db.delete(TO_DO_TABLE_NAME, COMPLETED_COLUMN + " = ?", new String[]{"1"});
+        db.close();
+    }
 }

@@ -34,4 +34,10 @@ public class ToDoListManager {
     public void addToDoItem(ToDoItem item){
         mToDoItems.add(item);
     }
+
+    public void removeCompletedItems(){
+        for(int i = mToDoItems.size() - 1; i >=0; i--){
+            if(mToDoItems.get(i).isComplete())mToDoItems.remove(i);
+        }
+    }
 }

@@ -114,4 +114,9 @@ public class ToDoListFragment extends Fragment implements FloatingActionButton.O
     public interface OnFragmentInteractionListener {
         void onFragmentInteraction(Uri uri);
     }
-}
+
+    public void removeCompletedToDos(){
+        GoalSQLHelper.getInstance(getContext()).removeCompletedToDo();
+        ToDoListManager.getInstance().removeCompletedItems();
+        mAdapter.refreshItems();
+    }}

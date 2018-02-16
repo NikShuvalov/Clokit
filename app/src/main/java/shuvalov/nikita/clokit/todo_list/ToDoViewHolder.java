@@ -3,6 +3,7 @@ package shuvalov.nikita.clokit.todo_list;
 import android.graphics.Paint;
 import android.support.v7.widget.AppCompatCheckBox;
 import android.support.v7.widget.AppCompatTextView;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
@@ -15,11 +16,13 @@ import shuvalov.nikita.clokit.R;
 public class ToDoViewHolder extends RecyclerView.ViewHolder {
     public AppCompatCheckBox mCheckBox;
     public AppCompatTextView mTextView;
+    public CardView mCardView;
 
     public ToDoViewHolder(View itemView) {
         super(itemView);
         mTextView = (AppCompatTextView)itemView.findViewById(R.id.description_text);
         mCheckBox = (AppCompatCheckBox)itemView.findViewById(R.id.checkbox);
+        mCardView = (CardView)itemView.findViewById(R.id.card_container);
     }
 
     public void setToDoItem(ToDoItem td){
@@ -31,5 +34,4 @@ public class ToDoViewHolder extends RecyclerView.ViewHolder {
             mTextView.setPaintFlags(mTextView.getPaintFlags() & (~ Paint.STRIKE_THRU_TEXT_FLAG));
         }
     }
-
 }

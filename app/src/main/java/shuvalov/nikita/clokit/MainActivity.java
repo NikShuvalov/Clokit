@@ -39,6 +39,7 @@ import shuvalov.nikita.clokit.pojos.Goal;
 import shuvalov.nikita.clokit.pojos.Week;
 import shuvalov.nikita.clokit.todo_list.ToDoAsyncTask;
 import shuvalov.nikita.clokit.todo_list.ToDoListFragment;
+import shuvalov.nikita.clokit.todo_list.ToDoListManager;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
@@ -102,8 +103,13 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater menuInflater = getMenuInflater();
-        menuInflater.inflate(R.menu.menu_toolbar,menu);
+        if(mCurrentDisplay.equals(TODO_LIST_FRAG)){
+            MenuInflater menuInflater = getMenuInflater();
+            menuInflater.inflate(R.menu.menu_todo,menu);
+        }else {
+            MenuInflater menuInflater = getMenuInflater();
+            menuInflater.inflate(R.menu.menu_toolbar, menu);
+        }
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -157,6 +163,9 @@ public class MainActivity extends AppCompatActivity
                 break;
             case R.id.remove_empty_goals_opt:
                 removeUnusedGoals();
+                break;
+            case R.id.remove_complete_todo_opt:
+                ((ToDoListFragment)getSupportFragmentManager().findFragmentByTag(TODO_LIST_FRAG)).removeCompletedToDos();
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -383,7 +392,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        menu.setGroupVisible(0, mCurrentDisplay.equals(HOME_FRAG));
+        menu.setGroupVisible(0, mCurrentDisplay.equals(HOME_FRAG) || mCurrentDisplay.equals(TODO_LIST_FRAG));
         return super.onPrepareOptionsMenu(menu);
     }
 
@@ -424,7 +433,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void startToDoFragment(){
-        new ToDoAsyncTask().execute(this);//FixMe: Make this less likely to fuck things up
+        ToDoListManager.getInstance().setToDoItems(GoalSQLHelper.getInstance(this).getToDoList());
         mCurrentDisplay = TODO_LIST_FRAG;
         mBackRecentlyPressed = false;
         invalidateOptionsMenu();
@@ -473,6 +482,5 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onFragmentInteraction(Uri uri) {
-
     }
 }

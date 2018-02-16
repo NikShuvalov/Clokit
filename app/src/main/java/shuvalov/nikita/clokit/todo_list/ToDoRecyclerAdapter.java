@@ -1,7 +1,10 @@
 package shuvalov.nikita.clokit.todo_list;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
 
@@ -30,7 +33,6 @@ public class ToDoRecyclerAdapter extends RecyclerView.Adapter<ToDoViewHolder> {
     @Override
     public void onBindViewHolder(final ToDoViewHolder holder, int position) {
         final ToDoItem toDoItem = mToDoItems.get(position);
-
         holder.setToDoItem(toDoItem);
         holder.mCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener(){
 
@@ -39,6 +41,20 @@ public class ToDoRecyclerAdapter extends RecyclerView.Adapter<ToDoViewHolder> {
                 toDoItem.setComplete(b);
                 holder.setToDoItem(toDoItem);
                 GoalSQLHelper.getInstance(compoundButton.getContext()).updateToDoItem(toDoItem);
+            }
+        });
+        holder.mCardView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                new AlertDialog.Builder(view.getContext())
+                        .setTitle(toDoItem.getName())
+                        .setMessage(toDoItem.getDescription())
+                        .setPositiveButton("Close", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                dialogInterface.dismiss();
+                            }
+                        }).create().show();
             }
         });
 
