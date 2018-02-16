@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.database.DatabaseErrorHandler;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.support.annotation.NonNull;
 import android.util.Log;
 
 import java.util.ArrayList;
@@ -492,7 +493,6 @@ public class GoalSQLHelper extends SQLiteOpenHelper {
         }
     }
 
-
     public String getLastActiveWeekNum(){
         SQLiteDatabase db = getReadableDatabase();
         Cursor c =db.query(WEEKS_REFERENCE_TABLE_NAME,null, null, null, null ,null, null, null);
@@ -621,6 +621,7 @@ public class GoalSQLHelper extends SQLiteOpenHelper {
         addGoalToWeeklyTable(existingEntry);
     }
 
+    @NonNull
     private ToDoItem parseToDoItemCursor(Cursor c){
         String name = c.getString(c.getColumnIndex(NAME_COLUMN));
         String details = c.getString(c.getColumnIndex(DETAILS_COLUMN));
