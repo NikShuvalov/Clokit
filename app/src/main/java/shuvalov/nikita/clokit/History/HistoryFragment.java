@@ -9,6 +9,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.util.ArrayList;
+
 import shuvalov.nikita.clokit.GoalSQLHelper;
 import shuvalov.nikita.clokit.MainActivity;
 import shuvalov.nikita.clokit.R;
@@ -37,11 +39,13 @@ public class HistoryFragment extends Fragment {
 
 
         RecyclerView historyRecycler = (RecyclerView)view.findViewById(R.id.history_recycler);
-        HistoryRecyclerAdapter historyAdapter = new HistoryRecyclerAdapter(GoalSQLHelper.getInstance(getContext()).getActiveWeeks(), (MainActivity)getActivity());
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(),LinearLayoutManager.VERTICAL,false);
+        ArrayList<Week> activeWeeks = GoalSQLHelper.getInstance(getContext()).getActiveWeeks();
+        HistoryRecyclerAdapter historyAdapter = new HistoryRecyclerAdapter(activeWeeks, (MainActivity)getActivity());
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(),LinearLayoutManager.VERTICAL,true);
 
         historyRecycler.setAdapter(historyAdapter);
         historyRecycler.setLayoutManager(linearLayoutManager);
+        linearLayoutManager.scrollToPosition(activeWeeks.size()-1);
         return view;
     }
 
