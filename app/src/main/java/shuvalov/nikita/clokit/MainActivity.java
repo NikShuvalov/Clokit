@@ -100,7 +100,6 @@ public class MainActivity extends AppCompatActivity
         mNavView.setNavigationItemSelectedListener(this);
     }
 
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         if(mCurrentDisplay.equals(TODO_LIST_FRAG)){
@@ -241,49 +240,67 @@ public class MainActivity extends AppCompatActivity
                         @Override
                         public void onClick(View view) {
                             {
+
+                                //ToDo: Consolidate this and other alertDialog
                                 String goalName;
                                 Goal selectedGoal = goalsAdapter.getSelectedGoal();
-                                if(selectedGoal ==null){
+                                if(selectedGoal == null){
                                     Toast.makeText(MainActivity.this, "No Goal Selected", Toast.LENGTH_SHORT).show();
                                 }else{
+                                    boolean validTimeEntry = false;
                                     goalName = selectedGoal.getGoalName();
                                     goalsAdapter.resetSelection();
                                     String hoursString = hourEntry.getText().toString();
                                     String minutesString  = minuteEntry.getText().toString();
-                                    int minutes = 0;
-                                    int hours = 0;
+                                    long minutes = 0;
+                                    long hours = 0;
                                     if(hoursString.equals("") && minutesString.equals("")){
                                         hourEntry.setError("A goal time amount is required");
                                         minuteEntry.setError("A goal time amount is required");
                                         goalsAdapter.resetSelection(); //Needed to reset selection, otherwise two can be selected
+                                    } else if (hoursString.length() > 3 || minutesString.length() > 5){
+                                        if( hoursString.length() > 3) {
+                                            hourEntry.setError("Hour Input can't be longer than 3 digits");
+                                        }
+                                        if(minutesString.length() > 5){
+                                            minuteEntry.setError("Minute Input can't be longer than 5 digits");
+                                        }
                                     }else if(hoursString.equals("") || minutesString.equals("")){
                                         if(minutesString.equals("")){
                                             hours = Integer.valueOf(hoursString);
                                         }else{
                                             minutes = Integer.valueOf(minutesString);
                                         }
+                                        validTimeEntry = true;
                                     } else{
                                         hours = Integer.valueOf(hoursString);
                                         minutes = Integer.valueOf(minutesString);
+                                        validTimeEntry = true;
                                     }
-                                    long totalMillis = (minutes*1000*60)+(hours*1000*3600);
-                                    if(totalMillis==0){
-                                        hourEntry.setError("A goal time amount is required");
-                                        minuteEntry.setError("A goal time amount is required");
-                                        goalsAdapter.resetSelection();
-                                    }else {
-                                        String subCategory = subCatEntry.getText().toString();
-                                        Goal goal = new Goal(goalName.trim(), 0, totalMillis, AppUtils.getCurrentWeekNum(), subCategory.trim());
-                                        if (CurrentWeekGoalManager.getInstance().addCurrentGoal(goal)) {
-                                            GoalSQLHelper.getInstance(MainActivity.this).addGoalToWeeklyTable(goal);
-                                            CurrentWeekGoalManager.getInstance().notifyNewData();
-                                            if (mCurrentDisplay.equals(HOME_FRAG)) {
-                                                ((HomeFragment)getSupportFragmentManager().findFragmentByTag(HOME_FRAG)).updateTimeLeftDisplay();
-                                            }
-                                            dialogInterface.dismiss();
-                                        } else {
+                                    if(validTimeEntry) {
+                                        long totalMillis = (minutes * 1000 * 60) + (hours * 1000 * 3600);
+                                        if (totalMillis == 0) {
+                                            hourEntry.setError("A goal time amount is required");
+                                            minuteEntry.setError("A goal time amount is required");
                                             goalsAdapter.resetSelection();
-                                            Toast.makeText(MainActivity.this, "This goal is already set for this week", Toast.LENGTH_SHORT).show();
+                                        } else if (totalMillis > 604800000) {
+                                            hourEntry.setError("Goal Time can't be greater than length of week");
+                                            minuteEntry.setError("Goal Time can't be greater than length of week");
+                                            goalsAdapter.resetSelection();
+                                        } else {
+                                            String subCategory = subCatEntry.getText().toString();
+                                            Goal goal = new Goal(goalName.trim(), 0, totalMillis, AppUtils.getCurrentWeekNum(), subCategory.trim());
+                                            if (CurrentWeekGoalManager.getInstance().addCurrentGoal(goal)) {
+                                                GoalSQLHelper.getInstance(MainActivity.this).addGoalToWeeklyTable(goal);
+                                                CurrentWeekGoalManager.getInstance().notifyNewData();
+                                                if (mCurrentDisplay.equals(HOME_FRAG)) {
+                                                    ((HomeFragment) getSupportFragmentManager().findFragmentByTag(HOME_FRAG)).updateTimeLeftDisplay();
+                                                }
+                                                dialogInterface.dismiss();
+                                            } else {
+                                                goalsAdapter.resetSelection();
+                                                Toast.makeText(MainActivity.this, "This goal is already set for this week", Toast.LENGTH_SHORT).show();
+                                            }
                                         }
                                     }
                                 }
@@ -312,42 +329,61 @@ public class MainActivity extends AppCompatActivity
                         @Override
                         public void onClick(View view) {
                             {
+                                //ToDo: Consolidate this and other alertDialog
                                 String goalName = nameEntry.getText().toString();
                                 String subCat = subCatEntry.getText().toString();
                                 if(goalName.trim().equals("")){
                                     nameEntry.setError("A goal name is required");
                                 }else{
+                                    boolean validTimeEntry = false;
                                     String hoursString = hourEntry.getText().toString();
                                     String minutesString  = minuteEntry.getText().toString();
-                                    int minutes = 0;
-                                    int hours = 0;
+                                    long minutes = 0;
+                                    long hours = 0;
                                     if(hoursString.equals("") && minutesString.equals("")){
                                         hourEntry.setError("A goal time amount is required");
                                         minuteEntry.setError("A goal time amount is required");
+                                    } else if (hoursString.length() > 3 || minutesString.length() > 5){
+                                        if( hoursString.length() > 3) {
+                                            hourEntry.setError("Hour Input can't be longer than 3 digits");
+                                        }
+                                        if(minutesString.length() > 5){
+                                            minuteEntry.setError("Minute Input can't be longer than 5 digits");
+                                        }
                                     }else if(hoursString.equals("") || minutesString.equals("")){
                                         if(minutesString.equals("")){
                                             hours = Integer.valueOf(hoursString);
                                         }else{
                                             minutes = Integer.valueOf(minutesString);
                                         }
-                                    } else{
+                                        validTimeEntry = true;
+                                    }
+                                    else{
                                         hours = Integer.valueOf(hoursString);
                                         minutes = Integer.valueOf(minutesString);
+                                        validTimeEntry = true;
                                     }
-                                    long totalMillis = (minutes*1000*60)+(hours*1000*3600);
-                                    if(totalMillis<=0){
-                                        hourEntry.setError("A goal time amount is required");
-                                        minuteEntry.setError("A goal time amount is required");
-                                    }else{
-                                        Goal goal = new Goal(goalName.trim(), 0, totalMillis, AppUtils.getCurrentWeekNum(), subCat.trim());
-                                        if(CurrentWeekGoalManager.getInstance().addCurrentGoal(goal)){
-                                            GoalSQLHelper.getInstance(MainActivity.this).addGoalToWeeklyTable(goal);
-                                            if (mCurrentDisplay.equals(HOME_FRAG)) {
-                                                ((HomeFragment)getSupportFragmentManager().findFragmentByTag(HOME_FRAG)).updateTimeLeftDisplay();
+
+                                    if(validTimeEntry) {
+                                        long totalMillis = (minutes * 1000 * 60) + (hours * 1000 * 3600);
+                                        if (totalMillis == 0) {
+                                            Log.d("MainAcivity", "onClick: " + totalMillis);
+                                            hourEntry.setError("A goal time amount is required");
+                                            minuteEntry.setError("A goal time amount is required");
+                                        } else if (totalMillis > (604800 * 1000)) {
+                                            hourEntry.setError("Total goal time can't be greater than week length");
+                                            minuteEntry.setError("Total goal time can't be greater than week length");
+                                        } else {
+                                            Goal goal = new Goal(goalName.trim(), 0, totalMillis, AppUtils.getCurrentWeekNum(), subCat.trim());
+                                            if (CurrentWeekGoalManager.getInstance().addCurrentGoal(goal)) {
+                                                GoalSQLHelper.getInstance(MainActivity.this).addGoalToWeeklyTable(goal);
+                                                if (mCurrentDisplay.equals(HOME_FRAG)) {
+                                                    ((HomeFragment) getSupportFragmentManager().findFragmentByTag(HOME_FRAG)).updateTimeLeftDisplay();
+                                                }
+                                                dialogInterface.dismiss();
+                                            } else {
+                                                Toast.makeText(MainActivity.this, "This goal is already set for this week", Toast.LENGTH_SHORT).show();
                                             }
-                                            dialogInterface.dismiss();
-                                        }else{
-                                            Toast.makeText(MainActivity.this, "This goal is already set for this week", Toast.LENGTH_SHORT).show();
                                         }
                                     }
                                 }
@@ -388,7 +424,6 @@ public class MainActivity extends AppCompatActivity
             startHomeFragment();
         }
     }
-
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
