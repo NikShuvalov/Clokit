@@ -9,13 +9,15 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Enter Goal Name"
-        android:layout_marginBottom="8dp"/>
+        android:layout_marginBottom="8dp"
+        android:maxLength="50"/>
     <EditText
         android:id="@+id/sub_cat_entry"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Enter Subcategory (Optional)"
-        android:layout_marginBottom="8dp"/>
+        android:layout_marginBottom="8dp"
+        android:maxLength="140"/>
     <LinearLayout
         android:id="@+id/time_row"
         android:layout_width="match_parent"

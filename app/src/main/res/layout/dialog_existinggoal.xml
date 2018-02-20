@@ -39,7 +39,8 @@
         android:layout_height="wrap_content"
         android:hint="Enter Subcategory (Optional)"
         android:inputType="text"
-        android:layout_above="@id/time_row"/>
+        android:layout_above="@id/time_row"
+        android:maxLength="140"/>
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/existing_goal_recycler"
