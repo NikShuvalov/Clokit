@@ -4,12 +4,14 @@ package shuvalov.nikita.clokit.goaltracker;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.graphics.Point;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -24,6 +26,8 @@ import shuvalov.nikita.clokit.GoalSQLHelper;
 import shuvalov.nikita.clokit.R;
 import shuvalov.nikita.clokit.pojos.Goal;
 import shuvalov.nikita.clokit.pojos.Week;
+
+import static android.content.ContentValues.TAG;
 
 
 public class HomeFragment extends Fragment implements GoalRecyclerAdapter.OnGoalChangeListener{
@@ -111,6 +115,13 @@ public class HomeFragment extends Fragment implements GoalRecyclerAdapter.OnGoal
             setupGoalForThisWeek(lastWeekGoal, sharedPreferences);
         }
         updateTimeLeftDisplay();
+
+        Point p = new Point();
+        getActivity().getWindowManager().getDefaultDisplay().getSize(p);
+
+        int height = p.y;
+        int width = p.x;
+        Log.d(TAG, "onResume: " + width + ", " + height);
     }
 
     private void setupGoalForThisWeek(Goal lastWeekGoal, SharedPreferences sharedPreferences){
