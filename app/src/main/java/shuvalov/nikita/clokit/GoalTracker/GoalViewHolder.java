@@ -10,6 +10,7 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -29,6 +30,7 @@ public class GoalViewHolder extends RecyclerView.ViewHolder {
     private TextView mGoalText, mCurrentTime, mEndTime, mSubCatText;
     public ImageView mEditButton;
     private ProgressBar mProgressBar;
+    private FrameLayout mProgressFrame;
     public ToggleButton mToggleButton;
     public Button mRemoveButton;
     public CardView mContainer;
@@ -45,15 +47,17 @@ public class GoalViewHolder extends RecyclerView.ViewHolder {
         mContainer = (CardView)itemView.findViewById(R.id.card_container);
         mProgressBar = (ProgressBar) itemView.findViewById(R.id.progress_bar);
         mToggleButton = (ToggleButton) itemView.findViewById(R.id.clock_it_button);
+        mProgressFrame = (FrameLayout)itemView.findViewById(R.id.progress_frame);
 
         FrameLayout.LayoutParams buttonParams = (FrameLayout.LayoutParams) mToggleButton.getLayoutParams();
         buttonParams.height = (parentSize - 62)/3;
         buttonParams.width = (parentSize-62)/3;
         mToggleButton.setLayoutParams(buttonParams);
 
-        FrameLayout.LayoutParams progressParams = (FrameLayout.LayoutParams) mProgressBar.getLayoutParams();
-        progressParams.height = parentSize - 62;
-        progressParams.width = parentSize - 62;
+        LinearLayout.LayoutParams progressFrameParams = (LinearLayout.LayoutParams) mProgressFrame.getLayoutParams();
+        FrameLayout.LayoutParams progressParams = new FrameLayout.LayoutParams(progressFrameParams);
+        progressParams.height = (int)(parentSize *.9);
+        progressParams.width = (int)(parentSize *.9);
         mProgressBar.setLayoutParams(progressParams);
         itemView.findViewById(R.id.progress_backdrop).setLayoutParams(progressParams);
     }

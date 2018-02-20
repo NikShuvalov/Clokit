@@ -46,7 +46,7 @@ public class GoalRecyclerAdapter extends RecyclerView.Adapter<GoalViewHolder> im
     @Override
     public GoalViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         int parentSize = parent.getWidth() < parent.getHeight() ? parent.getWidth() :
-                 parent.getHeight();
+                (int)(parent.getWidth()/2.05);
         return new GoalViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.viewholder_goal, null), parentSize);
     }
 

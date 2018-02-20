@@ -115,13 +115,6 @@ public class HomeFragment extends Fragment implements GoalRecyclerAdapter.OnGoal
             setupGoalForThisWeek(lastWeekGoal, sharedPreferences);
         }
         updateTimeLeftDisplay();
-
-        Point p = new Point();
-        getActivity().getWindowManager().getDefaultDisplay().getSize(p);
-
-        int height = p.y;
-        int width = p.x;
-        Log.d(TAG, "onResume: " + width + ", " + height);
     }
 
     private void setupGoalForThisWeek(Goal lastWeekGoal, SharedPreferences sharedPreferences){
