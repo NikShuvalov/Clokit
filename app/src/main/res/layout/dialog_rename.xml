@@ -17,6 +17,7 @@
         android:id="@+id/name_entry"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Enter new subcategory"/>
+        android:hint="Enter new subcategory"
+        android:maxLength="140"/>
 
 </LinearLayout>
